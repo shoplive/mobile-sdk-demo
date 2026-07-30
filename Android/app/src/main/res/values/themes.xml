@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Compose 가 색을 소유한다 — 테마는 창(window) 설정만 담당한다.
+         SDK 플레이어/스튜디오 Activity 는 자체 테마(Theme.ShopLiveSDK 등)를 쓰므로
+         이 테마의 영향을 받지 않는다. -->
+    <style name="Theme.ShopliveOnboarding" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="Theme.ShopliveOnboarding.Transparent" parent="Theme.ShopliveOnboarding">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>
