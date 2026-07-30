@@ -1,0 +1,129 @@
+/* ShopLive オンボーディングデモ — 日本語 */
+
+/* MARK: - S1 スタート */
+"start.title" = "ShopLive SDK\n動作確認デモ";
+"start.subtitle" = "視聴（Player）と配信（Streamer）の8つの機能を、一覧からタップするだけで実行できます。説明を読む必要はありません。";
+"start.tour" = "ひとまず試す · すぐ開始";
+"start.tourNote.available" = "ShopLive のデモキャンペーンで、入力なしに確認できます。";
+"start.tourNote.missing" = "⚠️ 内蔵デモキーが空です — DemoDefaults（DemoCredentials.swift）を埋めるか、下から直接入力してください。";
+"start.own.collapsed" = "自分のアカウントで試す ▼";
+"start.own.expanded" = "自分のアカウントで試す ▲";
+"start.form.tip" = "必要なのは2つだけです。配信トークンはミッション8のときだけ必要です。";
+"start.field.accessKey" = "accessKey *";
+"start.field.accessKey.hint" = "Queenie コンソール、または担当者から発行";
+"start.field.accessKey.placeholder" = "発行された accessKey";
+"start.field.campaignKey" = "campaignKey *";
+"start.field.campaignKey.hint" = "ライブ / VOD どちらでも可";
+"start.field.campaignKey.placeholder" = "テストする campaignKey";
+"start.field.streamToken" = "配信トークン（ミッション8）";
+"start.field.streamToken.hint" = "視聴用のユーザー認証とは別経路です";
+"start.field.streamToken.placeholder" = "任意";
+"start.validate" = "検証して開始";
+"start.tip.code" = "コードはアプリ内にありません。一緒にお渡しするデモアプリのプロジェクトで確認してください — 各カードに開くファイルのパスが書かれています。";
+"start.tip.privacy" = "入力値は端末内にのみ保存され、サーバーへ送信されません。配信トークンは Keychain に保管します。";
+"start.toast.required" = "accessKey と campaignKey は必須です";
+"start.toast.initialized" = "✅ 初期化完了 — キーの有効性は再生時に確認されます";
+"start.toast.tourMissing" = "内蔵デモキーが空です — DemoCredentials.swift の DemoDefaults を埋めるか、下の「自分のアカウントで試す」を使ってください";
+
+/* MARK: - S2 機能一覧 */
+"list.title" = "機能の確認 %d/8";
+"list.tip.tapToRun" = "カードをタップするとすぐ実行されます。番号は連携ガイド（sdk.shoplive.cloud）のミッション番号と同じです。";
+"list.tip.openFiles" = "コードを見るには、カードの 📄 ファイルを Xcode で開いてください。Integration/ 配下はデモ UI に依存しないため、そのままコピーできます。";
+"list.mode.own" = "自分のアカウント · %@";
+"list.mode.tour" = "お試し · ShopLive デモキャンペーン";
+"list.badge.done" = "確認済み";
+"list.locked.credentials" = "accessKey と campaignKey の入力が必要です";
+"list.locked.streamToken" = "配信トークンが必要です";
+"list.locked.hint" = "🔒 %@ — 右上の ⚙";
+"list.rescue.toast" = "再生に到達しなかったためプレーヤーを閉じました — ログを確認してください";
+
+/* MARK: - ミッション */
+"mission.1.title" = "プレーヤーを表示する";
+"mission.1.summary" = "タップするとフルスクリーンのライブがすぐ開きます。";
+"mission.1.check" = "2〜3秒で再生 · ライブならチャットと LIVE バッジ";
+"mission.2.title" = "ディープリンクで開く";
+"mission.2.summary" = "擬似プッシュのバナーを出します。タップするとリンクから直接再生します。";
+"mission.2.check" = "バナーをタップ → 再生 · ref が referrer として渡る";
+"mission.3.title" = "会員情報を連携する";
+"mission.3.summary" = "guest / profile / token から選んで再生します。";
+"mission.3.check" = "チャットのニックネームが会員名で表示";
+"mission.4.title" = "画面に埋め込む";
+"mission.4.summary" = "ホームフィードのカードの間に入ったプレーヤーを見ます。";
+"mission.4.check" = "スクロールしても再生継続 · フルスクリーンへ昇格";
+"mission.5.title" = "PIP で見続ける";
+"mission.5.summary" = "再生後に商品をタップすると小さいウィンドウで続きます。";
+"mission.5.check" = "小窓が維持される · タップで途切れず復帰";
+"mission.6.title" = "イベント · 商品 · クーポン";
+"mission.6.summary" = "商品やクーポンをタップし、ログに何が来るかを見ます。";
+"mission.6.check" = "navigation / coupon の受信と respond の呼び出し";
+"mission.7.title" = "UI をカスタマイズ";
+"mission.7.summary" = "オプションで色やオーバーレイを変えてすぐ確認します。";
+"mission.7.check" = "色が反映 · hidden でもイベントは届く";
+"mission.8.title" = "ライブ配信する";
+"mission.8.summary" = "スタジオを開いて配信を開始・終了します。";
+"mission.8.check" = "プレビュー → LIVE への遷移 · 自動復旧";
+
+/* MARK: - ミッション2 擬似プッシュ */
+"banner.app" = "MY SHOP · たった今";
+"banner.title" = "🔴 サマーセールのライブが開始！今すぐ入場";
+
+/* MARK: - ミッション3 認証の選択 */
+"auth.sheet.title" = "どの方式でユーザーを識別しますか？";
+"auth.sheet.message" = "1つのアプリ内で併用でき、次の再生から適用されます";
+"auth.guest" = "guest — 未ログインで視聴";
+"auth.profile" = "profile — 簡易認証";
+"auth.token" = "token — サーバー署名の JWT（推奨）";
+"auth.logout" = "ログアウト（logout）";
+"auth.cancel" = "キャンセル";
+
+/* MARK: - S3 デモ用コントロール */
+"player.overlay.back" = "‹ 一覧";
+"player.overlay.dev" = "⌗ 開発者";
+"player.overlay.badge" = "デモアプリ専用";
+
+/* MARK: - ミッション4 ホームフィード */
+"feed.title" = "ホームフィード · ミッション4";
+"feed.tip.embed" = "下が ShoplivePlayerView です — レイアウトだけをアプリが持ち、コントロール・イベント・PIP はフルスクリーンと同一の API です。";
+"feed.warn.autoPip" = "この埋め込みビューは設計書 §3.4 のとおり映像専用です（overlayUI = .hidden）。画面離脱時の自動 PIP 昇格オプションは今回の SDK ビルドで公開表面から削除され、手動 enterPictureInPicture() のみ提供されます。";
+"feed.card1.title" = "今日のおすすめ";
+"feed.card1.detail" = "通常のフィードカード";
+"feed.card2.title" = "ベストセラー";
+"feed.card2.detail" = "スクロールしても上の再生は維持されます";
+"feed.card3.title" = "新商品";
+"feed.card3.detail" = "さらにスクロールしてもセッションは生きています";
+"feed.expand" = "⤢ フルスクリーン";
+
+/* MARK: - V1 開発者シート */
+"dev.tab.log" = "イベントログ";
+"dev.tab.options" = "オプション";
+"dev.log.empty" = "まだログがありません — 機能を実行してください";
+"dev.log.notice" = "⚠ エンジンの切り替えはイベントで通知されません。HLS↔WebRTC の切り替えは SDK 内部の事情であり、ネットワーク状況は playback(rebuffering) と connectionStateChanged だけで観測できます。\n\n⚠ 自動復旧中の問題は error として通知されません。復旧不能でセッションが終了するときにのみ error(isRecoverable=false) が届きます。";
+"dev.log.copy" = "📋 ログをコピー";
+"dev.log.clear" = "消去";
+"dev.toast.copied" = "📋 コピーしました";
+"dev.group.auth" = "認証 · ミッション3";
+"dev.group.pip" = "PIP · ミッション5";
+"dev.group.overlay" = "オーバーレイ · 外観 · ミッション7";
+"dev.group.control" = "コントロール（再生中に即反映）";
+"dev.group.advanced" = "詳細 — configuration の残り全項目";
+"dev.default" = "既定 %@";
+"dev.action.call" = "呼び出す";
+"dev.action.send" = "送信";
+"dev.action.toggle" = "切替";
+"dev.error.noPlayer" = "再生中のプレーヤーがありません";
+"dev.hint.cycle" = "値をタップすると循環します。すべての項目に既定値があるため、指定しなくても動作します。";
+"dev.unwired.warning" = "現在の SDK ビルドでは以下の項目に消費先がなく、値が保存されるだけです（動作に反映されません）:\noverlay.ui · pip.isOSPipEnabled · pip.autoEnterOnLeaveScreen · navigation.shareScheme · appearance.isStatusBarVisible · appearance.allowScreenCapture · PlayOptions の2項目。\noverlay.ui のみランタイムプロパティ（overlayUI）で回避適用されます。";
+
+/* MARK: - V2 商品詳細 */
+"product.title" = "商品詳細 · 自社アプリの画面";
+"product.tip.routed" = "navigation(url) をアプリがルーティングした結果です。\n受信 URL  %@";
+"product.name" = "シグネチャー コットンシャツ";
+"product.price" = "¥3,900";
+"product.warn.mustHandle" = "navigation はアプリが必ず処理しなければならない唯一の request です。ルーティングを実装しないと、商品をタップしても何も起きません。";
+"product.pip.active" = "現在 in-App PIP で視聴が続いています（state = .inAppPIP）。PIP ウィンドウをタップすると途切れずフルスクリーンへ戻ります。";
+"nav.action.pip.explain" = "pip — 画面遷移時に小窓へ縮小し、視聴が続きます。（既定）";
+"nav.action.keep.explain" = "keep — プレーヤーをそのまま維持します。";
+"nav.action.close.explain" = "close — プレーヤーを閉じます。";
+
+/* 재생 실패 안내 (세션당 1회) */
+"player.failure.notice" = "⚠️ 再生に失敗しました（%@）— ストリームが配信されていません。プレーヤーはそのままにしてあります。ログを確認し、戻るには「‹ 一覧」を押してください。";

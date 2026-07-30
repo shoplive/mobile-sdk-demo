@@ -1,0 +1,2586 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "ShopLiveWebRTCHelperSDK",
+    "printedName": "ShopLiveWebRTCHelperSDK",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "WebRTC",
+        "printedName": "WebRTC",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "IOSBundlePolicy",
+        "printedName": "IOSBundlePolicy",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "balanced",
+            "printedName": "balanced",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type) -> ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSBundlePolicy",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSBundlePolicy",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8balancedyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8balancedyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "maxCompat",
+            "printedName": "maxCompat",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type) -> ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSBundlePolicy",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSBundlePolicy",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO9maxCompatyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO9maxCompatyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "maxBundle",
+            "printedName": "maxBundle",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type) -> ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSBundlePolicy",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSBundlePolicy",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO9maxBundleyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO9maxBundleyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Function",
+            "name": "toBundlePolicy",
+            "printedName": "toBundlePolicy()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "RTCBundlePolicy",
+                "printedName": "WebRTC.RTCBundlePolicy",
+                "usr": "c:@E@RTCBundlePolicy"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO08toBundleG0So09RTCBundleG0VyF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO08toBundleG0So09RTCBundleG0VyF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(rawValue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "IOSBundlePolicy",
+                "printedName": "ShopLiveWebRTCHelperSDK.IOSBundlePolicy",
+                "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueACSS_tcfc",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueACSS_tcfc",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Var",
+            "name": "rawValue",
+            "printedName": "rawValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueSSvp",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueSSvg",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO8rawValueSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO",
+        "mangledName": "$s23ShopLiveWebRTCHelperSDK15IOSBundlePolicyO",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "enumRawTypeName": "String",
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "WebRTC",
+        "printedName": "WebRTC",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "IOSIceTransportsType",
+        "printedName": "IOSIceTransportsType",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "none",
+            "printedName": "none",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type) -> ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSIceTransportsType",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSIceTransportsType",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO4noneyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO4noneyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "relay",
+            "printedName": "relay",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type) -> ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSIceTransportsType",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSIceTransportsType",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO5relayyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO5relayyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "nohost",
+            "printedName": "nohost",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type) -> ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSIceTransportsType",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSIceTransportsType",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO6nohostyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO6nohostyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "all",
+            "printedName": "all",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type) -> ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "IOSIceTransportsType",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "IOSIceTransportsType",
+                        "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO3allyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO3allyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Function",
+            "name": "toIceTransportsType",
+            "printedName": "toIceTransportsType()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "RTCIceTransportPolicy",
+                "printedName": "WebRTC.RTCIceTransportPolicy",
+                "usr": "c:@E@RTCIceTransportPolicy"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO05toIcegH0So21RTCIceTransportPolicyVyF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO05toIcegH0So21RTCIceTransportPolicyVyF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(rawValue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "IOSIceTransportsType",
+                "printedName": "ShopLiveWebRTCHelperSDK.IOSIceTransportsType",
+                "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueACSS_tcfc",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueACSS_tcfc",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Var",
+            "name": "rawValue",
+            "printedName": "rawValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueSSvp",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueSSvg",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO8rawValueSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO",
+        "mangledName": "$s23ShopLiveWebRTCHelperSDK20IOSIceTransportsTypeO",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "enumRawTypeName": "String",
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "WebRTC",
+        "printedName": "WebRTC",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ShopLiveWebSocketEvent",
+        "printedName": "ShopLiveWebSocketEvent",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "connected",
+            "printedName": "connected",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ShopLiveWebSocketEvent",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO9connectedyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO9connectedyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "text",
+            "printedName": "text",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> (Swift.String) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(Swift.String) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO4textyACSScACmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO4textyACSScACmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "data",
+            "printedName": "data",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> (Foundation.Data) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(Foundation.Data) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Data",
+                        "printedName": "Foundation.Data",
+                        "usr": "s:10Foundation4DataV"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO4datayAC10Foundation4DataVcACmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO4datayAC10Foundation4DataVcACmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "emptyResponse",
+            "printedName": "emptyResponse",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ShopLiveWebSocketEvent",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO13emptyResponseyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO13emptyResponseyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "disConnected",
+            "printedName": "disConnected",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ShopLiveWebSocketEvent",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO12disConnectedyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO12disConnectedyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "closed",
+            "printedName": "closed",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ((Foundation.Data?, Foundation.URLSessionWebSocketTask.CloseCode)) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "((Foundation.Data?, Foundation.URLSessionWebSocketTask.CloseCode)) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Tuple",
+                        "printedName": "(Foundation.Data?, Foundation.URLSessionWebSocketTask.CloseCode)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Optional",
+                            "printedName": "Foundation.Data?",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Data",
+                                "printedName": "Foundation.Data",
+                                "usr": "s:10Foundation4DataV"
+                              }
+                            ],
+                            "usr": "s:Sq"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "CloseCode",
+                            "printedName": "Foundation.URLSessionWebSocketTask.CloseCode",
+                            "usr": "c:@E@NSURLSessionWebSocketCloseCode"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO6closedyAC10Foundation4DataVSg_So012NSURLSessioncF9CloseCodeVt_tcACmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO6closedyAC10Foundation4DataVSg_So012NSURLSessioncF9CloseCodeVt_tcACmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "error",
+            "printedName": "error",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ((any Swift.Error)?) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "((any Swift.Error)?) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "(any Swift.Error)?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Error",
+                            "printedName": "any Swift.Error",
+                            "usr": "s:s5ErrorP"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO5erroryACs5Error_pSgcACmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO5erroryACs5Error_pSgcACmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "timeout",
+            "printedName": "timeout",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type) -> ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ShopLiveWebSocketEvent",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                    "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketEvent",
+                        "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO7timeoutyA2CmF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO7timeoutyA2CmF",
+            "moduleName": "ShopLiveWebRTCHelperSDK"
+          },
+          {
+            "kind": "Var",
+            "name": "desc",
+            "printedName": "desc",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO4descSSvp",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO4descSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO4descSSvg",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO4descSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO",
+        "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC11SocketEventO",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ShopLiveWebSocketDelegate",
+        "printedName": "ShopLiveWebSocketDelegate",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "didReceive",
+            "printedName": "didReceive(event:client:webSocket:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ShopLiveWebSocketEvent",
+                "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocketEvent",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC11SocketEventO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLSessionWebSocketTask?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URLSessionWebSocketTask",
+                    "printedName": "Foundation.URLSessionWebSocketTask",
+                    "usr": "c:objc(cs)NSURLSessionWebSocketTask"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ShopLiveWebSocket",
+                "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocket",
+                "usr": "c:@M@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP10didReceive5event6client03webF0yAA0abcF5EventO_So012NSURLSessioncF4TaskCSgAA0abcF0CtF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP10didReceive5event6client03webF0yAA0abcF5EventO_So012NSURLSessioncF4TaskCSgAA0abcF0CtF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "genericSig": "<τ_0_0 where τ_0_0 : ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate>",
+            "sugared_genericSig": "<Self where Self : ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP",
+        "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "genericSig": "<τ_0_0 : ObjectiveC.NSObjectProtocol>",
+        "sugared_genericSig": "<Self : ObjectiveC.NSObjectProtocol>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ShopLiveWebSocket",
+        "printedName": "ShopLiveWebSocket",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "delegate",
+            "printedName": "delegate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "WeakStorage",
+                "printedName": "(any ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate)?"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvp",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "ReferenceOwnership",
+              "AccessControl"
+            ],
+            "ownership": 1,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketDelegate",
+                        "printedName": "any ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvg",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ShopLiveWebSocketDelegate",
+                        "printedName": "any ShopLiveWebRTCHelperSDK.ShopLiveWebSocketDelegate",
+                        "usr": "s:23ShopLiveWebRTCHelperSDK0abC14SocketDelegateP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvs",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvs",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvM",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC8delegateAA0abcF8Delegate_pSgvM",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "tag",
+            "printedName": "tag",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivp",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivg",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivs",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivs",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivM",
+                "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC3tagSivM",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "openWebSocket",
+            "printedName": "openWebSocket(with:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URL",
+                "printedName": "Foundation.URL",
+                "usr": "s:10Foundation3URLV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC04opencF04withy10Foundation3URLV_tF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC04opencF04withy10Foundation3URLV_tF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getSocketState",
+            "printedName": "getSocketState()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLSessionTask.State?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "State",
+                    "printedName": "Foundation.URLSessionTask.State",
+                    "usr": "c:@E@NSURLSessionTaskState"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC03getF5StateSo016NSURLSessionTaskH0VSgyF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC03getF5StateSo016NSURLSessionTaskH0VSgyF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "send",
+            "printedName": "send(data:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Data",
+                "printedName": "Foundation.Data",
+                "usr": "s:10Foundation4DataV"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "((any Swift.Error)?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any Swift.Error)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Error",
+                        "printedName": "any Swift.Error",
+                        "usr": "s:s5ErrorP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC4send4data10completiony10Foundation4DataV_ys5Error_pSgctF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC4send4data10completiony10Foundation4DataV_ys5Error_pSgctF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "DiscardableResult"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "closeWebSocket",
+            "printedName": "closeWebSocket()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC05closecF0yyF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC05closecF0yyF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getCurrentWebSocketTask",
+            "printedName": "getCurrentWebSocketTask()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.URLSessionWebSocketTask?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "URLSessionWebSocketTask",
+                    "printedName": "Foundation.URLSessionWebSocketTask",
+                    "usr": "c:objc(cs)NSURLSessionWebSocketTask"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:23ShopLiveWebRTCHelperSDK0abC6SocketC010getCurrentcF4TaskSo012NSURLSessioncfI0CSgyF",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC010getCurrentcF4TaskSo012NSURLSessioncfI0CSgyF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ShopLiveWebSocket",
+                "printedName": "ShopLiveWebRTCHelperSDK.ShopLiveWebSocket",
+                "usr": "c:@M@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket(im)init",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketCACycfc",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "urlSession",
+            "printedName": "urlSession(_:webSocketTask:didOpenWithProtocol:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URLSession",
+                "printedName": "Foundation.URLSession",
+                "usr": "c:objc(cs)NSURLSession"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URLSessionWebSocketTask",
+                "printedName": "Foundation.URLSessionWebSocketTask",
+                "usr": "c:objc(cs)NSURLSessionWebSocketTask"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket(im)URLSession:webSocketTask:didOpenWithProtocol:",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC10urlSession_03webF4Task19didOpenWithProtocolySo12NSURLSessionC_So0ocfJ0CSSSgtF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "objc_name": "URLSession:webSocketTask:didOpenWithProtocol:",
+            "declAttributes": [
+              "Final",
+              "ObjC",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "urlSession",
+            "printedName": "urlSession(_:webSocketTask:didCloseWith:reason:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URLSession",
+                "printedName": "Foundation.URLSession",
+                "usr": "c:objc(cs)NSURLSession"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URLSessionWebSocketTask",
+                "printedName": "Foundation.URLSessionWebSocketTask",
+                "usr": "c:objc(cs)NSURLSessionWebSocketTask"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "CloseCode",
+                "printedName": "Foundation.URLSessionWebSocketTask.CloseCode",
+                "usr": "c:@E@NSURLSessionWebSocketCloseCode"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket(im)URLSession:webSocketTask:didCloseWithCode:reason:",
+            "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC10urlSession_03webF4Task12didCloseWith6reasonySo12NSURLSessionC_So0ocfJ0CSo0ocfL4CodeV10Foundation4DataVSgtF",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "objc_name": "URLSession:webSocketTask:didCloseWithCode:reason:",
+            "declAttributes": [
+              "Final",
+              "ObjC",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@ShopLiveWebRTCHelperSDK@objc(cs)ShopLiveWebSocket",
+        "mangledName": "$s23ShopLiveWebRTCHelperSDK0abC6SocketC",
+        "moduleName": "ShopLiveWebRTCHelperSDK",
+        "declAttributes": [
+          "Final",
+          "AccessControl",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCPeerConnectionState",
+        "printedName": "RTCPeerConnectionState",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So22RTCPeerConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo22RTCPeerConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So22RTCPeerConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo22RTCPeerConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCPeerConnectionState",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCPeerConnectionState",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCIceConnectionState",
+        "printedName": "RTCIceConnectionState",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So21RTCIceConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo21RTCIceConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So21RTCIceConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo21RTCIceConnectionStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCIceConnectionState",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCIceConnectionState",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCSourceState",
+        "printedName": "RTCSourceState",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So14RTCSourceStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo14RTCSourceStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So14RTCSourceStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo14RTCSourceStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCSourceState",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCSourceState",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCSignalingState",
+        "printedName": "RTCSignalingState",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So17RTCSignalingStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo17RTCSignalingStateV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So17RTCSignalingStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo17RTCSignalingStateV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCSignalingState",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCSignalingState",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCIceTransportPolicy",
+        "printedName": "RTCIceTransportPolicy",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So21RTCIceTransportPolicyV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo21RTCIceTransportPolicyV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So21RTCIceTransportPolicyV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo21RTCIceTransportPolicyV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCIceTransportPolicy",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCIceTransportPolicy",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "RTCBundlePolicy",
+        "printedName": "RTCBundlePolicy",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So15RTCBundlePolicyV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "mangledName": "$sSo15RTCBundlePolicyV23ShopLiveWebRTCHelperSDKE4nameSSvp",
+            "moduleName": "ShopLiveWebRTCHelperSDK",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So15RTCBundlePolicyV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "mangledName": "$sSo15RTCBundlePolicyV23ShopLiveWebRTCHelperSDKE4nameSSvg",
+                "moduleName": "ShopLiveWebRTCHelperSDK",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "c:@E@RTCBundlePolicy",
+        "moduleName": "WebRTC",
+        "objc_name": "RTCBundlePolicy",
+        "declAttributes": [
+          "SynthesizedProtocol",
+          "ObjC",
+          "SynthesizedProtocol",
+          "Sendable",
+          "Dynamic"
+        ],
+        "enumRawTypeName": "Int",
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1649,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1682,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "FloatLiteral",
+      "offset": 1789,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "FloatLiteral",
+      "offset": 1837,
+      "length": 3,
+      "value": "3.0"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1920,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1955,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/kylekwon\/Documents\/workspace\/.matrix-wt-dev\/lines\/international\/Modules\/WebRTCHelper\/Sources\/WebSocket\/ShopLiveWebSocket.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1989,
+      "length": 1,
+      "value": "3"
+    }
+  ]
+}

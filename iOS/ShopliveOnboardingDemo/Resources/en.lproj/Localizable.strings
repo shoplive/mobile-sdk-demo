@@ -1,0 +1,129 @@
+/* ShopLive Onboarding Demo — English */
+
+/* MARK: - S1 Start */
+"start.title" = "ShopLive SDK\nIntegration Demo";
+"start.subtitle" = "Tap any of the 8 features to run it immediately — viewing (Player) and broadcasting (Streamer). No reading required.";
+"start.tour" = "Take a tour · Start now";
+"start.tourNote.available" = "Runs against the ShopLive demo campaign — no input needed.";
+"start.tourNote.missing" = "⚠️ The bundled demo keys are empty — fill in DemoDefaults (DemoCredentials.swift) or enter your own below.";
+"start.own.collapsed" = "Use my own account ▼";
+"start.own.expanded" = "Use my own account ▲";
+"start.form.tip" = "You only need two. The stream token is required only for Mission 8.";
+"start.field.accessKey" = "accessKey *";
+"start.field.accessKey.hint" = "Issued from the Queenie console or by your contact";
+"start.field.accessKey.placeholder" = "Your accessKey";
+"start.field.campaignKey" = "campaignKey *";
+"start.field.campaignKey.hint" = "Live or VOD — either works";
+"start.field.campaignKey.placeholder" = "campaignKey to test";
+"start.field.streamToken" = "Stream token (Mission 8)";
+"start.field.streamToken.hint" = "A separate path from viewer authentication";
+"start.field.streamToken.placeholder" = "Optional";
+"start.validate" = "Validate and start";
+"start.tip.code" = "The code is not in this app. Read it in the demo project shipped alongside — each feature card names the file to open.";
+"start.tip.privacy" = "Values are stored on this device only and never sent to a server. The stream token is kept in the Keychain.";
+"start.toast.required" = "accessKey and campaignKey are required";
+"start.toast.initialized" = "✅ Initialized — key validity is confirmed on playback";
+"start.toast.tourMissing" = "The bundled demo keys are empty — fill in DemoDefaults in DemoCredentials.swift, or use “Use my own account” below";
+
+/* MARK: - S2 Feature list */
+"list.title" = "Features verified %d/8";
+"list.tip.tapToRun" = "Tapping a card runs it right away. Numbers match the mission numbers in the integration guide (sdk.shoplive.cloud).";
+"list.tip.openFiles" = "To read the code, open the 📄 file from a card in Xcode. Files under Integration/ have no demo-UI dependencies, so you can copy them as-is.";
+"list.mode.own" = "My account · %@";
+"list.mode.tour" = "Tour · ShopLive demo campaign";
+"list.badge.done" = "Verified";
+"list.locked.credentials" = "accessKey and campaignKey are required";
+"list.locked.streamToken" = "A stream token is required";
+"list.locked.hint" = "🔒 %@ — see ⚙ at top right";
+"list.rescue.toast" = "Closed the player because playback was never reached — check the log";
+
+/* MARK: - Missions */
+"mission.1.title" = "Present the player";
+"mission.1.summary" = "Tap to open a full-screen live stream immediately.";
+"mission.1.check" = "Plays within 2–3s · chat and LIVE badge when live";
+"mission.2.title" = "Open via deep link";
+"mission.2.summary" = "Sends a mock push banner. Tapping it plays straight from the link.";
+"mission.2.check" = "Tap banner → playback · ref arrives as referrer";
+"mission.3.title" = "Connect user info";
+"mission.3.summary" = "Pick guest / profile / token, then play.";
+"mission.3.check" = "Chat nickname shows the member name";
+"mission.4.title" = "Embed in your screen";
+"mission.4.summary" = "See a player embedded between home-feed cards.";
+"mission.4.check" = "Playback survives scrolling · promotes to full screen";
+"mission.5.title" = "Keep watching in PIP";
+"mission.5.summary" = "After playback starts, tap a product to continue in a small window.";
+"mission.5.check" = "Small window persists · tap returns without interruption";
+"mission.6.title" = "Events · products · coupons";
+"mission.6.summary" = "Tap products and coupons, then watch what arrives in the log.";
+"mission.6.check" = "navigation/coupon requests received and respond called";
+"mission.7.title" = "Customize the UI";
+"mission.7.summary" = "Change colors and the overlay in Options and see it applied.";
+"mission.7.check" = "Color applied · events still arrive when hidden";
+"mission.8.title" = "Go live";
+"mission.8.summary" = "Open the studio and start or stop a broadcast.";
+"mission.8.check" = "preview → LIVE transition · automatic recovery";
+
+/* MARK: - Mission 2 mock push banner */
+"banner.app" = "MY SHOP · now";
+"banner.title" = "🔴 Summer sale live has started — join now!";
+
+/* MARK: - Mission 3 auth picker */
+"auth.sheet.title" = "How should we identify the user?";
+"auth.sheet.message" = "You can mix these within one app; it applies from the next playback";
+"auth.guest" = "guest — watch without signing in";
+"auth.profile" = "profile — simple authentication";
+"auth.token" = "token — server-signed JWT (recommended)";
+"auth.logout" = "Sign out (logout)";
+"auth.cancel" = "Cancel";
+
+/* MARK: - S3 demo controls */
+"player.overlay.back" = "‹ List";
+"player.overlay.dev" = "⌗ Developer";
+"player.overlay.badge" = "Demo app only";
+
+/* MARK: - Mission 4 home feed */
+"feed.title" = "Home feed · Mission 4";
+"feed.tip.embed" = "Below is ShoplivePlayerView — your app owns only the layout; controls, events and PIP use the exact same API as full screen.";
+"feed.warn.autoPip" = "This embedded view is video-only per design doc §3.4 (overlayUI = .hidden). The automatic-PIP-on-leave option was removed from the public surface in this SDK build; only manual enterPictureInPicture() is available.";
+"feed.card1.title" = "Today's picks";
+"feed.card1.detail" = "An ordinary feed card";
+"feed.card2.title" = "Best sellers";
+"feed.card2.detail" = "Playback above survives scrolling";
+"feed.card3.title" = "New arrivals";
+"feed.card3.detail" = "The session stays alive as you scroll further";
+"feed.expand" = "⤢ Full screen";
+
+/* MARK: - V1 developer sheet */
+"dev.tab.log" = "Event log";
+"dev.tab.options" = "Options";
+"dev.log.empty" = "No log entries yet — run a feature";
+"dev.log.notice" = "⚠ Engine switches are not reported as events. HLS↔WebRTC switching is internal to the SDK; network conditions surface only via playback(rebuffering) and connectionStateChanged.\n\n⚠ Issues being auto-recovered are not reported as error. error(isRecoverable=false) is delivered only when the session ends unrecoverably.";
+"dev.log.copy" = "📋 Copy log";
+"dev.log.clear" = "Clear";
+"dev.toast.copied" = "📋 Copied";
+"dev.group.auth" = "Authentication · Mission 3";
+"dev.group.pip" = "PIP · Mission 5";
+"dev.group.overlay" = "Overlay · appearance · Mission 7";
+"dev.group.control" = "Controls (applied immediately during playback)";
+"dev.group.advanced" = "Advanced — every remaining configuration field";
+"dev.default" = "default %@";
+"dev.action.call" = "Call";
+"dev.action.send" = "Send";
+"dev.action.toggle" = "Toggle";
+"dev.error.noPlayer" = "No player is currently playing";
+"dev.hint.cycle" = "Tap a value to cycle it. Every field has a default, so it works without being set.";
+"dev.unwired.warning" = "In this SDK build the following fields have no consumer, so the value is only stored (no effect):\noverlay.ui · pip.isOSPipEnabled · pip.autoEnterOnLeaveScreen · navigation.shareScheme · appearance.isStatusBarVisible · appearance.allowScreenCapture · both PlayOptions fields.\nOnly overlay.ui is worked around via the runtime property (overlayUI).";
+
+/* MARK: - V2 product detail */
+"product.title" = "Product detail · your app's screen";
+"product.tip.routed" = "This is the result of your app routing navigation(url).\nReceived URL  %@";
+"product.name" = "Signature Cotton Shirt";
+"product.price" = "$39.00";
+"product.warn.mustHandle" = "navigation is the only request your app must handle. Without routing, tapping a product does nothing.";
+"product.pip.active" = "Viewing continues in in-App PIP right now (state = .inAppPIP). Tap the PIP window to return to full screen without interruption.";
+"nav.action.pip.explain" = "pip — shrinks to a small window on navigation so viewing continues. (default)";
+"nav.action.keep.explain" = "keep — leaves the player as it is.";
+"nav.action.close.explain" = "close — closes the player.";
+
+/* 재생 실패 안내 (세션당 1회) */
+"player.failure.notice" = "⚠️ Playback failed (%@) — the stream is not being broadcast. The player is left open; check the log, and tap '‹ List' to leave.";

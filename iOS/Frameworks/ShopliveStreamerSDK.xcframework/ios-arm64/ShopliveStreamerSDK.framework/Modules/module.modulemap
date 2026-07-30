@@ -1,0 +1,3 @@
+framework module ShopliveStreamerSDK {
+  header "ShopliveStreamerSDK-Swift.h"
+}
