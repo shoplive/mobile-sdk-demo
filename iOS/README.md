@@ -144,7 +144,7 @@ bash scripts/run-tuist.sh generate --no-open
 enum DemoDefaults {
     static let accessKey = "uv9CGthPzlvsInZerCw0"
     static let campaignKey = "faea28dd96c3"
-    static let streamToken = "1-2XyVzj…"                 // 미션 8 전용
+    static let streamToken = "1-5QALAn…"                 // 미션 8 전용
 }
 ```
 
