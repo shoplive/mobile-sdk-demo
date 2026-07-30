@@ -9,6 +9,7 @@ import cloud.shoplive.onboarding.data.CredentialStore
 import cloud.shoplive.onboarding.data.DemoMode
 import cloud.shoplive.onboarding.data.LocaleSetting
 import cloud.shoplive.onboarding.data.MissionProgress
+import cloud.shoplive.onboarding.demo.DemoDefaults
 import cloud.shoplive.onboarding.demo.DemoLogBridge
 import cloud.shoplive.onboarding.integration.ShopliveInitializer
 import java.lang.ref.WeakReference
@@ -40,7 +41,7 @@ class DemoApplication : Application() {
         val credentials = DemoContainer.credentials
         val accessKey = when (credentials.mode) {
             DemoMode.OWN -> credentials.accessKey
-            DemoMode.TOUR -> BuildConfig.DEMO_ACCESS_KEY
+            DemoMode.TOUR -> DemoContainer.demoAccessKey
             null -> ""
         }
         ShopliveInitializer.initializeIfNeeded(this, accessKey)
@@ -85,11 +86,28 @@ object DemoContainer {
         return if (args.isEmpty()) context.getString(id) else context.getString(id, *args)
     }
 
-    /** Built-in demo keys for tour mode, injected from local.properties. */
-    val demoAccessKey: String get() = BuildConfig.DEMO_ACCESS_KEY
-    val demoCampaignKey: String get() = BuildConfig.DEMO_CAMPAIGN_KEY
-    val demoStreamToken: String get() = BuildConfig.DEMO_STREAM_TOKEN
+    /**
+     * Credentials for tour mode.
+     *
+     * `local.properties` (or the matching environment variable) wins; when it is
+     * blank, the checked-in demo account in [DemoDefaults] is used, so a fresh clone
+     * runs without setup. Point these at anything of your own through
+     * `local.properties` — never by editing [DemoDefaults].
+     */
+    val demoAccessKey: String
+        get() = BuildConfig.DEMO_ACCESS_KEY.ifBlank { DemoDefaults.ACCESS_KEY }
 
+    val demoCampaignKey: String
+        get() = BuildConfig.DEMO_CAMPAIGN_KEY.ifBlank { DemoDefaults.CAMPAIGN_KEY }
+
+    val demoStreamToken: String
+        get() = BuildConfig.DEMO_STREAM_TOKEN.ifBlank { DemoDefaults.STREAM_TOKEN }
+
+    /**
+     * Always true now that [DemoDefaults] ships real values, so the "look around"
+     * button is never locked. The check is kept because it is the one place that
+     * decides that, and blanking [DemoDefaults] has to keep working.
+     */
     val hasDemoKeys: Boolean
         get() = demoAccessKey.isNotBlank() && demoCampaignKey.isNotBlank()
 }

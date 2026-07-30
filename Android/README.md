@@ -31,8 +31,20 @@ shoplive.demo.streamToken=
 `SHOPLIVE_DEMO_ACCESS_KEY` / `SHOPLIVE_DEMO_CAMPAIGN_KEY` / `SHOPLIVE_DEMO_STREAM_TOKEN`
 로도 주입할 수 있습니다(CI용). 우선순위는 `local.properties` → `gradle.properties` → 환경변수입니다.
 
-데모 키를 비워 두면 앱의 "둘러보기" 버튼이 잠기고, 사용자가 시작 화면에서 직접
-accessKey · campaignKey 를 입력해 진행합니다.
+**데모 키는 비워 둬도 됩니다.** 비어 있으면 리포에 들어 있는 데모 계정
+([`demo/DemoDefaults.kt`](app/src/main/java/cloud/shoplive/onboarding/demo/DemoDefaults.kt))으로
+폴백하므로, 클론 직후 바로 "둘러보기"가 동작합니다. iOS 쪽
+`DemoCredentials.swift` 의 `DemoDefaults` 와 같은 값이므로 **한쪽 토큰을 교체하면 다른
+쪽도 함께 교체**해야 합니다.
+
+`local.properties`(또는 환경변수)에 값이 있으면 그것이 이깁니다. 자기 계정으로 확인할
+때는 `local.properties` 에 넣거나 시작 화면에서 직접 입력하세요 — `DemoDefaults.kt` 는
+고치지 않습니다.
+
+> ⚠️ `DemoDefaults.kt` 에 들어가는 값은 **공개된 것으로 취급**하세요. 버려도 되는 데모
+> 계정 전용이며, 고객사·운영 자격증명은 절대 넣지 않습니다. 토큰을 교체해도 git 이력에서
+> 사라지지 않으므로, 무효화는 Shoplive 콘솔에서 해야 합니다. 송출 토큰은 수명이 짧아
+> 만료되면 Mission 8 이 멈추고, 콘솔에서 새로 받아 Android·iOS 양쪽에 넣어야 합니다.
 
 기본 저장소는 개발용(`repo.us1`)입니다. 고객사 배포용을 쓰려면
 `shoplive.maven.url=https://repo-mig.us1.shoplive.cloud/repository/shoplive/` 를 추가하세요.
