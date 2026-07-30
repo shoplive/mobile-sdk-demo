@@ -138,6 +138,15 @@ final class MissionListViewController: UIViewController {
             Self.watchPipExit(host: host, player: player)
         }
 
+        // Session end (`stateChanged(.closed)`) — including when the user closes the PIP window, which
+        // is *not* a return to full screen. Latching it here stops the poll below from un-hiding the
+        // host over a dead player; the SDK dismisses the host on its own, and viewWillAppear reloads
+        // the list.
+        DemoPlayerDelegate.shared.onSessionClosed = { [weak host] in
+            host?.markSessionClosed()
+            DevSheetViewController.activePlayer = nil
+        }
+
         present(host, animated: true)
 
         // Mission 7: if .hidden was chosen, also apply it through the runtime property. On older SDK
@@ -157,6 +166,10 @@ final class MissionListViewController: UIViewController {
         guard let host, let player else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             guard host.viewIfLoaded?.window != nil || host.isViewLoaded else { return }
+            // The session ended while in PIP (the PIP window was closed). Stop watching — restoring
+            // now is what produced the full-screen black flash.
+            if host.isSessionClosed || host.isBeingDismissed || player.state == .closed { return }
+
             if player.isInPictureInPicture {
                 watchPipExit(host: host, player: player)      // still in PIP — keep watching
             } else {

@@ -34,7 +34,20 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
     ///
     /// Going to PIP moves the render surface into a floating container on the app window, so the
     /// full-screen host must step out of the way (otherwise a black screen covers everything).
+    ///
+    /// - Important: This is **only** reported while the session is alive. Session end arrives through
+    ///   `onSessionClosed` instead — see there for why the two must not be conflated.
     var onPipStateChanged: ((Bool) -> Void)?
+
+    /// The playback session ended (`stateChanged(.closed)`). A host that wraps the player should
+    /// treat this as "tear down", not as "back to full screen".
+    ///
+    /// - Important: Closing the **PIP window** ends the session, so `.closed` is what arrives — not a
+    ///   PIP-exit. Reporting it as "no longer in PIP" makes a stepped-aside host un-hide itself over a
+    ///   player that no longer has a render surface, which flashes the host's own background across the
+    ///   whole screen until the dismissal finishes (measured: the SDK dismisses the host itself, so the
+    ///   host is already `isBeingDismissed` by the time this arrives).
+    var onSessionClosed: (() -> Void)?
 
     /// Playback reached (first frame rendered). The host uses this for its "verified" marker.
     ///
@@ -51,9 +64,16 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // Playback lifecycle. Entering/leaving .inAppPIP also arrives through this event.
             shopliveLog(.event, "stateChanged(.\(state.logLabel))")
             if state == .playing { onPlaybackReached?() }
-            // Tell the host about PIP promotion/return. Every state other than `.inAppPIP` counts as
-            // "not in PIP".
-            onPipStateChanged?(state == .inAppPIP)
+
+            // ★ `.closed` is session end, NOT a return from PIP — closing the PIP window lands here.
+            //   Do not fold it into onPipStateChanged(false): the render surface is already gone, so a
+            //   host that un-hides on it covers the screen with its own background until it is
+            //   dismissed. Route the two apart.
+            if state == .closed {
+                onSessionClosed?()
+            } else {
+                onPipStateChanged?(state == .inAppPIP)
+            }
 
         case .campaignStatusChanged(let status):
             // .ready / .live / .ended — decide whether to show the LIVE badge from this value.

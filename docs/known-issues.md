@@ -170,13 +170,38 @@ The demo feed uses `Column + verticalScroll` instead. There is no "stay alive wh
 
 On promotion, the render surface moves to a floating container over the app window and **the original full-screen view is left empty.** Leave it visible and the user sees a black screen with a small PIP window on top. (This was a real user report.)
 
-**Mitigation, three parts:**
+**Mitigation, four parts:**
 
 1. Present the host `.overFullScreen`, **not** `.fullScreen` — `.fullScreen` detaches the presenter's view, so hiding your host reveals nothing.
 2. On `stateChanged(.inAppPIP)`, call `PlayerHostViewController.setPipPresentation(true)` to hide the host. Now the list screen shows behind the floating window.
-3. **Poll `isInPictureInPicture` every 0.5 s as a safety net** — the return transition may not arrive via `stateChanged`.
+3. **Do not treat every non-`.inAppPIP` state as "returned from PIP"** — see the next entry. `.closed` means the session ended, and restoring the host on it is a bug.
+4. **Poll `isInPictureInPicture` every 0.5 s as a safety net**, and have the poll bail out once the session is closed.
 
-Measured: `stateChanged` fires **only on `.inAppPIP` entry**; playing/loading transitions never arrive.
+### Closing the PIP window flashes the host (iOS)
+
+**Status:** fixed in the demo — the fix is in the copy-target layer, so copy it
+
+**Symptom:** with the player in PIP, tapping the PIP window's close button covered the whole screen in black for a moment before it slid away.
+
+**Cause:** `stateChanged(.closed)` is what arrives when the PIP window is closed — the session ends, it is *not* a PIP-exit. A delegate that collapses the state into a boolean (`onPipStateChanged(state == .inAppPIP)`) reports `false`, the stepped-aside host un-hides itself over a player that no longer has a render surface, and the host's own black background covers the screen until the dismissal finishes.
+
+Measured at the moment of close: `inPip=false state=closed hostDismissing=true` — **the SDK dismisses the host itself**, so the host only needed to stay out of the way.
+
+**Fix:** route session end and PIP-exit apart. `ShopliveIntegration/DemoPlayerDelegate.swift` now sends `.closed` to a separate `onSessionClosed` hook, and the host latches it so no in-flight restore can un-hide it. Deliberately it does **not** change `isHidden` — closing from full screen must keep the normal slide-down animation, and in both paths the visibility is already correct.
+
+Verified: closing from PIP produces **no un-hide at all**, while tapping the PIP window to return still restores the host.
+
+### What `stateChanged` actually delivers (iOS)
+
+Correcting an earlier claim on this page that it fires "only on `.inAppPIP` entry". Observed states, PIP session:
+
+| State | Fires? |
+|---|---|
+| `.inAppPIP` | ✅ on promotion |
+| `.playing` | ✅ on returning from PIP to full screen |
+| `.closed` | ✅ on session end, including closing the PIP window |
+
+What still does **not** arrive is `stateChanged` during the initial playback ramp-up — see [above](#statechanged-never-fires-ios). So `stateChanged` is usable for PIP and teardown transitions, but not as a "playback has started" signal.
 
 ### PIP padding default clips the window
 

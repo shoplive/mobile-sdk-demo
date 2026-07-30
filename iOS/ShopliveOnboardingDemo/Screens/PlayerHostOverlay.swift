@@ -41,6 +41,10 @@ final class PlayerHostViewController: UIViewController {
         modalPresentationStyle = .overFullScreen
     }
 
+    /// Set once the SDK reports the session ended. From then on the host must never make itself
+    /// visible again.
+    private(set) var isSessionClosed = false
+
     /// Steps the host out of the way depending on whether in-App PIP is active.
     ///
     /// On promotion to PIP the render surface moves into a **floating container above the app
@@ -50,7 +54,25 @@ final class PlayerHostViewController: UIViewController {
     /// return.
     func setPipPresentation(_ pipActive: Bool) {
         guard viewIfLoaded != nil else { return }
+        // Stepping aside is always safe. Coming back is only valid while the session is alive: after
+        // the session closes (e.g. the user closed the PIP window) the player has no render surface,
+        // so un-hiding would flash this host's black background across the whole screen until the
+        // dismissal completes.
+        if !pipActive, isSessionClosed || isBeingDismissed { return }
         view.isHidden = pipActive
+    }
+
+    /// Latches "the session is over" so no in-flight restore can un-hide the host.
+    ///
+    /// Deliberately does **not** touch `isHidden`, because the correct visibility differs by path and
+    /// in both cases it is already right:
+    ///   · closed from PIP        — the host is hidden, so it stays hidden and the SDK dismisses an
+    ///                              invisible host. No flash.
+    ///   · closed from full screen — the host is visible, so it stays visible and dismisses with the
+    ///                              normal slide-down. Hiding it here would make the player vanish
+    ///                              instantly instead of animating out.
+    func markSessionClosed() {
+        isSessionClosed = true
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
