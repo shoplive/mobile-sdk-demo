@@ -1,0 +1,383 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.3 effective-5.10 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+// swift-module-flags: -target arm64-apple-ios15.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name ShoplivePlayerSDK -package-name ShopLiveSDK
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.3
+import AVFAudio
+import AVFoundation
+import AVKit
+import DeveloperToolsSupport
+import Foundation
+import MediaPlayer
+import OSLog
+import ShopLiveWebRTCHelperSDK
+import ShopliveCore
+import Swift
+import SwiftUI
+import UIKit
+import VideoToolbox
+@preconcurrency import WebKit
+import WebRTC
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum ShoplivePlayerSDKAsset : Swift.Sendable {
+  public static let closebutton: ShoplivePlayerSDK.ShoplivePlayerSDKImages
+}
+public struct ShoplivePlayerSDKImages : Swift.Sendable {
+  public let name: Swift.String
+  public typealias Image = UIKit.UIImage
+  public var image: ShoplivePlayerSDK.ShoplivePlayerSDKImages.Image {
+    get
+  }
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, visionOS 1.0, *)
+  public var swiftUIImage: SwiftUICore.Image {
+    get
+  }
+}
+@available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, visionOS 1.0, *)
+extension SwiftUICore.Image {
+  public init(asset: ShoplivePlayerSDK.ShoplivePlayerSDKImages)
+  public init(asset: ShoplivePlayerSDK.ShoplivePlayerSDKImages, label: SwiftUICore.Text)
+  public init(decorative asset: ShoplivePlayerSDK.ShoplivePlayerSDKImages)
+}
+@_inheritsConvenienceInitializers @objc final public class ShoplivePlayerSDKResources : ObjectiveC.NSObject {
+  @objc final public class var bundle: Foundation.Bundle {
+    @objc get
+  }
+  @objc override dynamic public init()
+  @objc deinit
+}
+public enum ShoplivePlayerSDKStrings : Swift.Sendable {
+  public static let shopliveBitrate: Swift.String
+  public static let shopliveBroadcasterPermAlert: Swift.String
+  public static let shopliveBroadcasterRetryMessage: Swift.String
+  public static let shopliveCamera: Swift.String
+  public static let shopliveDialogCancel: Swift.String
+  public static let shopliveDialogClose: Swift.String
+  public static let shopliveDialogConfirm: Swift.String
+  public static let shopliveDialogEnd: Swift.String
+  public static let shopliveDialogError: Swift.String
+  public static let shopliveEmptyUrlMessage: Swift.String
+  public static let shopliveErrorBaseMessage: Swift.String
+  public static let shopliveErrorNoInternet: Swift.String
+  public static let shopliveErrorServerTimeout: Swift.String
+  public static let shopliveErrorTemporaryError: Swift.String
+  public static let shopliveErrorTemporaryErrorMessage: Swift.String
+  public static let shopliveHintChatInput: Swift.String
+  public static let shopliveProgressLiveIn: Swift.String
+  public static let shopliveSend: Swift.String
+  public static let shopliveSetting: Swift.String
+  public static func shopliveSettingsBitrateBase(_ p1: Swift.Int, _ p2: Swift.Int) -> Swift.String
+  public static func shopliveSettingsBitrateWrongrangeHigh(_ p1: Swift.Int) -> Swift.String
+  public static func shopliveSettingsBitrateWrongrangeLow(_ p1: Swift.Int) -> Swift.String
+  public static let shopliveStatsConnecting: Swift.String
+  public static let shopliveStatsNormal: Swift.String
+  public static let shopliveStatsUnstable: Swift.String
+  public static let shopliveStreamAlertContent: Swift.String
+  public static let shopliveStreamAlertTitle: Swift.String
+  public static let shopliveStreamReadyCampaignClosed: Swift.String
+  public static let shopliveTutorialContent: Swift.String
+  public static let shopliveViewer: Swift.String
+}
+public enum ShoplivePlayerState {
+  case idle, loading, playing, paused, inAppPIP, closed
+  public static func == (a: ShoplivePlayerSDK.ShoplivePlayerState, b: ShoplivePlayerSDK.ShoplivePlayerState) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveCampaignStatus {
+  case ready, live, ended
+  public static func == (a: ShoplivePlayerSDK.ShopliveCampaignStatus, b: ShoplivePlayerSDK.ShopliveCampaignStatus) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveConnectionState {
+  case connecting, connected, reconnecting, disconnected
+  public static func == (a: ShoplivePlayerSDK.ShopliveConnectionState, b: ShoplivePlayerSDK.ShopliveConnectionState) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveResizeMode {
+  case fill, fit
+  public static func == (a: ShoplivePlayerSDK.ShopliveResizeMode, b: ShoplivePlayerSDK.ShopliveResizeMode) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShoplivePipPosition {
+  case topLeft, topCenter, topRight
+  case middleLeft, middleCenter, middleRight
+  case bottomLeft, bottomCenter, bottomRight
+  public static func == (a: ShoplivePlayerSDK.ShoplivePipPosition, b: ShoplivePlayerSDK.ShoplivePipPosition) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveOverlayUIMode {
+  case builtIn, hidden
+  public static func == (a: ShoplivePlayerSDK.ShopliveOverlayUIMode, b: ShoplivePlayerSDK.ShopliveOverlayUIMode) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveNavigationAction {
+  case pip, keep, close
+  public static func == (a: ShoplivePlayerSDK.ShopliveNavigationAction, b: ShoplivePlayerSDK.ShopliveNavigationAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveResultStatus {
+  case show, hide, keep
+  public static func == (a: ShoplivePlayerSDK.ShopliveResultStatus, b: ShoplivePlayerSDK.ShopliveResultStatus) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ShopliveResultAlertType {
+  case alert, toast
+  public static func == (a: ShoplivePlayerSDK.ShopliveResultAlertType, b: ShoplivePlayerSDK.ShopliveResultAlertType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct ShopliveCampaignInfo {
+  public let campaignKey: Swift.String
+  public let title: Swift.String?
+  public let status: ShoplivePlayerSDK.ShopliveCampaignStatus?
+  public init(campaignKey: Swift.String, title: Swift.String? = nil, status: ShoplivePlayerSDK.ShopliveCampaignStatus? = nil)
+}
+public struct ShopliveCampaign {
+  public let title: Swift.String?
+  public let status: ShoplivePlayerSDK.ShopliveCampaignStatus
+  public init(title: Swift.String? = nil, status: ShoplivePlayerSDK.ShopliveCampaignStatus = .ready)
+}
+public struct ShopliveBrand {
+  public let name: Swift.String?
+  public let identifier: Swift.String?
+  public let imageUrl: Swift.String?
+  public init(name: Swift.String? = nil, identifier: Swift.String? = nil, imageUrl: Swift.String? = nil)
+}
+public struct ShopliveAnalyticsInfo {
+  public let campaignKey: Swift.String
+  public let isPlaying: Swift.Bool
+  public let isMuted: Swift.Bool
+  public let durationMs: Swift.Int64
+  public let campaign: ShoplivePlayerSDK.ShopliveCampaign?
+  public let brand: ShoplivePlayerSDK.ShopliveBrand?
+  public init(campaignKey: Swift.String, isPlaying: Swift.Bool, isMuted: Swift.Bool, durationMs: Swift.Int64, campaign: ShoplivePlayerSDK.ShopliveCampaign? = nil, brand: ShoplivePlayerSDK.ShopliveBrand? = nil)
+}
+public struct ShopliveCouponResult {
+  public let couponId: Swift.String
+  public let success: Swift.Bool
+  public let message: Swift.String?
+  public let status: ShoplivePlayerSDK.ShopliveResultStatus
+  public let alertType: ShoplivePlayerSDK.ShopliveResultAlertType
+  public init(couponId: Swift.String, success: Swift.Bool, message: Swift.String? = nil, status: ShoplivePlayerSDK.ShopliveResultStatus, alertType: ShoplivePlayerSDK.ShopliveResultAlertType)
+}
+public struct ShopliveCustomActionResult {
+  public let id: Swift.String
+  public let success: Swift.Bool
+  public let message: Swift.String?
+  public let status: ShoplivePlayerSDK.ShopliveResultStatus
+  public let alertType: ShoplivePlayerSDK.ShopliveResultAlertType
+  public init(id: Swift.String, success: Swift.Bool, message: Swift.String? = nil, status: ShoplivePlayerSDK.ShopliveResultStatus, alertType: ShoplivePlayerSDK.ShopliveResultAlertType)
+}
+public struct ShoplivePlayerConfiguration {
+  public var pip: ShoplivePlayerSDK.ShoplivePlayerConfiguration.PipOptions
+  public var sound: ShoplivePlayerSDK.ShoplivePlayerConfiguration.SoundOptions
+  public var appearance: ShoplivePlayerSDK.ShoplivePlayerConfiguration.AppearanceOptions
+  public var navigation: ShoplivePlayerSDK.ShoplivePlayerConfiguration.NavigationOptions
+  public var overlay: ShoplivePlayerSDK.ShoplivePlayerConfiguration.OverlayOptions
+  public var customParameters: [Swift.String : Swift.String]
+  public init()
+  public struct PipOptions {
+    public var isInAppPipEnabled: Swift.Bool
+    public var isOSPipEnabled: Swift.Bool
+    public var defaultPosition: ShoplivePlayerSDK.ShoplivePipPosition
+    public var scale: CoreFoundation.CGFloat
+    public var padding: UIKit.UIEdgeInsets
+    public var floatingOffset: UIKit.UIEdgeInsets
+    public var fixedWidth: CoreFoundation.CGFloat?
+    public var windowProvider: (() -> UIKit.UIWindow?)?
+    public init()
+  }
+  public struct SoundOptions {
+    public var muteOnStart: Swift.Bool
+    public var mixWithOthers: Swift.Bool
+    public var autoResumeOnCallEnded: Swift.Bool
+    public init()
+  }
+  public struct AppearanceOptions {
+    public var resizeMode: ShoplivePlayerSDK.ShopliveResizeMode
+    public var indicatorColor: UIKit.UIColor
+    public var loadingAnimationImages: [UIKit.UIImage]?
+    public var chatInputFont: UIKit.UIFont?
+    public var chatSendButtonFont: UIKit.UIFont?
+    public var allowScreenCapture: Swift.Bool
+    public init()
+  }
+  public struct NavigationOptions {
+    public var actionOnNavigation: ShoplivePlayerSDK.ShopliveNavigationAction
+    public var shareScheme: Swift.String?
+    public init()
+  }
+  public struct OverlayOptions {
+    public var ui: ShoplivePlayerSDK.ShopliveOverlayUIMode
+    public init()
+  }
+}
+extension ShoplivePlayerSDK.ShoplivePlayerConfiguration {
+  public static let live: ShoplivePlayerSDK.ShoplivePlayerConfiguration
+  public static let preview: ShoplivePlayerSDK.ShoplivePlayerConfiguration
+}
+public struct ShoplivePlayOptions {
+  public var referrer: Swift.String?
+  public var keepWindowStateOnPlayExecuted: Swift.Bool
+  public init()
+}
+public protocol ShoplivePlayerControlling : AnyObject {
+  var delegate: (any ShoplivePlayerSDK.ShoplivePlayerDelegate)? { get set }
+  var configuration: ShoplivePlayerSDK.ShoplivePlayerConfiguration { get set }
+  func play(campaignKey: Swift.String, options: ShoplivePlayerSDK.ShoplivePlayOptions)
+  func stop()
+  var isMuted: Swift.Bool { get set }
+  var resizeMode: ShoplivePlayerSDK.ShopliveResizeMode { get set }
+  func reload()
+  func enterPictureInPicture()
+  func exitPictureInPicture()
+  var isInPictureInPicture: Swift.Bool { get }
+  var overlayUI: ShoplivePlayerSDK.ShopliveOverlayUIMode { get set }
+  func send(command: Swift.String, payload: [Swift.String : Any]?)
+  var state: ShoplivePlayerSDK.ShoplivePlayerState { get }
+  var currentCampaign: ShoplivePlayerSDK.ShopliveCampaignInfo? { get }
+}
+public protocol ShoplivePlayerDelegate : AnyObject {
+  func player(_ player: any ShoplivePlayerSDK.ShoplivePlayerControlling, didReceive event: ShoplivePlayerSDK.ShoplivePlayerEvent)
+  func player(_ player: any ShoplivePlayerSDK.ShoplivePlayerControlling, didRequest request: ShoplivePlayerSDK.ShoplivePlayerRequest)
+}
+public enum ShoplivePlayerEvent {
+  case stateChanged(ShoplivePlayerSDK.ShoplivePlayerState)
+  case campaignStatusChanged(ShoplivePlayerSDK.ShopliveCampaignStatus)
+  case campaignInfoReceived(ShoplivePlayerSDK.ShopliveCampaignInfo)
+  case playback(ShopliveCore.PlaybackEvent)
+  case connectionStateChanged(ShoplivePlayerSDK.ShopliveConnectionState)
+  case userNameUpdateRequested([Swift.String : Any])
+  case analytics(info: ShoplivePlayerSDK.ShopliveAnalyticsInfo)
+  case error(ShopliveCore.ShopliveError)
+}
+public enum ShoplivePlayerRequest {
+  case navigation(url: Foundation.URL)
+  case coupon(id: Swift.String, respond: (ShoplivePlayerSDK.ShopliveCouponResult) -> Swift.Void)
+  case customWebAction(id: Swift.String, type: Swift.String, payload: Any?, respond: (ShoplivePlayerSDK.ShopliveCustomActionResult) -> Swift.Void)
+}
+@objc @_Concurrency.MainActor @preconcurrency final public class ShoplivePlayerView : UIKit.UIView, ShoplivePlayerSDK.ShoplivePlayerControlling {
+  @_Concurrency.MainActor @preconcurrency weak final public var delegate: (any ShoplivePlayerSDK.ShoplivePlayerDelegate)?
+  @_Concurrency.MainActor @preconcurrency final public var configuration: ShoplivePlayerSDK.ShoplivePlayerConfiguration
+  @_Concurrency.MainActor @preconcurrency public init(configuration: ShoplivePlayerSDK.ShoplivePlayerConfiguration)
+  @available(*, unavailable, message: "Use init(configuration:) — storyboard/xib instantiation cannot inject ShoplivePlayerConfiguration.")
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency final public func play(campaignKey: Swift.String, options: ShoplivePlayerSDK.ShoplivePlayOptions = .init())
+  @_Concurrency.MainActor @preconcurrency final public func stop()
+  @_Concurrency.MainActor @preconcurrency final public var isMuted: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public var resizeMode: ShoplivePlayerSDK.ShopliveResizeMode {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public func reload()
+  @_Concurrency.MainActor @preconcurrency final public func enterPictureInPicture()
+  @_Concurrency.MainActor @preconcurrency final public func exitPictureInPicture()
+  @_Concurrency.MainActor @preconcurrency final public var isInPictureInPicture: Swift.Bool {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency final public var overlayUI: ShoplivePlayerSDK.ShopliveOverlayUIMode {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public func send(command: Swift.String, payload: [Swift.String : Any]?)
+  @_Concurrency.MainActor @preconcurrency final public var state: ShoplivePlayerSDK.ShoplivePlayerState {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency final public var currentCampaign: ShoplivePlayerSDK.ShopliveCampaignInfo? {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency @objc override final public func layoutSubviews()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class ShoplivePlayerViewController : UIKit.UIViewController, ShoplivePlayerSDK.ShoplivePlayerControlling {
+  @_Concurrency.MainActor @preconcurrency convenience public init(campaignKey: Swift.String, options: ShoplivePlayerSDK.ShoplivePlayOptions = .init(), configuration: ShoplivePlayerSDK.ShoplivePlayerConfiguration = .init())
+  @available(*, unavailable, message: "Use init(campaignKey:options:configuration:) — storyboard/xib instantiation cannot inject a campaignKey.")
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency final public func close()
+  @_Concurrency.MainActor @preconcurrency final public var delegate: (any ShoplivePlayerSDK.ShoplivePlayerDelegate)? {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public var configuration: ShoplivePlayerSDK.ShoplivePlayerConfiguration {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public func play(campaignKey: Swift.String, options: ShoplivePlayerSDK.ShoplivePlayOptions = .init())
+  @_Concurrency.MainActor @preconcurrency final public func stop()
+  @_Concurrency.MainActor @preconcurrency final public var isMuted: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public var resizeMode: ShoplivePlayerSDK.ShopliveResizeMode {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public func reload()
+  @_Concurrency.MainActor @preconcurrency final public func enterPictureInPicture()
+  @_Concurrency.MainActor @preconcurrency final public func exitPictureInPicture()
+  @_Concurrency.MainActor @preconcurrency final public var isInPictureInPicture: Swift.Bool {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency final public var overlayUI: ShoplivePlayerSDK.ShopliveOverlayUIMode {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public func send(command: Swift.String, payload: [Swift.String : Any]?)
+  @_Concurrency.MainActor @preconcurrency final public var state: ShoplivePlayerSDK.ShoplivePlayerState {
+    get
+  }
+  @_Concurrency.MainActor @preconcurrency final public var currentCampaign: ShoplivePlayerSDK.ShopliveCampaignInfo? {
+    get
+  }
+  @objc deinit
+}
+extension ShoplivePlayerSDK.ShopliveResizeMode : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveResizeMode : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveResultStatus : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveResultStatus : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveResultAlertType : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveResultAlertType : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveCampaignStatus : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveCampaignStatus : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShoplivePlayerState : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShoplivePlayerState : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveConnectionState : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveConnectionState : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShoplivePipPosition : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShoplivePipPosition : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveOverlayUIMode : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveOverlayUIMode : Swift.Hashable {}
+extension ShoplivePlayerSDK.ShopliveNavigationAction : Swift.Equatable {}
+extension ShoplivePlayerSDK.ShopliveNavigationAction : Swift.Hashable {}

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (fallback) locale = English.
+  Korean → values-ko/strings.xml · Japanese → values-ja/strings.xml
+  A device set to any other language falls back to this file.
+
+  Developer log lines (DemoLog) are intentionally NOT localized: they mirror SDK API
+  calls and get pasted into bug reports, where one language is easier to read.
+-->
+<resources>
+    <string name="app_name">ShopLive Demo</string>
+
+    <!-- ── S1 Start ─────────────────────────────────────────────────────── -->
+    <string name="start_title">ShopLive SDK\nIntegration Demo</string>
+    <string name="start_subtitle">Tap any of the 8 features to run it right away — watching (Player) and broadcasting (Streamer). No need to read the docs first.</string>
+    <string name="start_tour_button">Take a tour · Start now</string>
+    <string name="start_tour_hint_ready">Uses the ShopLive demo campaign — no input required.</string>
+    <string name="start_tour_hint_missing">No built-in demo keys — fill in local.properties or enter your own keys below.</string>
+    <string name="start_own_button">Use my own account %s</string>
+    <string name="start_own_tip">You only need two values. The stream token is required for Mission 8 only.</string>
+    <string name="start_validate_button">Validate and start</string>
+    <string name="start_validation_tip">Validation only checks the key format. The SDK has no API to verify keys up front, so real validity shows up on first playback as an error event — reported as invalid key / campaign not found / authentication required / network.</string>
+    <string name="start_back_to_missions">Back to the feature list (%s)</string>
+    <string name="start_code_tip">The code is not in the app. Read it in the demo project shipped alongside — every feature card names the file to open.</string>
+    <string name="start_storage_encrypted">Your input is stored only on this device (EncryptedSharedPreferences) and is never sent to a server.</string>
+    <string name="start_storage_plain">⚠️ The Keystore is unavailable on this device, so values are stored in plain SharedPreferences. They still never leave the device.</string>
+
+    <string name="field_access_key">accessKey *</string>
+    <string name="field_access_key_hint">Issued via the Queenie console or your contact</string>
+    <string name="field_campaign_key">campaignKey *</string>
+    <string name="field_campaign_key_hint">Live or VOD — either works</string>
+    <string name="field_stream_token">Stream token</string>
+    <string name="field_stream_token_hint">Optional — a separate path from viewer authentication</string>
+    <string name="field_user_jwt">User JWT</string>
+    <string name="field_user_jwt_hint">Optional — used to try the token method in Mission 3</string>
+
+    <!-- ── S2 Feature list ──────────────────────────────────────────────── -->
+    <string name="mission_list_tip">Tap a card to run it immediately. The numbers match the Mission numbers in the integration guide.</string>
+    <string name="mission_list_code_tip">To read the code, open the 📄 file named on each card in the demo project. This app is for verifying behaviour.</string>
+    <string name="mission_list_sdk_screen_tip">Demo-app UI cannot be drawn on top of the SDK player or studio (the SDK owns those screens). Events keep accumulating in the log — check the ⌗ developer sheet once you are back.</string>
+    <string name="badge_confirmed">Confirmed</string>
+    <string name="lock_message">🔒 %s — enter it via ⚙ at the top right</string>
+    <string name="cd_locked">Locked</string>
+    <string name="topbar_progress">Features verified %1$d/8</string>
+    <string name="cd_back_to_list">Back to the list</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_close">Close</string>
+    <string name="fab_developer">Developer</string>
+
+    <string name="mode_own">My account · %s</string>
+    <string name="mode_tour">Tour · ShopLive demo campaign</string>
+    <string name="mode_auth_suffix">%1$s · auth %2$s</string>
+    <string name="key_not_entered">no key</string>
+
+    <!-- ── Missions ─────────────────────────────────────────────────────── -->
+    <string name="mission1_title">Open the player</string>
+    <string name="mission1_desc">Tap to open a full-screen live stream right away.</string>
+    <string name="mission1_check">Playback within 2–3s · chat and LIVE badge when live</string>
+    <string name="mission2_title">Open from a deep link</string>
+    <string name="mission2_desc">Sends a fake push banner. Tapping it plays straight from the link.</string>
+    <string name="mission2_check">Tap banner → playback · ref arrives as referrer</string>
+    <string name="mission3_title">Connect member info</string>
+    <string name="mission3_desc">Pick guest / profile / token, then play.</string>
+    <string name="mission3_check">Chat nickname shows the member name</string>
+    <string name="mission4_title">Embed in your screen</string>
+    <string name="mission4_desc">See a player embedded between home-feed cards.</string>
+    <string name="mission4_check">Playback survives scrolling · promotes to full screen</string>
+    <string name="mission5_title">Keep watching in PIP</string>
+    <string name="mission5_desc">Tap a product during playback and it continues in a small window.</string>
+    <string name="mission5_check">Small window persists · tap to return without interruption</string>
+    <string name="mission6_title">Events · products · coupons</string>
+    <string name="mission6_desc">Tap products and coupons, then watch what arrives in the log.</string>
+    <string name="mission6_check">navigation/coupon requests received and respond called</string>
+    <string name="mission7_title">Customize the UI</string>
+    <string name="mission7_desc">Change colors and the overlay in Options and see it applied.</string>
+    <string name="mission7_check">Color applied · events still arrive when hidden</string>
+    <string name="mission8_title">Go live</string>
+    <string name="mission8_desc">Open the studio and start/stop a broadcast.</string>
+    <string name="mission8_check">preview → LIVE transition · automatic recovery</string>
+
+    <!-- ── Locks and messages ───────────────────────────────────────────── -->
+    <string name="lock_need_mode">Choose a mode on the start screen first</string>
+    <string name="lock_need_keys">accessKey and campaignKey are required</string>
+    <string name="lock_need_stream_token">A stream token is required</string>
+    <string name="msg_demo_keys_missing">The built-in demo keys are empty. Fill in shoplive.demo.accessKey and campaignKey in local.properties, or continue with “Use my own account”.</string>
+    <string name="msg_validation_ok">Validated — the key format looks right. Real validity is confirmed on first playback.</string>
+    <string name="msg_token_needs_jwt">The token method needs a JWT. Enter one via ⚙ — continuing as guest.</string>
+    <string name="msg_no_campaign_key">No campaignKey.</string>
+    <string name="msg_studio_not_started">The studio did not open because there is no stream token.</string>
+    <string name="msg_deeplink_no_access_key">Received a deep link, but there is no accessKey. Pick a mode first.</string>
+    <string name="msg_progress_reset">Cleared the verification record and the log.</string>
+
+    <!-- ── V1 Developer sheet ───────────────────────────────────────────── -->
+    <string name="tab_event_log">Event log</string>
+    <string name="tab_options">Options</string>
+    <string name="log_empty">No log yet — try running a feature</string>
+    <string name="log_note_engine_switch">⚠ Engine switching is never reported as an event. HLS↔WebRTC failover is internal to the SDK; network conditions surface only through playback rebuffering and connectionStateChanged.</string>
+    <string name="log_note_auto_recovery">⚠ Issues being auto-recovered do not arrive as error. An error is delivered only when a session ends unrecoverably (isRecoverable = false).</string>
+    <string name="log_copy">📋 Copy log</string>
+    <string name="log_clear">Clear</string>
+
+    <string name="group_playback_type">Playback type</string>
+    <string name="tip_playback_type">type sets the defaults for volume-key policy and resolution. LIVE = volume keys allowed, live resolution / PREVIEW = volume keys blocked, preview resolution (less traffic).</string>
+    <string name="group_auth">Authentication · Mission 3</string>
+    <string name="tip_auth">Pick the authentication method on the Mission 3 card. It applies from the next playback.</string>
+    <string name="group_pip">PIP · Mission 5</string>
+    <string name="group_overlay_appearance">Overlay · appearance · Mission 7</string>
+    <string name="group_control">Controls · applied during playback</string>
+    <string name="tip_control_runtime">Only this group applies mid-playback. configuration is immutable, so assignments after start are ignored.</string>
+    <string name="group_play_options">PlayOptions · per playback</string>
+    <string name="tip_play_options">Unlike configuration, these can differ on every start()/play() call.</string>
+    <string name="warn_os_pip_activity_only">OS PIP is full-screen (Activity) only. Enabling it has no effect on an embedded view — the whole host Activity is what shrinks, so a single view cannot be shown alone.</string>
+    <string name="warn_overlay_hidden">HIDDEN only hides the UI. The command channel stays alive, so product and coupon data keeps arriving — watch the log tab. An embedded view is always HIDDEN (video only).</string>
+    <string name="warn_mute_on_start">In the current SDK version, enabling this makes playback bounce into PIP (reproduced on a real device). Turn it on for inspection only.</string>
+    <string name="warn_allow_screen_capture">Setting this to false makes the SDK apply FLAG_SECURE to the player window, so video shows up black in screenshots, mirroring, and screen recordings. (The docs list false as the default, but the implementation default is true.)</string>
+    <string name="advanced_expand">Advanced — all remaining configuration fields ▼</string>
+    <string name="advanced_collapse">Advanced — all remaining configuration fields ▲</string>
+    <string name="advanced_note">Every field has a default, so it works without being set. Tap a value to cycle to the next one.</string>
+    <string name="btn_replay_with_options">▶ Replay with these options</string>
+    <string name="btn_reset_defaults">Reset to defaults</string>
+    <string name="option_default_prefix">default %s</string>
+    <string name="action_call">Call</string>
+    <string name="action_send">Send</string>
+    <string name="action_enter">Enter</string>
+    <string name="action_exit">Exit</string>
+    <string name="action_stop">Stop</string>
+
+    <string name="value_sdk_default">SDK default</string>
+    <string name="value_demo_drawable">Demo-app drawable</string>
+    <string name="value_white_default">white (default)</string>
+    <string name="value_null_sdk_default">null (SDK default)</string>
+    <string name="value_null_by_type">null (decided by type)</string>
+
+    <!-- ── Mission 4 Feed ───────────────────────────────────────────────── -->
+    <string name="feed_tip_embed">Below is a ShoplivePlayerView. Your app owns only the layout; controls, events, and PIP use the same API as full screen. An embedded view shows video only (no overlay UI).</string>
+    <string name="feed_warn_activity_context">An embedded view requires an Activity (LifecycleOwner) context. It cannot be created with applicationContext.</string>
+    <string name="feed_warn_no_campaign">No campaignKey. Enter your keys via ⚙.</string>
+    <string name="feed_card1_title">Recommended today</string>
+    <string name="feed_card1_desc">An ordinary feed card</string>
+    <string name="feed_card2_title">Best sellers</string>
+    <string name="feed_card2_desc">Playback above survives scrolling</string>
+    <string name="feed_card3_title">New arrivals</string>
+    <string name="feed_card3_desc">An embedded view offers in-App PIP only (OS PIP is full-screen only)</string>
+    <string name="feed_card4_title">All reviews</string>
+    <string name="feed_card4_desc">An ordinary feed card</string>
+    <string name="feed_btn_pip">⤡ PIP</string>
+    <string name="feed_btn_fullscreen">⤢ Full screen</string>
+    <string name="feed_warn_expand_restream">Promoting to full screen re-fetches the stream in the current version — handover without a re-fetch is upcoming SDK work.</string>
+
+    <!-- ── V2 Product detail ────────────────────────────────────────────── -->
+    <string name="product_toolbar_title">Product detail · our own screen</string>
+    <string name="product_tip_result">This screen is the result of your app routing navigation(url).</string>
+    <string name="product_received_url">Received URL</string>
+    <string name="product_name">Signature cotton shirt</string>
+    <string name="product_price">$39.00</string>
+    <string name="product_action_default">default PIP</string>
+    <string name="product_action_pip_desc">PIP — playback shrinks into a small window and continues when you navigate away. (default)</string>
+    <string name="product_action_keep_desc">KEEP — the player is left as it is.</string>
+    <string name="product_action_close_desc">CLOSE — the player is closed.</string>
+    <string name="product_warn_required">navigation is the only request your app must handle. Without routing, tapping a product does nothing.</string>
+    <string name="product_btn_exit_pip">Exit PIP and return to full screen</string>
+    <string name="product_tip_policy">Change the policy (PIP/KEEP/CLOSE) in the developer sheet\'s Options tab and product taps behave differently on the next playback.</string>
+
+    <!-- ── Mission 2 push banner ────────────────────────────────────────── -->
+    <string name="push_banner_source">MY SHOP · now</string>
+    <string name="push_banner_title">🔴 The summer sale is live! Come on in</string>
+    <string name="push_banner_dismiss">Dismiss</string>
+
+    <!-- ── Mission 3 auth dialog ────────────────────────────────────────── -->
+    <string name="auth_dialog_title">How should we identify the user?</string>
+    <string name="auth_dialog_note">You can mix methods in one app; the choice applies from the next playback.</string>
+    <string name="auth_dialog_cancel">Cancel</string>
+    <string name="auth_guest_desc">watching without logging in</string>
+    <string name="auth_profile_desc">simple auth (the SDK generates a client token)</string>
+    <string name="auth_token_desc">server-signed JWT (recommended)</string>
+
+    <!-- ── Error causes ─────────────────────────────────────────────────── -->
+    <string name="err_access_key">Invalid key — accessKey is not set. Call initialize first.</string>
+    <string name="err_campaign_not_found">Campaign not found — check the campaignKey.</string>
+    <string name="err_not_on_air">The campaign is not on air. Check whether it is VOD and its scheduled time.</string>
+    <string name="err_auth_required">Authentication required — check user authentication (Mission 3).</string>
+    <string name="err_network">Network — check your connection. (The SDK is attempting automatic recovery.)</string>
+    <string name="err_server">Server error — try again shortly.</string>
+    <string name="err_other">Other error</string>
+    <string name="coupon_issued">Your coupon has been issued</string>
+    <string name="validate_keys_required">accessKey and campaignKey are required.</string>
+    <string name="validate_access_key_whitespace">accessKey contains whitespace. Check whether it was truncated when copied.</string>
+    <string name="validate_campaign_key_whitespace">campaignKey contains whitespace.</string>
+    <string name="mode_label_own">my account</string>
+    <string name="mode_label_tour">tour</string>
+    <string name="demo_user_name">Demo user</string>
+    <string name="language_label">Display language</string>
+    <string name="language_note">English is the default. This is an app-level setting and does not follow the device language.</string>
+    <string name="err_playback_failed">Playback keeps failing (code %1$s). The campaign may not be on air, or it has no playable stream. The SDK retries every few seconds — the screen stays black until a stream is available.</string>
+    <string name="err_playback_failed_short">Playback failed (code %1$s) — campaign may not be on air</string>
+</resources>

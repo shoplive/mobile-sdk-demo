@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShopLive デモ</string>
+
+    <!-- ── S1 スタート ──────────────────────────────────────────────────── -->
+    <string name="start_title">ShopLive SDK\n動作確認デモ</string>
+    <string name="start_subtitle">視聴(Player)と配信(Streamer)の8つの機能を、一覧からタップするだけで実行できます。説明を読む必要はありません。</string>
+    <string name="start_tour_button">お試し · すぐ開始</string>
+    <string name="start_tour_hint_ready">ShopLive のデモキャンペーンを使い、入力なしで確認します。</string>
+    <string name="start_tour_hint_missing">内蔵デモキーが空です — local.properties を設定するか、下で直接入力してください。</string>
+    <string name="start_own_button">自分のアカウントで試す %s</string>
+    <string name="start_own_tip">必要なのは2つだけです。配信トークンは Mission 8 を確認するときにのみ必要です。</string>
+    <string name="start_validate_button">検証して開始</string>
+    <string name="start_validation_tip">検証はキーの形式のみを確認します。SDK にはキーの有効性を事前に問い合わせる API がないため、実際の有効性は最初の再生時に error イベントで判別されます — キーの誤り / キャンペーンなし / 認証が必要 / ネットワーク に分けてお知らせします。</string>
+    <string name="start_back_to_missions">機能一覧に戻る (%s)</string>
+    <string name="start_code_tip">コードはアプリ内にはありません。同梱のデモアプリのプロジェクトで確認してください。各機能カードに開くファイルのパスが記載されています。</string>
+    <string name="start_storage_encrypted">入力値は端末の暗号化ストレージ(EncryptedSharedPreferences)にのみ保存され、サーバーへは送信されません。</string>
+    <string name="start_storage_plain">⚠️ この端末では Keystore が利用できないため、通常の SharedPreferences に保存します。値が端末外に出ることはありません。</string>
+
+    <string name="field_access_key">accessKey *</string>
+    <string name="field_access_key_hint">Queenie コンソール、または担当者から発行</string>
+    <string name="field_campaign_key">campaignKey *</string>
+    <string name="field_campaign_key_hint">ライブ / VOD どちらでも可</string>
+    <string name="field_stream_token">配信トークン</string>
+    <string name="field_stream_token_hint">任意 — 視聴用のユーザー認証とは別の経路です</string>
+    <string name="field_user_jwt">ユーザー JWT</string>
+    <string name="field_user_jwt_hint">任意 — Mission 3 の token 方式を確認するときに使います</string>
+
+    <!-- ── S2 機能一覧 ──────────────────────────────────────────────────── -->
+    <string name="mission_list_tip">カードをタップするとすぐ実行されます。番号は連携ガイドの Mission 番号と同じです。</string>
+    <string name="mission_list_code_tip">コードを見るには、同梱のデモアプリのプロジェクトでカードの 📄 ファイルを開いてください。このアプリは動作確認用です。</string>
+    <string name="mission_list_sdk_screen_tip">SDK のプレイヤー・スタジオ画面の上にはデモアプリの UI を重ねられません(SDK 所有の画面)。その間のイベントはログに蓄積されるので、戻ってから ⌗ 開発者シートで確認してください。</string>
+    <string name="badge_confirmed">確認済み</string>
+    <string name="lock_message">🔒 %s — 右上の ⚙ から入力してください</string>
+    <string name="cd_locked">ロック中</string>
+    <string name="topbar_progress">機能確認 %1$d/8</string>
+    <string name="cd_back_to_list">一覧へ</string>
+    <string name="cd_settings">設定</string>
+    <string name="cd_close">閉じる</string>
+    <string name="fab_developer">開発者</string>
+
+    <string name="mode_own">自分のアカウント · %s</string>
+    <string name="mode_tour">お試し · ShopLive デモキャンペーン</string>
+    <string name="mode_auth_suffix">%1$s · 認証 %2$s</string>
+    <string name="key_not_entered">キー未入力</string>
+
+    <!-- ── ミッション ───────────────────────────────────────────────────── -->
+    <string name="mission1_title">プレイヤーを開く</string>
+    <string name="mission1_desc">タップすると全画面のライブがすぐに開きます。</string>
+    <string name="mission1_check">2〜3秒以内に再生 · ライブならチャットと LIVE バッジ</string>
+    <string name="mission2_title">ディープリンクから開く</string>
+    <string name="mission2_desc">擬似プッシュのバナーを送ります。タップするとリンクから直接再生されます。</string>
+    <string name="mission2_check">バナーをタップ → 再生 · ref が referrer として渡る</string>
+    <string name="mission3_title">会員情報を連携する</string>
+    <string name="mission3_desc">guest / profile / token から選んで再生します。</string>
+    <string name="mission3_check">チャットのニックネームが会員名で表示される</string>
+    <string name="mission4_title">画面に埋め込む</string>
+    <string name="mission4_desc">ホームフィードのカードの間に埋め込まれたプレイヤーを見ます。</string>
+    <string name="mission4_check">スクロールしても再生が続く · 全画面へ昇格</string>
+    <string name="mission5_title">PIP で見続ける</string>
+    <string name="mission5_desc">再生後に商品をタップすると、小さなウィンドウで継続します。</string>
+    <string name="mission5_check">小窓が維持される · タップで途切れず復帰</string>
+    <string name="mission6_title">イベント · 商品 · クーポン</string>
+    <string name="mission6_desc">商品やクーポンをタップし、ログに何が届くか見ます。</string>
+    <string name="mission6_check">navigation・coupon リクエストの受信と respond の呼び出し</string>
+    <string name="mission7_title">UI をカスタマイズする</string>
+    <string name="mission7_desc">オプションで色やオーバーレイを変えてすぐ確認します。</string>
+    <string name="mission7_check">色が反映される · hidden でもイベントは届く</string>
+    <string name="mission8_title">ライブ配信する</string>
+    <string name="mission8_desc">スタジオを開いて配信を開始・終了します。</string>
+    <string name="mission8_check">プレビュー → LIVE への遷移 · 自動復旧</string>
+
+    <!-- ── ロック・メッセージ ───────────────────────────────────────────── -->
+    <string name="lock_need_mode">先にスタート画面でモードを選んでください</string>
+    <string name="lock_need_keys">accessKey と campaignKey の入力が必要です</string>
+    <string name="lock_need_stream_token">配信トークンが必要です</string>
+    <string name="msg_demo_keys_missing">内蔵デモキーが空です。local.properties の shoplive.demo.accessKey と campaignKey を設定するか、「自分のアカウントで試す」から進めてください。</string>
+    <string name="msg_validation_ok">検証完了 — キーの形式を確認しました。実際の有効性は最初の再生で確認されます。</string>
+    <string name="msg_token_needs_jwt">token 方式には JWT が必要です。⚙ から入力してください — guest で進めます。</string>
+    <string name="msg_no_campaign_key">campaignKey がありません。</string>
+    <string name="msg_studio_not_started">配信トークンがないためスタジオを開けませんでした。</string>
+    <string name="msg_deeplink_no_access_key">ディープリンクを受け取りましたが accessKey がありません。先にモードを選んでください。</string>
+    <string name="msg_progress_reset">確認の記録とログを消去しました。</string>
+
+    <!-- ── V1 開発者シート ──────────────────────────────────────────────── -->
+    <string name="tab_event_log">イベントログ</string>
+    <string name="tab_options">オプション</string>
+    <string name="log_empty">まだログがありません — 機能を実行してみてください</string>
+    <string name="log_note_engine_switch">⚠ エンジンの切り替えはイベントとして届きません。HLS↔WebRTC の切替は SDK 内部の事情であり、ネットワーク状況は playback の rebuffering と connectionStateChanged からのみ観測できます。</string>
+    <string name="log_note_auto_recovery">⚠ 自動復旧中の問題は error として届きません。復旧不能でセッションが終了するときにのみ error(isRecoverable = false) が渡されます。</string>
+    <string name="log_copy">📋 ログをコピー</string>
+    <string name="log_clear">消去</string>
+
+    <string name="group_playback_type">再生タイプ</string>
+    <string name="tip_playback_type">type が音量キーのポリシーと受信解像度の既定値を決めます。LIVE = 音量キー許可・ライブ解像度 / PREVIEW = 音量キー無効・プレビュー解像度(通信量を削減)。</string>
+    <string name="group_auth">認証 · Mission 3</string>
+    <string name="tip_auth">認証方式は Mission 3 のカードで選びます。次の再生から適用されます。</string>
+    <string name="group_pip">PIP · Mission 5</string>
+    <string name="group_overlay_appearance">オーバーレイ · 外観 · Mission 7</string>
+    <string name="group_control">制御 · 再生中に即時反映</string>
+    <string name="tip_control_runtime">このグループのみ再生中に反映されます。configuration は不変で、開始後の代入は無視されます。</string>
+    <string name="group_play_options">PlayOptions · 再生ごと</string>
+    <string name="tip_play_options">configuration と違い、start()/play() の呼び出しごとに変えられる値です。</string>
+    <string name="warn_os_pip_activity_only">OS PIP は全画面(Activity)専用です。埋め込みビューでは有効にしても動作しません — ホスト Activity 全体が縮小する方式のため、ビュー単体を表示できないからです。</string>
+    <string name="warn_overlay_hidden">HIDDEN は表示だけを止めます。コマンドチャネルは生きているため商品・クーポンのデータは届き続けます — ログタブで確認してください。埋め込みビューは常に HIDDEN 固定です(映像のみ)。</string>
+    <string name="warn_mute_on_start">現行の SDK バージョンでは true にすると再生が PIP に切り替わる問題が確認されています(実機で再現)。確認目的でのみ有効にしてください。</string>
+    <string name="warn_allow_screen_capture">false にすると SDK がプレイヤーのウィンドウに FLAG_SECURE を設定するため、スクリーンショット・ミラーリング・画面録画で映像が黒くなります。(ドキュメントには既定値 false と記載されていますが、実装の既定値は true です。)</string>
+    <string name="advanced_expand">詳細 — configuration の残り全項目 ▼</string>
+    <string name="advanced_collapse">詳細 — configuration の残り全項目 ▲</string>
+    <string name="advanced_note">すべての項目に既定値があるため、指定しなくても動作します。値をタップすると次の値に切り替わります。</string>
+    <string name="btn_replay_with_options">▶ このオプションで再生し直す</string>
+    <string name="btn_reset_defaults">既定値に戻す</string>
+    <string name="option_default_prefix">既定 %s</string>
+    <string name="action_call">呼び出す</string>
+    <string name="action_send">送信</string>
+    <string name="action_enter">開始</string>
+    <string name="action_exit">解除</string>
+    <string name="action_stop">停止</string>
+
+    <string name="value_sdk_default">SDK 既定</string>
+    <string name="value_demo_drawable">デモアプリのドローアブル</string>
+    <string name="value_white_default">white (既定)</string>
+    <string name="value_null_sdk_default">null (SDK 既定)</string>
+    <string name="value_null_by_type">null (type が決定)</string>
+
+    <!-- ── Mission 4 フィード ───────────────────────────────────────────── -->
+    <string name="feed_tip_embed">下が ShoplivePlayerView です。アプリが持つのはレイアウトだけで、操作・イベント・PIP は全画面と同じ API を使います。埋め込みビューは映像のみを表示します(オーバーレイ UI なし)。</string>
+    <string name="feed_warn_activity_context">埋め込みビューは Activity(LifecycleOwner) の context を必要とします。applicationContext では生成できません。</string>
+    <string name="feed_warn_no_campaign">campaignKey がありません。⚙ からキーを入力してください。</string>
+    <string name="feed_card1_title">今日のおすすめ</string>
+    <string name="feed_card1_desc">通常のフィードカード</string>
+    <string name="feed_card2_title">ベストセラー</string>
+    <string name="feed_card2_desc">スクロールしても上の再生は続きます</string>
+    <string name="feed_card3_title">新商品</string>
+    <string name="feed_card3_desc">埋め込みビューは in-App PIP のみ対応(OS PIP は全画面専用)</string>
+    <string name="feed_card4_title">レビューまとめ</string>
+    <string name="feed_card4_desc">通常のフィードカード</string>
+    <string name="feed_btn_pip">⤡ PIP</string>
+    <string name="feed_btn_fullscreen">⤢ 全画面</string>
+    <string name="feed_warn_expand_restream">全画面への昇格は現行バージョンではストリームを再取得します — 再取得なしのセッション引き継ぎは SDK の後続作業です。</string>
+
+    <!-- ── V2 商品詳細 ──────────────────────────────────────────────────── -->
+    <string name="product_toolbar_title">商品詳細 · 自社アプリの画面</string>
+    <string name="product_tip_result">navigation(url) をアプリがルーティングした結果です。</string>
+    <string name="product_received_url">受信した URL</string>
+    <string name="product_name">シグネチャー コットンシャツ</string>
+    <string name="product_price">3,900円</string>
+    <string name="product_action_default">既定 PIP</string>
+    <string name="product_action_pip_desc">PIP — 画面遷移時に小窓へ縮小され、視聴が続きます。(既定値)</string>
+    <string name="product_action_keep_desc">KEEP — プレイヤーをそのまま維持します。</string>
+    <string name="product_action_close_desc">CLOSE — プレイヤーを閉じます。</string>
+    <string name="product_warn_required">navigation はアプリが必ず処理しなければならない唯一のリクエストです。ルーティングを実装しないと、商品をタップしても何も起きません。</string>
+    <string name="product_btn_exit_pip">PIP を解除して全画面に戻る</string>
+    <string name="product_tip_policy">開発者シートのオプションタブでポリシー(PIP/KEEP/CLOSE)を変えると、次の再生で商品をタップしたときの挙動が変わります。</string>
+
+    <!-- ── Mission 2 プッシュバナー ─────────────────────────────────────── -->
+    <string name="push_banner_source">MY SHOP · たった今</string>
+    <string name="push_banner_title">🔴 サマーセールのライブが開始! 今すぐ入場</string>
+    <string name="push_banner_dismiss">閉じる</string>
+
+    <!-- ── Mission 3 認証ダイアログ ─────────────────────────────────────── -->
+    <string name="auth_dialog_title">どの方式でユーザーを識別しますか?</string>
+    <string name="auth_dialog_note">1つのアプリで併用でき、次の再生から適用されます。</string>
+    <string name="auth_dialog_cancel">キャンセル</string>
+    <string name="auth_guest_desc">未ログインでの視聴</string>
+    <string name="auth_profile_desc">簡易認証 (SDK がクライアントトークンを生成)</string>
+    <string name="auth_token_desc">サーバー署名の JWT (推奨)</string>
+
+    <!-- ── エラー原因 ───────────────────────────────────────────────────── -->
+    <string name="err_access_key">キーの誤り — accessKey が設定されていません。先に initialize を呼んでください。</string>
+    <string name="err_campaign_not_found">キャンペーンなし — campaignKey を確認してください。</string>
+    <string name="err_not_on_air">キャンペーンが配信中ではありません。VOD かどうかと編成時間を確認してください。</string>
+    <string name="err_auth_required">認証が必要 — ユーザー認証(Mission 3)を確認してください。</string>
+    <string name="err_network">ネットワーク — 接続状態を確認してください。(SDK が自動復旧を試みます)</string>
+    <string name="err_server">サーバーエラー — しばらくしてから再試行してください。</string>
+    <string name="err_other">その他のエラー</string>
+    <string name="coupon_issued">クーポンが発行されました</string>
+    <string name="validate_keys_required">accessKey と campaignKey は必須です。</string>
+    <string name="validate_access_key_whitespace">accessKey に空白が含まれています。コピー時に前後が欠けていないか確認してください。</string>
+    <string name="validate_campaign_key_whitespace">campaignKey に空白が含まれています。</string>
+    <string name="mode_label_own">自分のアカウント</string>
+    <string name="mode_label_tour">お試し</string>
+    <string name="demo_user_name">デモユーザー</string>
+    <string name="language_label">表示言語</string>
+    <string name="language_note">既定は English です。アプリ独自の設定で、端末の言語には従いません。</string>
+    <string name="err_playback_failed">再生が繰り返し失敗しています (code %1$s)。キャンペーンが配信中でないか、再生可能なストリームがありません。SDK は数秒ごとに再試行するため、ストリームが用意されるまで画面は黒いままです。</string>
+    <string name="err_playback_failed_short">再生失敗 (code %1$s) — 配信中でない可能性があります</string>
+</resources>

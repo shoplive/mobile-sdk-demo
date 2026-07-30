@@ -1,0 +1,3 @@
+framework module ShopLiveWebRTCHelperSDK {
+  header "ShopLiveWebRTCHelperSDK-Swift.h"
+}
