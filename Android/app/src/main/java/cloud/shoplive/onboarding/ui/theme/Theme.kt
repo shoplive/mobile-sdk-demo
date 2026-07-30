@@ -52,7 +52,7 @@ private val DarkColors = darkColorScheme(
     error = BrandLight,
 )
 
-/** 로그·키 값처럼 자리수를 맞춰 읽어야 하는 텍스트에 쓴다. */
+/** For text read column-by-column, like log lines and key values. */
 val MonoStyle = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.sp)
 
 private val DemoTypography = Typography(
@@ -75,7 +75,7 @@ fun ShopliveOnboardingTheme(
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        // 브랜드 색을 그대로 보여야 하는 데모라 Dynamic Color 는 쓰지 않는다.
+        // No Dynamic Color: this demo has to show the brand colours as they are.
         colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = DemoTypography,
         content = content,

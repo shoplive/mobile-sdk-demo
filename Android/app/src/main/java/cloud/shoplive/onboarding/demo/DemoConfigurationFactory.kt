@@ -1,53 +1,47 @@
-package cloud.shoplive.onboarding.sdk
+package cloud.shoplive.onboarding.demo
 
 import android.graphics.Typeface
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.ChatInputFont
 import cloud.shoplive.onboarding.data.DemoOptions
 import cloud.shoplive.onboarding.data.LoadingAnimation
+import cloud.shoplive.player.ShopliveInsets
 import cloud.shoplive.player.ShoplivePlayOptions
 import cloud.shoplive.player.ShoplivePlayerConfiguration
 
 /**
- * Mission 7 — UI 커스터마이즈.
+ * Demo-only: maps **every** control in the options tab onto its configuration field.
  *
- * `ShoplivePlayerConfiguration` 는 **재생 1건의 초기값·정책 묶음**이다. 예전 SDK 의 정적
- * 옵션 setter 들을 하나의 불변 객체로 대체한다.
+ * ## Why this is not in `:integration`
+ * This is the trap worth naming. "Assembling a configuration" looks like one job,
+ * but it is two:
  *
- * ## 불변이고, 재생 시작 전에만 반영된다
- * 모든 필드가 `val` 이고, 재생이 시작된 뒤의 대입은 **무시된다**(경고 로그만 남는다).
- * 값을 바꿔 확인하려면 새 configuration 으로 다시 재생해야 한다 — 데모앱 옵션 탭의
- * "이 옵션으로 다시 재생" 버튼이 그 흐름이다.
+ * - *Examples a customer would copy* — `branded()`, `overlayHidden()`,
+ *   `embeddedPreview()`. Those live in
+ *   [cloud.shoplive.onboarding.integration.ShoplivePlayerPresets].
+ * - *Reflecting a demo screen's mutable state into all fields at once* — this file.
+ *   It exists so a developer can flip any field and replay, which no customer app
+ *   wants. It is bound to [DemoOptions] and to this app's drawables, so it is
+ *   harness by definition.
  *
- * 재생 중에 바꿔야 하는 것은 configuration 이 아니라 런타임 프로퍼티다:
- * `isMuted` · `resizeMode` · `overlayUI`.
- *
- * ## 지정하지 않아도 동작한다
- * 모든 필드에 기본값이 있다. `ShoplivePlayerConfiguration()` 만으로도 정상 재생된다.
- *
- * ## overlay.ui = HIDDEN 의 의미
- * 기본 오버레이 UI(채팅·상품·쿠폰)를 **감추기만** 한다. 커맨드 채널은 살아 있으므로
- * 상품·쿠폰 데이터는 계속 들어온다 — 앱이 자체 UI 를 그릴 때 쓰는 모드다.
- * 웹뷰를 완전히 파괴하는 모드는 공개돼 있지 않다(세션 종료 시에만 일어난다).
+ * The iOS refactor put the equivalent function in the copy-paste set, and only the
+ * isolated compile target caught it.
  */
-object PlayerConfigurationFactory {
+object DemoConfigurationFactory {
 
-    /** 3줄 연동에 쓰는 무설정 기본값. */
-    fun default(): ShoplivePlayerConfiguration = ShoplivePlayerConfiguration()
-
-    /** 개발자 시트에서 조정한 값 전체를 configuration 으로 만든다. */
+    /** Turns the current options-tab state into a configuration. */
     fun from(options: DemoOptions): ShoplivePlayerConfiguration =
         ShoplivePlayerConfiguration(
-            // LIVE / PREVIEW — 볼륨키 정책과 수신 해상도의 기본값을 이 값이 정한다.
+            // LIVE / PREVIEW — decides the volume-key policy and receive resolution.
             type = options.type,
 
-            pip = PipOptions.from(options),
+            pip = pip(options),
 
             sound = ShoplivePlayerConfiguration.SoundOptions(
                 muteOnStart = options.muteOnStart,
                 mixWithOthers = options.mixWithOthers,
                 autoResumeOnFocusGained = options.autoResumeOnFocusGained,
-                // null 이면 type 기본값(LIVE=true · PREVIEW=false)을 따른다.
+                // null follows the type default (LIVE=true, PREVIEW=false).
                 isVolumeKeyEnabled = options.isVolumeKeyEnabled,
             ),
 
@@ -63,7 +57,8 @@ object PlayerConfigurationFactory {
                     ChatInputFont.BOLD -> Typeface.DEFAULT_BOLD
                     ChatInputFont.MONOSPACE -> Typeface.MONOSPACE
                 },
-                // false 로 두면 SDK 가 FLAG_SECURE 를 걸어 스크린샷·미러링이 검게 나온다.
+                // false makes the SDK set FLAG_SECURE, blacking out screenshots
+                // and mirroring.
                 allowScreenCapture = options.allowScreenCapture,
             ),
 
@@ -77,11 +72,22 @@ object PlayerConfigurationFactory {
                 ui = options.overlayUI,
             ),
 
-            // 오버레이 URL 에 실릴 추가 쿼리 파라미터.
+            // Extra query parameters appended to the overlay URL.
             customParameters = options.customParameters,
         )
 
-    /** 회차 단위 옵션. configuration 과 달리 `play()`/`start()` 호출마다 다르게 줄 수 있다. */
+    private fun pip(options: DemoOptions): ShoplivePlayerConfiguration.PipOptions =
+        ShoplivePlayerConfiguration.PipOptions(
+            isInAppPipEnabled = options.isInAppPipEnabled,
+            isOSPipEnabled = options.isOSPipEnabled,
+            enterOSPipOnBackPressed = options.enterOSPipOnBackPressed,
+            defaultPosition = options.pipPosition,
+            scale = options.pipScale,
+            aspectRatio = options.pipAspectRatio,
+            padding = ShopliveInsets.all(options.pipPaddingDp),
+        )
+
+    /** Per-playback options, which may differ on every `start()` / `play()`. */
     fun playOptions(options: DemoOptions, referrerOverride: String? = null): ShoplivePlayOptions =
         ShoplivePlayOptions(
             referrer = (referrerOverride ?: options.referrer).takeIf { it.isNotBlank() },

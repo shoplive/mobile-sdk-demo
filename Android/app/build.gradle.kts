@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// 둘러보기 모드에 쓰는 데모 키. 커밋되지 않는 local.properties 에서 읽고,
-// 없으면 환경변수, 그것도 없으면 빈 값(앱에서 "둘러보기" 잠금)으로 둔다.
+// Demo keys for tour mode. Read from local.properties (never committed), then the
+// environment, and finally left blank — which locks "look around" in the app.
 val localProps = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.exists()) file.inputStream().use { load(it) }
@@ -24,22 +24,31 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        // SDK 데모앱(cloud.shoplive.demo)과 한 기기에 함께 설치할 수 있도록 별도 id 를 쓴다.
+        // A separate id so this can sit alongside the SDK demo app (cloud.shoplive.demo)
+        // on one device.
         applicationId = "cloud.shoplive.onboarding"
 
-        // SDK 요구 최소 버전은 player 19 / streamer 21 이다. 이 데모앱은 Compose·
-        // EncryptedSharedPreferences 를 쓰므로 24 로 올려 둔다 — 고객사 앱은 21 까지 내려도 된다.
+        // The SDK requires player 19 / streamer 21. This demo uses Compose and
+        // EncryptedSharedPreferences, hence 24 — a customer app can go down to 21, and
+        // :integration does (see integration/build.gradle.kts).
         minSdk = 24
         targetSdk = 35
 
         versionCode = 1
         versionName = "3.0.0"
 
+        // Only relevant when the local SDK sources are wired in (composite build). The
+        // SDK library modules have a "distribution" flavour dimension
+        // (develop/qa/qaUs/ebay) and this app has none, so variant matching needs a
+        // target. Harmless when consuming the AAR.
+        missingDimensionStrategy("distribution", "develop")
+
         buildConfigField("String", "DEMO_ACCESS_KEY", "\"${demoKey("shoplive.demo.accessKey", "SHOPLIVE_DEMO_ACCESS_KEY")}\"")
         buildConfigField("String", "DEMO_CAMPAIGN_KEY", "\"${demoKey("shoplive.demo.campaignKey", "SHOPLIVE_DEMO_CAMPAIGN_KEY")}\"")
         buildConfigField("String", "DEMO_STREAM_TOKEN", "\"${demoKey("shoplive.demo.streamToken", "SHOPLIVE_DEMO_STREAM_TOKEN")}\"")
 
-        // Mission 2 — 딥링크 스킴. AndroidManifest 의 intent-filter 와 한 값을 공유한다.
+        // Mission 2 — the deep-link scheme. One value shared with the manifest's
+        // intent-filter, and passed into ShopliveDeepLinkRouter as a parameter.
         val scheme = "shoplivedemo"
         manifestPlaceholders["deepLinkScheme"] = scheme
         buildConfigField("String", "DEEP_LINK_SCHEME", "\"$scheme\"")
@@ -50,7 +59,7 @@ android {
             isMinifyEnabled = false
         }
         release {
-            // 데모앱이라 서명은 debug 키로 둔다. 고객사 앱은 자체 서명 설정을 쓰세요.
+            // A demo, so it is signed with the debug key. Use your own signing config.
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -79,10 +88,17 @@ android {
 }
 
 dependencies {
-    // ── Shoplive 통합 SDK v3 ────────────────────────────────────────────────
-    // 시청(Player)만 쓸 거면 첫 줄만, 송출(Streamer)만 쓸 거면 둘째 줄만 남기면 된다.
-    // core / exoplayer / webrtc / android-webrtc 는 내부 의존이라 선언하지 않아도 되고,
-    // 둘을 함께 쓸 때 겹치는 의존성도 SDK 쪽에서 정리된다.
+    // ── The copy-paste layer ────────────────────────────────────────────────
+    // Every Shoplive call the demo makes goes through here. The dependency points
+    // one way only: :integration knows nothing about this module, which is what
+    // keeps it copyable. It exposes the SDK with `api`, so the two `implementation`
+    // lines below are only for the app's own direct use of SDK types.
+    implementation(project(":integration"))
+
+    // ── Shoplive unified SDK v3 ─────────────────────────────────────────────
+    // Watching only: keep the first line. Broadcasting only: the second. Both: both.
+    // core / exoplayer / webrtc / android-webrtc are internal dependencies you do not
+    // declare, and the overlap between the two artifacts is resolved by the SDK.
     implementation(libs.shoplive.player.sdk)
     implementation(libs.shoplive.streamer.sdk)
 

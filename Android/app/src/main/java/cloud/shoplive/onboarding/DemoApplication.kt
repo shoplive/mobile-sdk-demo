@@ -9,28 +9,34 @@ import cloud.shoplive.onboarding.data.CredentialStore
 import cloud.shoplive.onboarding.data.DemoMode
 import cloud.shoplive.onboarding.data.LocaleSetting
 import cloud.shoplive.onboarding.data.MissionProgress
-import cloud.shoplive.onboarding.sdk.ShopliveInitializer
+import cloud.shoplive.onboarding.demo.DemoLogBridge
+import cloud.shoplive.onboarding.integration.ShopliveInitializer
 import java.lang.ref.WeakReference
 
 /**
- * 앱 시작점.
+ * App entry point.
  *
- * **SDK 초기화를 여기서 한다.** 딥링크로 콜드 스타트하는 경로(Mission 2)에서도 재생 전에
- * accessKey 가 설정돼 있어야 하기 때문이다. 마지막으로 쓴 모드의 키를 복구해 초기화하고,
- * 저장된 것이 없으면 시작 화면에서 사용자가 고를 때까지 초기화를 미룬다.
+ * **SDK initialization happens here.** A deep link can cold-start the app
+ * (see `ShopliveDeepLinkRouter`), and the access key has to be set before playback
+ * starts. The last used mode's key is restored and initialized; when nothing is
+ * stored, initialization waits until the user chooses on the start screen.
  */
 class DemoApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        // 표시 언어를 가장 먼저 확정한다 — 이후 만들어지는 컨텍스트가 이 값을 쓴다.
+        // Pin the display language first — every context created later reads it.
         LocaleSetting.install(this)
+
+        // Install the log sink before any SDK call, so nothing is lost. This is the
+        // only wiring the copy-paste layer needs from the host app.
+        DemoLogBridge.install()
 
         DemoContainer.install(this)
         ProductRouter.install(this)
 
-        // 재실행 시 시작 화면을 건너뛰고 마지막 모드로 들어간다.
+        // On relaunch, skip the start screen and go straight in with the last mode.
         val credentials = DemoContainer.credentials
         val accessKey = when (credentials.mode) {
             DemoMode.OWN -> credentials.accessKey
@@ -42,8 +48,12 @@ class DemoApplication : Application() {
 }
 
 /**
- * 아주 작은 서비스 로케이터. 데모앱에 DI 프레임워크를 끌어들이지 않기 위한 선택이다 —
- * 고객사 앱에서는 Hilt·Koin 등 쓰던 방식으로 바꾸면 된다.
+ * A very small service locator, so the demo does not drag in a DI framework. In a
+ * customer app, replace it with Hilt, Koin, or whatever you already use.
+ *
+ * Note that nothing in `:integration` knows this exists — it takes what it needs as
+ * constructor and function parameters. That is the point: a DI choice made here
+ * cannot leak into the files a customer copies.
  */
 object DemoContainer {
 
@@ -53,7 +63,7 @@ object DemoContainer {
     lateinit var progress: MissionProgress
         private set
 
-    /** Compose 밖(ViewModel·delegate)에서 문자열 리소스를 읽기 위한 앱 컨텍스트. */
+    /** App context for reading string resources outside Compose (ViewModel, delegate). */
     lateinit var appContext: Context
         private set
 
@@ -64,17 +74,18 @@ object DemoContainer {
     }
 
     /**
-     * 리소스 문자열 조회 헬퍼.
+     * String resource lookup helper.
      *
-     * 앱 컨텍스트는 **기기 언어**를 들고 있으므로 그대로 쓰면 안 된다 —
-     * [LocaleSetting] 이 고른 언어로 감싼 컨텍스트에서 읽는다(기본 영어).
+     * The app context carries the **device** language, so it cannot be used as-is —
+     * read from the context [LocaleSetting] wrapped in the chosen language
+     * (English by default).
      */
     fun string(@StringRes id: Int, vararg args: Any): String {
         val context = LocaleSetting.wrap(appContext)
         return if (args.isEmpty()) context.getString(id) else context.getString(id, *args)
     }
 
-    /** 둘러보기 모드에 쓰는 내장 데모 키. local.properties 에서 주입된다. */
+    /** Built-in demo keys for tour mode, injected from local.properties. */
     val demoAccessKey: String get() = BuildConfig.DEMO_ACCESS_KEY
     val demoCampaignKey: String get() = BuildConfig.DEMO_CAMPAIGN_KEY
     val demoStreamToken: String get() = BuildConfig.DEMO_STREAM_TOKEN
@@ -84,14 +95,15 @@ object DemoContainer {
 }
 
 /**
- * `navigation(url)` 요청의 도착지를 연다.
+ * Opens the destination of a `navigation(url)` request.
  *
- * ## 왜 Activity 를 새로 띄우나
- * 요청이 도착하는 시점에는 **SDK 플레이어 Activity 가 화면 맨 앞**에 있다. 데모앱의
- * Compose 화면은 그 뒤에 있으므로, 상품 상세를 보여주려면 새 Activity 를 그 위에 올려야 한다.
+ * ## Why it launches an Activity
+ * When the request arrives, the **SDK player Activity is front-most**. This app's
+ * Compose screens are behind it, so showing a product detail means putting a new
+ * Activity on top.
  *
- * 또 `ShoplivePlayerRequest.Navigation` 은 url 만 준다(context 를 주지 않는다). 그래서
- * 앱이 자기 화면 컨텍스트를 알고 있어야 한다 — 여기서는 현재 떠 있는 Activity 를 추적한다.
+ * `ShoplivePlayerRequest.Navigation` also only gives a url — no context. So the app
+ * has to know its own screen context; here that means tracking the resumed Activity.
  */
 object ProductRouter {
 
@@ -125,7 +137,7 @@ object ProductRouter {
             host.startActivity(ProductDetailActivity.intent(host, url))
             return
         }
-        // 화면이 하나도 떠 있지 않은 예외 상황(백그라운드) — 새 Task 로 올린다.
+        // Nothing on screen at all (app in background) — start a new task.
         application?.let { app ->
             app.startActivity(
                 ProductDetailActivity.intent(app, url).apply {
