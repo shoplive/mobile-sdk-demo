@@ -8,10 +8,12 @@ If you're integrating both platforms, read this page before you write shared des
 
 **Snapshots compared:**
 
-| | Build | Delivery |
-|---|---|---|
-| iOS | `dev` `5f0ee781`, rebuilt 2026-07-30 (SDK 2.0.20.1) | Local xcframeworks in `iOS/Frameworks/` |
-| Android | `3.0.0` | Private Maven |
+| | Version | Built from | Delivery |
+|---|---|---|---|
+| iOS | `3.0.0` | `dev` commit `5f0ee781` | Local xcframeworks in `iOS/Frameworks/` |
+| Android | `3.0.0` | Published artifacts | Private Maven |
+
+Both report the same version number, but they are **not the same build** — which is why the differences below exist at all.
 
 Some of the differences below are **snapshot skew** (one platform is simply ahead) rather than deliberate design. Those are marked, since they may resolve on their own.
 

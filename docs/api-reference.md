@@ -6,8 +6,8 @@
 
 A lookup table for the public surface, both platforms side by side. This reflects what the demo apps actually compile against:
 
-- **iOS** — `dev` build `5f0ee781` (rebuilt 2026-07-30), local xcframeworks
-- **Android** — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0`
+- **iOS** — `3.0.0`, packaged from `dev` commit `5f0ee781` as local xcframeworks
+- **Android** — `3.0.0`, from `cloud.shoplive:shoplive-{player,streamer}-sdk`
 
 Where the two disagree, the difference is called out here and explained in [Platform Differences](platform-differences.md).
 

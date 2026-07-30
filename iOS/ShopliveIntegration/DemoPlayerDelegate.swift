@@ -67,7 +67,7 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // PlaybackEvent is a class — the state is in `.event`, extra details in `.datas`.
             shopliveLog(.event, "playback(\(playback.event.logLabel))")
 
-            // ★ Measured (2026-07-30, SDK 2.0.20.1): across a healthy playback session the SDK never
+            // ★ Measured (2026-07-30, SDK 3.0.0): across a healthy playback session the SDK never
             //   sends `stateChanged` even once. So gating "did playback start?" on stateChanged alone
             //   never becomes true. We decide it from playback(STARTED/RENDERING), which does arrive.
             //   (`campaignStatusChanged` and `campaignInfoReceived` were also missing on older builds

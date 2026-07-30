@@ -191,7 +191,7 @@ On Android you can *read* the answer: `ShopliveStreamerEvent.StateChanged` carri
 
 ## ⚠️ Studio appearance: iOS and Android diverge here
 
-| | iOS (dev `5f0ee781`) | Android (3.0.0) |
+| | iOS (`3.0.0`, dev `5f0ee781`) | Android (`3.0.0`) |
 |---|---|---|
 | Appearance options | **Removed from the public surface** | `ShopliveAppearanceOptions()` |
 | Constructor | `init(campaignKey:)` only | `start(campaignKey =, appearance =)` |

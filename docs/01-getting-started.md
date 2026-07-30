@@ -34,7 +34,7 @@ Android additionally needs **Maven repository credentials** (username + password
 | SDK delivery | 5 local `.xcframework` bundles in `iOS/Frameworks/` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
 
-> ⚠️ **The two demos are pinned to different SDK snapshots.** The iOS demo is built against a `dev` branch build (`5f0ee781`, rebuilt 2026-07-30); the Android demo consumes the published `3.0.0` artifacts. A handful of fields exist on one platform and not the other as a result — all of them are listed in [Platform Differences](platform-differences.md).
+> ⚠️ **Both platforms report `3.0.0`, but they are not the same build.** The iOS binaries are packaged from a `dev` commit (`5f0ee781`); the Android demo consumes the published Maven artifacts. A handful of fields exist on one platform and not the other as a result — all of them are listed in [Platform Differences](platform-differences.md).
 
 ---
 

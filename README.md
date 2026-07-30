@@ -135,12 +135,14 @@ The `Integration` / `sdk` split is not just a convention — on iOS it's **enfor
 
 ## Versions covered
 
-| | Build | Delivery |
-|---|---|---|
-| iOS | `dev` `5f0ee781`, rebuilt 2026-07-30 (SDK 2.0.20.1) | Local xcframeworks (SPM for customer projects) |
-| Android | `3.0.0` | Private Maven — `cloud.shoplive:shoplive-{player,streamer}-sdk` |
+Both platforms report **`Shoplive.sdkVersion` = `3.0.0`**.
 
-The two platforms are at **different snapshot points**, so a handful of fields exist on one side only. All of them are listed in [Platform Differences](docs/platform-differences.md).
+| | Version | Built from | Delivery |
+|---|---|---|---|
+| iOS | `3.0.0` | `dev` commit `5f0ee781` | Local xcframeworks (SPM for customer projects) |
+| Android | `3.0.0` | Published artifacts | Private Maven — `cloud.shoplive:shoplive-{player,streamer}-sdk` |
+
+> **Same version number, not the same build.** The iOS binaries are packaged from a `dev` commit; Android consumes the published Maven artifacts. So a handful of fields still exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
 Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. Where something is unverified, it says so.
 

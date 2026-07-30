@@ -10,7 +10,7 @@ Everything on this page was **observed by running the demo apps**, not inferred 
 
 | | Build | Environment | Date |
 |---|---|---|---|
-| iOS | `dev` `5f0ee781` (SDK 2.0.20.1) | Simulator, Xcode 26.6 | 2026-07-30 |
+| iOS | `3.0.0`, from `dev` commit `5f0ee781` | Simulator, Xcode 26.6 | 2026-07-30 |
 | Android | `3.0.0` | `sdk_gphone16k_arm64` · API 37 · 16 KB page image | 2026-07-30 |
 
 ---

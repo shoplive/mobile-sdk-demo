@@ -100,16 +100,29 @@ xcodebuild -workspace ShopliveOnboardingDemo.xcworkspace -scheme IntegrationCopy
 
 ### 빌드 재현 (SDK 소스에서)
 
-**`dev` (`5f0ee781`, 2026-07-30 재빌드)** 기준으로 추출했습니다.
+**`dev` (`5f0ee781`) 코드 + 버전 상수만 `3.0.0` 으로 올려** 추출했습니다(2026-07-30 재빌드).
+`Shoplive.sdkVersion` 이 `3.0.0` 을 반환하는 것을 시뮬레이터 실측으로 확인했습니다 — Android(`3.0.0`)와 버전 표기를 맞추기 위한 변경입니다.
 (그 이전 빌드는 `feature/SMV-1446-repack-player` `8d66bcd6` 기준이었습니다 — §7 에 API 차이를 적어 뒀습니다.)
+
+> ⚠️ **버전 상수 변경은 SDK 저장소에 커밋돼 있지 않습니다.** 별도 워크트리에서만 올려 빌드했으므로,
+> `matrix-sdk-ios` 의 `dev` 는 여전히 `2.0.20.1` 입니다. 실제 릴리스로 반영하려면 SDK 저장소에 별도 PR 이 필요합니다.
+
 재현 절차:
 
 ```bash
 cd matrix-sdk-ios            # 라인 심링크가 이미 international 이면 use-international.sh 불필요
+
+# ① 버전 상수 5개를 3.0.0 으로 (sdkVersion · corePlayer · hlsPlayer · rtcPlayer · studio)
+#    lines/international/Modules/ShopliveCore/Sources/ShopLiveCommon.swift
+#    ⚠️ 문자열이 15바이트 이하라 Swift small-string 최적화로 인라인됩니다 —
+#       빌드된 바이너리를 `strings` 로 검증할 수 없고, 런타임에 확인해야 합니다.
+
 bash scripts/run-tuist.sh generate --no-open
-# 스킴 4종(ShopliveCore · ShopLiveWebRTCHelperSDK · ShoplivePlayerSDK · ShopliveStreamerSDK) 을
-# iphoneos / iphonesimulator 로 archive → xcodebuild -create-xcframework
-# WebRTC 는 .build/checkouts/rtc-ios/Frameworks/WebRTC.xcframework 복사
+# ② 스킴 4종(ShopliveCore · ShopLiveWebRTCHelperSDK · ShoplivePlayerSDK · ShopliveStreamerSDK) 을
+#    iphoneos / iphonesimulator 로 archive (BUILD_LIBRARY_FOR_DISTRIBUTION=YES)
+#    → xcodebuild -create-xcframework
+# ③ WebRTC 는 재빌드 대상이 아닙니다 — 기존 것을 그대로 씁니다
+#    (필요하면 .build/checkouts/rtc-ios/Frameworks/WebRTC.xcframework 복사)
 ```
 
 > `ShopLiveTestApp/Project.swift` 의 죽은 모듈 참조(`Modules/CorePlayer`·`Modules/WebRTCPlayer`)는
@@ -160,7 +173,7 @@ xcrun simctl launch <UDID> cloud.shoplive.onboarding.demo -AppleLanguages "(ja)"
 
 ---
 
-## 6. 실측으로 확인된 SDK 동작 (2026-07-30, SDK 2.0.20.1)
+## 6. 실측으로 확인된 SDK 동작 (2026-07-30, SDK 3.0.0 — `dev` `5f0ee781` 코드)
 
 데모앱을 시뮬레이터에서 실제로 돌려 확인한 사실입니다. 앱 코드 곳곳의 `⚠️`/`Warning` 주석과 대응합니다.
 
