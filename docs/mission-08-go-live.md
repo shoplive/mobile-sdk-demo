@@ -210,8 +210,8 @@ Card ⑧ sets the token, launches the studio, and returns. The "done" badge appe
 The token is masked to 8 characters in the log, like every other credential:
 
 ```
-→SDK  setStreamToken("1-5JCwhr…")
-→SDK  ShopliveStreamer(activity).start(campaignKey: "8f595bd943cc")
+→SDK  setStreamToken("1-2XyVzj…")
+→SDK  ShopliveStreamer(activity).start(campaignKey: "faea28dd96c3")
 ```
 
 > **Not yet verified:** broadcast start and the camera/microphone permission flow have **not** been confirmed on real hardware — emulators have camera limitations that make this specific mission hard to validate. This is on the manual real-device checklist. See [Known Issues](known-issues.md#not-yet-verified).

@@ -40,6 +40,10 @@ On campaign `8f595bd943cc` (15:45, 2026-07-30): `initialize` → embed → `play
 
 At 20:29–20:33 the full-screen/embedded split was confirmed visually: the embedded view showed video only; full screen showed the whole overlay (logo, LIVE badge, share, PIP, product banner, likes, chat). `playback` 218 events, `error` **0**.
 
+**On the SDK 3.0.0 rebuild (22:09, 2026-07-30)** — re-verified on the current default campaign `faea28dd96c3`: `Shoplive.sdkVersion` returns `3.0.0` (read from the developer sheet), playback sustained with the playhead advancing 10 s → 80 s at 1920×1080/60 fps, and **zero non-2xx responses** (8× `200`, 56× `206`). The outbound request also carries `x-sl-player-sdk-version=3.0.0`, which confirms the version reaches the network layer rather than just the public API.
+
+> ⚠️ **That campaign currently serves Apple's public BipBop sample HLS**, not live commerce content. Playback is a clean 1080p60 VOD, so it is a good smoke test — but chat, product banners, coupons and the LIVE badge only appear during a real broadcast and **cannot be exercised with it.** Use an on-air campaign to check those.
+
 **Android** — install and launch clean, no crashes, no `dlopen` failures, no native alignment errors (including arm64-v8a on the 16 KB page image). Boots in English regardless of device language; all three languages switch correctly. `initialize` → `start` → `stateChanged(LOADING)` → `analytics` → `playback` all delivered. `Toast` confirmed to render **over the SDK-owned player Activity**.
 
 ---
@@ -80,12 +84,14 @@ The one thing `stateChanged` *is* reliable for on iOS: `.inAppPIP` entry.
 
 **Status:** open · reported to the SDK team
 
-Playing a campaign that isn't broadcasting (e.g. `faea28dd96c3`) produces a black player. The app and emulator are fine — **there is no stream.** What arrives:
+Playing a campaign that isn't broadcasting produces a black player. The app and emulator are fine — **there is no stream.** What arrives:
 
 ```
 playback(requested) → playback(failed(code: 404, message: 404))   ← repeats every ~5s
 playback(ended) → stateChanged(IDLE) → stateChanged(CLOSED)
 ```
+
+> **On the campaign key:** this was measured on `faea28dd96c3` while it had no stream. That campaign has since been repointed and **now plays normally** — re-measured on iOS at 22:09, zero 404s (8× `200`, 56× `206`), playhead advancing 10 s → 80 s. To reproduce the failure below you now need a different campaign that genuinely has no stream. The observations still stand as recorded; they have not been re-confirmed since the repoint.
 
 **Three observations reported to the SDK team:**
 

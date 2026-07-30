@@ -19,14 +19,18 @@ import Security
 /// and let S1's "try with my own account" collect them instead.
 enum DemoDefaults {
     static let accessKey = "uv9CGthPzlvsInZerCw0"
-    static let campaignKey = "8f595bd943cc"
+    static let campaignKey = "faea28dd96c3"
 
     /// For mission 8 (broadcasting) only. A completely separate path from viewer authentication.
     ///
-    /// Deliberately left empty: a stream token grants **broadcast permission**, so it is not kept in
-    /// source control. Mission 8 stays locked until a token is entered on S1, where it is stored in the
-    /// Keychain on the device only. Missions 1–7 need no token and work as-is.
-    static let streamToken = ""
+    /// This is a throwaway token for ShopLive's internal demo campaign, committed so that mission 8
+    /// runs with no setup.
+    ///
+    /// - Important: In your own app, do **not** copy this pattern. A stream token grants
+    ///   **broadcast permission** — anyone who can read it can start a broadcast on your campaign.
+    ///   Keep yours out of source control (inject it at build time, or collect it at runtime — a
+    ///   user-entered token goes to the Keychain and never touches source).
+    static let streamToken = "1-2XyVzjGzVkSBHzzN-an2"
 
     static var isAvailable: Bool { !accessKey.isEmpty && !campaignKey.isEmpty }
 }

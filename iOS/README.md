@@ -143,13 +143,22 @@ bash scripts/run-tuist.sh generate --no-open
 ```swift
 enum DemoDefaults {
     static let accessKey = "uv9CGthPzlvsInZerCw0"
-    static let campaignKey = "8f595bd943cc"
-    static let streamToken = ""                          // 미션 8 전용 — 소스에 두지 않음
+    static let campaignKey = "faea28dd96c3"
+    static let streamToken = "1-2XyVzj…"                 // 미션 8 전용
 }
 ```
 
 - 고객사에 전달할 때는 이 세 값을 **비우거나 고객사 키로 교체**하세요. 비우면 앱이 S1 에서 입력을 요구합니다.
 - 사용자가 입력한 값은 기기에만 저장됩니다(accessKey/campaignKey → UserDefaults, 송출 토큰 → Keychain). 서버로 전송하지 않습니다.
+
+> **위 세 값은 사내 데모 캠페인용**이라 미션 8까지 설정 없이 돌아가도록 그대로 커밋해 뒀습니다.
+> **고객사 앱에서는 이 방식을 따라 하지 마세요** — 송출 토큰은 읽을 수 있는 사람이면 누구나
+> **해당 캠페인으로 방송을 시작할 수 있는** 권한입니다. 자기 토큰은 소스에 두지 말고
+> 빌드 시 주입하거나 런타임에 입력받으세요(S1 입력값은 Keychain 에만 저장됩니다).
+
+> **캠페인 `faea28dd96c3` 은 현재 Apple 의 공개 샘플 HLS(BipBop)를 가리킵니다** (2026-07-30 22:09 실측).
+> 재생은 1920x1080@60fps VOD 로 정상이지만 실제 라이브 커머스 콘텐츠가 아니므로,
+> 채팅·상품·LIVE 배지 등 방송 중에만 나타나는 요소는 이 캠페인으로 확인할 수 없습니다.
 
 ---
 
