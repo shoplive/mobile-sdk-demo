@@ -18,8 +18,8 @@ import Security
 /// When handing the project to a customer, replace these three with the customer's keys or empty them
 /// and let S1's "try with my own account" collect them instead.
 enum DemoDefaults {
-    static let accessKey = "uv9CGthPzlvsInZerCw0"
-    static let campaignKey = "faea28dd96c3"
+    static let accessKey = "ZJZBkloYuh5zXsH7wuUi"
+    static let campaignKey = "9c83384b5c93"
 
     /// For mission 8 (broadcasting) only. A completely separate path from viewer authentication.
     ///
@@ -30,7 +30,7 @@ enum DemoDefaults {
     ///   **broadcast permission** — anyone who can read it can start a broadcast on your campaign.
     ///   Keep yours out of source control (inject it at build time, or collect it at runtime — a
     ///   user-entered token goes to the Keychain and never touches source).
-    static let streamToken = "1-2XyVzjGzVkSBHzzN-an2"
+    static let streamToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAzODI2IiwiYWNjZXNzS2V5IjoiWkpaQmtsb1l1aDV6WHNIN3d1VWkiLCJzb3VyY2UiOiJTVFJFQU1fQVBQIiwiZXhwIjoxODE2OTk4MjcxLCJpYXQiOjE3ODU0NjIyNzF9.77ZUK-ztmLR0Ow4N3vllxwU9-s-ziAtqGezvzvaZHhw"
 
     static var isAvailable: Bool { !accessKey.isEmpty && !campaignKey.isEmpty }
 }
