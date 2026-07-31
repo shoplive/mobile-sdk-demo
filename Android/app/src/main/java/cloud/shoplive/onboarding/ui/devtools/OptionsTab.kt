@@ -32,7 +32,7 @@ import cloud.shoplive.onboarding.data.ChatInputFont
 import cloud.shoplive.onboarding.data.DemoOptions
 import cloud.shoplive.onboarding.data.IndicatorColor
 import cloud.shoplive.onboarding.data.LoadingAnimation
-import cloud.shoplive.onboarding.sdk.PlayerSession
+import cloud.shoplive.onboarding.integration.ShoplivePlayerSession
 import cloud.shoplive.onboarding.ui.components.GroupLabel
 import cloud.shoplive.onboarding.ui.components.OptionRow
 import cloud.shoplive.onboarding.ui.components.Tip
@@ -45,16 +45,18 @@ import cloud.shoplive.player.ShoplivePlayerType
 import cloud.shoplive.player.ShopliveResizeMode
 
 /**
- * V1 · 옵션 탭.
+ * The options tab.
  *
- * **`ShoplivePlayerConfiguration` 의 모든 필드에 컨트롤이 하나씩 있다.** 미션에 등장하지
- * 않는 필드도 여기서 전부 만져 볼 수 있게 하는 것이 이 화면의 존재 이유다.
+ * **Every field of `ShoplivePlayerConfiguration` has exactly one control here**,
+ * including the ones no mission uses — being able to try all of them is the whole
+ * reason this screen exists.
  *
- * 각 항목에 SDK 기본값을 병기해, "지정하지 않아도 동작한다"를 눈으로 확인시킨다.
+ * Each row shows the SDK default next to the current value, which is how "you do not
+ * have to specify anything" becomes visible.
  *
- * configuration 은 불변이고 재생 시작 전에만 반영되므로, 값을 바꾼 뒤에는 아래
- * "이 옵션으로 다시 재생"으로 새 세션을 시작해야 한다. 재생 중에 즉시 반영되는 것은
- * "제어" 그룹(런타임 프로퍼티)뿐이다.
+ * A configuration is immutable and only read before playback starts, so after changing
+ * a value you have to start a new session with "replay with these options" at the
+ * bottom. The only group that applies immediately is "control" (runtime properties).
  */
 @Composable
 fun OptionsTab(
@@ -73,7 +75,7 @@ fun OptionsTab(
             .padding(horizontal = 16.dp)
             .padding(bottom = 24.dp),
     ) {
-        // ── 재생 형태 ────────────────────────────────────────────────────────
+        // ── Playback shape ───────────────────────────────────────────────────
         GroupLabel(stringResource(R.string.group_playback_type))
         Tip(stringResource(R.string.tip_playback_type))
         CycleOption(
@@ -85,7 +87,7 @@ fun OptionsTab(
             },
         )
 
-        // ── 인증 (Mission 3) ─────────────────────────────────────────────────
+        // ── Authentication (Mission 3) ───────────────────────────────────────
         GroupLabel(stringResource(R.string.group_auth))
         Tip(stringResource(R.string.tip_auth))
 
@@ -159,7 +161,7 @@ fun OptionsTab(
             },
         )
 
-        // ── 오버레이 · 외형 (Mission 7) ───────────────────────────────────────
+        // ── Overlay and appearance (Mission 7) ───────────────────────────────
         GroupLabel(stringResource(R.string.group_overlay_appearance))
         CycleOption(
             name = "overlay.ui",
@@ -204,7 +206,7 @@ fun OptionsTab(
             warning = stringResource(R.string.warn_mute_on_start),
         )
 
-        // ── 제어 (런타임) ────────────────────────────────────────────────────
+        // ── Control (runtime properties) ─────────────────────────────────────
         GroupLabel(stringResource(R.string.group_control))
         Tip(stringResource(R.string.tip_control_runtime), TipTone.OK)
         SwitchOption(
@@ -212,7 +214,7 @@ fun OptionsTab(
             defaultHint = "sound.muteOnStart",
             checked = options.muteOnStart,
             onChange = { v ->
-                PlayerSession.setMuted(v)
+                ShoplivePlayerSession.setMuted(v)
                 onChange { it.copy(muteOnStart = v) }
             },
         )
@@ -223,24 +225,24 @@ fun OptionsTab(
             onTap = {
                 onChange { current ->
                     val next = current.resizeMode.next(ShopliveResizeMode.entries)
-                    PlayerSession.setResizeMode(next)
+                    ShoplivePlayerSession.setResizeMode(next)
                     current.copy(resizeMode = next)
                 }
             },
         )
-        ActionRow("reload()", stringResource(R.string.action_call)) { PlayerSession.reload() }
+        ActionRow("reload()", stringResource(R.string.action_call)) { ShoplivePlayerSession.reload() }
         ActionRow("send(command:)", stringResource(R.string.action_send)) {
-            PlayerSession.send("HIGHLIGHT_PRODUCT", mapOf("sku" to "A-1024"))
+            ShoplivePlayerSession.send("HIGHLIGHT_PRODUCT", mapOf("sku" to "A-1024"))
         }
         ActionRow("enterPictureInPicture()", stringResource(R.string.action_enter)) {
-            PlayerSession.enterPictureInPicture()
+            ShoplivePlayerSession.enterPictureInPicture()
         }
         ActionRow("exitPictureInPicture()", stringResource(R.string.action_exit)) {
-            PlayerSession.exitPictureInPicture()
+            ShoplivePlayerSession.exitPictureInPicture()
         }
-        ActionRow("stop()", stringResource(R.string.action_stop)) { PlayerSession.stop() }
+        ActionRow("stop()", stringResource(R.string.action_stop)) { ShoplivePlayerSession.stop() }
 
-        // ── 고급 — 나머지 전 필드 ─────────────────────────────────────────────
+        // ── Advanced — every remaining field ─────────────────────────────────
         Spacer(Modifier.height(10.dp))
         HorizontalDivider()
         Text(
@@ -387,7 +389,7 @@ fun OptionsTab(
     }
 }
 
-// ── 행 컴포넌트 ──────────────────────────────────────────────────────────────
+// ── Row components ──────────────────────────────────────────────────────────
 
 @Composable
 private fun SwitchOption(
@@ -465,5 +467,5 @@ private fun ActionRow(name: String, actionLabel: String, onClick: () -> Unit) {
     }
 }
 
-/** enum 값을 다음 값으로 순환한다. */
+/** Cycles an enum value to the next one. */
 private fun <T : Enum<T>> T.next(all: List<T>): T = all[(all.indexOf(this) + 1) % all.size]

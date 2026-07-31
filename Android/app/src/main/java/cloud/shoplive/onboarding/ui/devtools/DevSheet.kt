@@ -23,14 +23,15 @@ import cloud.shoplive.onboarding.data.DemoOptionsStore
 import cloud.shoplive.onboarding.data.DevSheetTab
 
 /**
- * V1 — 개발자 시트.
+ * The developer sheet.
  *
- * 확인에 필요한 두 가지를 **한 시트 두 탭**으로 합쳤다.
- * - 로그: 무슨 이벤트가 오는지
- * - 옵션: 옵션을 바꾸면 어떻게 달라지는지
+ * The two things needed while verifying, in **one sheet with two tabs**:
+ * - log: which events arrive
+ * - options: what changes when you change an option
  *
- * 데모앱 화면(기능 목록·홈 피드)에서 ⌗ 버튼으로 열린다. SDK 가 소유한 플레이어·스튜디오
- * 화면 **위에는 뜨지 않는다** — 그 동안의 이벤트는 로그에 쌓이므로 돌아와서 확인한다.
+ * Opened with the ⌗ button from the demo's own screens. It **cannot** appear over the
+ * SDK-owned player or studio — events arriving during those pile up in the log and are
+ * read afterwards.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

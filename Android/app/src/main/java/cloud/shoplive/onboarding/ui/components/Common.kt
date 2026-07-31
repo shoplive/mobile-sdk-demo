@@ -31,7 +31,7 @@ import cloud.shoplive.onboarding.ui.theme.Warn
 
 enum class TipTone { INFO, WARN, OK }
 
-/** 안내 박스. 프로토타입의 `.tip` / `.tip.w` / `.tip.g` 에 대응한다. */
+/** A note box, matching the prototype's `.tip` / `.tip.w` / `.tip.g`. */
 @Composable
 fun Tip(
     text: String,
@@ -50,7 +50,8 @@ fun Tip(
             .clip(RoundedCornerShape(10.dp))
             .background(accent.copy(alpha = 0.10f))
     ) {
-        // 왼쪽 강조 바. Row 높이를 텍스트에 맞추려고 IntrinsicSize.Min 을 쓴다.
+        // The accent bar on the left. IntrinsicSize.Min makes the Row match the
+        // text height.
         Box(
             Modifier
                 .width(3.dp)
@@ -66,7 +67,7 @@ fun Tip(
     }
 }
 
-/** 작은 상태 배지. */
+/** A small status badge. */
 @Composable
 fun Pill(
     text: String,
@@ -84,7 +85,7 @@ fun Pill(
     )
 }
 
-/** 미션 번호 원형 배지. */
+/** The round mission-number badge. */
 @Composable
 fun NumberBadge(
     label: String,
@@ -107,7 +108,7 @@ fun NumberBadge(
     }
 }
 
-/** 소스 파일 경로 한 줄. 이 앱과 프로젝트 소스를 잇는 다리다. */
+/** One line of source path — the bridge between this app and the project sources. */
 @Composable
 fun SourcePathLine(path: String, modifier: Modifier = Modifier) {
     Text(
@@ -118,7 +119,7 @@ fun SourcePathLine(path: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** 섹션 제목. */
+/** A section heading. */
 @Composable
 fun GroupLabel(text: String, modifier: Modifier = Modifier) {
     Text(
@@ -129,7 +130,7 @@ fun GroupLabel(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** 키-값 한 줄 (탭하면 값이 순환하는 형태에 쓴다). */
+/** A key-value row, used where tapping cycles through values. */
 @Composable
 fun OptionRow(
     name: String,

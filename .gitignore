@@ -6,7 +6,8 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
+
 
 # Volume root files
 .DocumentRevisions-V100
@@ -147,3 +148,10 @@ playground.xcworkspace
 
 # Swift Package Manager
 # Package.resolved
+
+### Exceptions — keep last
+# The Gradle wrapper must be committed. Several `*.jar` rules above would exclude
+# it, and in .gitignore the last matching pattern wins, so this has to stay at the
+# bottom of the file. Without the jar, `./gradlew` fails on any fresh clone and in
+# CI with "Could not find or load main class org.gradle.wrapper.GradleWrapperMain".
+!gradle/wrapper/gradle-wrapper.jar

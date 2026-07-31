@@ -29,10 +29,10 @@ import cloud.shoplive.onboarding.data.DemoLog
 import cloud.shoplive.onboarding.ui.theme.MonoStyle
 
 /**
- * V1 · 로그 탭 — 무슨 이벤트가 오는지 본다.
+ * The log tab — watch which events arrive.
  *
- * `request` 는 **respond 호출 여부까지** 남긴다. 미응답이 곧 버그임을 눈으로 배우게 하는
- * 것이 이 화면의 목적이다.
+ * A `request` line is followed by **whether respond was called**. Seeing that pair is
+ * how "no answer is a bug" gets learned rather than explained.
  */
 @Composable
 fun LogTab(
@@ -63,7 +63,8 @@ fun LogTab(
             }
         }
 
-        // 고정 안내 — 로그에 "오지 않는" 두 가지. 없다고 오판하는 것을 막는다.
+        // Pinned note: the two things that never arrive in the log, so their absence
+        // is not mistaken for nothing happening.
         Column(
             Modifier
                 .padding(horizontal = 16.dp)

@@ -14,15 +14,16 @@ import cloud.shoplive.onboarding.ui.DemoApp
 import cloud.shoplive.onboarding.ui.theme.ShopliveOnboardingTheme
 
 /**
- * 데모앱의 유일한 주 화면.
+ * The demo's one main screen.
  *
- * 단일 Activity + Compose 구성이다. SDK 플레이어·스튜디오는 각자 Activity 로 이 위에 뜨고,
- * 이 화면은 그동안 살아 있으므로 delegate 가 계속 이벤트를 받는다.
+ * Single Activity plus Compose. The SDK's player and studio come up as their own
+ * Activities on top of this one, which stays alive underneath — which is why the
+ * delegate keeps receiving events the whole time.
  *
- * `launchMode="singleTask"` 라서 딥링크가 두 번째로 들어오면 [onNewIntent] 로 온다.
+ * `launchMode="singleTask"`, so a second deep link arrives at [onNewIntent].
  */
 class MainActivity : ComponentActivity() {
-    /** 앱이 고른 표시 언어(기본 영어)를 이 화면의 리소스에 적용한다. */
+    /** Applies the language chosen in the app (English by default) to this screen. */
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleSetting.wrap(newBase))
     }
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
         val campaignKey = intent?.getStringExtra(EXTRA_DEEP_LINK_CAMPAIGN) ?: return
         deepLinkCampaignKey = campaignKey
         deepLinkReferrer = intent.getStringExtra(EXTRA_DEEP_LINK_REFERRER)
-        // 화면 회전 등으로 같은 Intent 를 다시 읽어 중복 재생하지 않도록 비운다.
+        // Clear it so a rotation does not re-read the same Intent and play twice.
         intent.removeExtra(EXTRA_DEEP_LINK_CAMPAIGN)
         intent.removeExtra(EXTRA_DEEP_LINK_REFERRER)
     }

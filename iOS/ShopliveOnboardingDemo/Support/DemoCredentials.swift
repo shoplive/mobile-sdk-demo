@@ -30,7 +30,7 @@ enum DemoDefaults {
     ///   **broadcast permission** — anyone who can read it can start a broadcast on your campaign.
     ///   Keep yours out of source control (inject it at build time, or collect it at runtime — a
     ///   user-entered token goes to the Keychain and never touches source).
-    static let streamToken = "1-2XyVzjGzVkSBHzzN-an2"
+    static let streamToken = "1-5QALAnGzVkSBHzzN-an2"
 
     static var isAvailable: Bool { !accessKey.isEmpty && !campaignKey.isEmpty }
 }

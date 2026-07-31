@@ -6,28 +6,32 @@ import android.os.LocaleList
 import java.util.Locale
 
 /**
- * 앱 표시 언어. **기본값은 영어**이고, 기기 언어를 따라가지 않는다.
+ * The app's display language. **English by default**, and it does not follow the
+ * device language.
  *
- * ## 왜 기기 언어를 따르지 않나
- * 이 데모앱은 여러 국가의 고객사에 그대로 전달된다. 기기 언어를 따르면 한국 기기에서는
- * 한국어로만 열려서, 영어·일본어 화면이 어떻게 보이는지 확인할 방법이 없다. 그래서
- * **영어를 기본으로 고정**하고 앱 안에서 3개 언어를 즉시 바꿀 수 있게 했다.
+ * ## Why not follow the device
+ * This demo is handed to customers in several countries. Following the device would
+ * make it open only in Korean on a Korean phone, with no way to see how the English
+ * or Japanese screens look. So English is pinned as the default and all three
+ * languages can be switched inside the app.
  *
- * ## 구현 방식
- * 안드로이드 13+ 의 앱별 언어 설정(`LocaleManager`)을 쓰지 않고 자체 설정 + `attachBaseContext`
- * 로 처리한다 — minSdk 24 까지 **동일하게** 동작해야 하고, 시스템 설정과 앱 설정이 서로
- * 덮어쓰는 상황을 피하기 위해서다.
+ * ## How
+ * Not through per-app language settings (`LocaleManager`, Android 13+) but through
+ * our own setting plus `attachBaseContext` — it has to behave **identically** down to
+ * minSdk 24, and this avoids the system setting and the app setting overwriting each
+ * other.
  *
- * 각 Activity 는 `attachBaseContext(LocaleSetting.wrap(newBase))` 로 감싸고, Compose 밖에서
- * 문자열을 읽는 경로는 [cloud.shoplive.onboarding.DemoContainer.string] 이 같은 컨텍스트를 쓴다.
+ * Every Activity wraps with `attachBaseContext(LocaleSetting.wrap(newBase))`, and
+ * string lookups outside Compose go through
+ * [cloud.shoplive.onboarding.DemoContainer.string], which uses the same context.
  */
 object LocaleSetting {
 
-    /** 지원 언어. 첫 번째가 기본값이다. */
+    /** Supported languages. The first is the default. */
     val supported: List<Language> = listOf(Language.EN, Language.KO, Language.JA)
 
     enum class Language(val tag: String, val label: String) {
-        /** 기본값 — `res/values/` (폴백 리소스). */
+        /** The default — `res/values/`, the fallback resources. */
         EN("en", "English"),
         KO("ko", "한국어"),
         JA("ja", "日本語"),
@@ -41,7 +45,7 @@ object LocaleSetting {
 
     private var appContext: Context? = null
 
-    /** [cloud.shoplive.onboarding.DemoApplication] 이 가장 먼저 호출한다. */
+    /** Called first thing by [cloud.shoplive.onboarding.DemoApplication]. */
     fun install(context: Context) {
         appContext = context.applicationContext
         val saved = context
@@ -53,8 +57,8 @@ object LocaleSetting {
     val current: Language get() = cached
 
     /**
-     * 언어를 바꾼다. 화면은 호출한 쪽에서 `Activity.recreate()` 로 다시 그린다 —
-     * 리소스는 Activity 생성 시점에 확정되기 때문이다.
+     * Changes the language. The caller redraws with `Activity.recreate()`, because
+     * resources are resolved when the Activity is created.
      */
     fun set(language: Language) {
         cached = language
@@ -65,7 +69,7 @@ object LocaleSetting {
             ?.apply()
     }
 
-    /** 선택된 언어가 적용된 Context 를 만든다. Activity 의 `attachBaseContext` 에서 쓴다. */
+    /** Builds a Context with the chosen language, for `attachBaseContext`. */
     fun wrap(base: Context): Context {
         val locale = Locale.forLanguageTag(cached.tag)
         val config = Configuration(base.resources.configuration)
