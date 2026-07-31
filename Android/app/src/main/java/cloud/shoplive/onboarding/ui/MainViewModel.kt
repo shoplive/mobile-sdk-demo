@@ -2,8 +2,11 @@ package cloud.shoplive.onboarding.ui
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import cloud.shoplive.onboarding.BuildConfig
 import cloud.shoplive.onboarding.DemoContainer
+import cloud.shoplive.onboarding.ProductRouter
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.DemoLog
 import cloud.shoplive.onboarding.data.DemoMode
@@ -12,22 +15,30 @@ import cloud.shoplive.onboarding.data.DevSheetTab
 import cloud.shoplive.onboarding.data.Mission
 import cloud.shoplive.onboarding.data.MissionRun
 import cloud.shoplive.onboarding.data.missionOf
-import cloud.shoplive.onboarding.sdk.DeepLinkRouter
-import cloud.shoplive.onboarding.sdk.DemoPlayerDelegate
-import cloud.shoplive.onboarding.sdk.PlayerLauncher
-import cloud.shoplive.onboarding.sdk.ShopliveInitializer
-import cloud.shoplive.onboarding.sdk.StudioLauncher
-import cloud.shoplive.onboarding.sdk.UserSetup
+import cloud.shoplive.onboarding.demo.DemoConfigurationFactory
+import cloud.shoplive.onboarding.demo.DemoLabels
+import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
+import cloud.shoplive.onboarding.integration.ShopliveFailure
+import cloud.shoplive.onboarding.integration.ShopliveInitializer
+import cloud.shoplive.onboarding.integration.ShoplivePlayerEventLogger
+import cloud.shoplive.onboarding.integration.ShoplivePlayerLauncher
+import cloud.shoplive.onboarding.integration.ShopliveStudioLauncher
+import cloud.shoplive.onboarding.integration.ShopliveUserSetup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * 화면 상태와 "카드 탭 → 즉시 실행" 흐름을 담당한다.
+ * Screen state and the "tap a card, it runs" flow.
  *
- * 미션 실행은 **중간 화면 없이** 바로 SDK 를 호출한다. 설명·코드를 보여주는 화면은 두지
- * 않는다 — 코드는 프로젝트 소스에서 보고, 앱은 동작만 확인한다.
+ * Running a mission calls the SDK directly, with no screen in between. There are no
+ * explanation or code-listing screens — the code is read in the project sources, and
+ * the app is for watching it behave.
+ *
+ * This class is also where the demo meets the copy-paste layer: it supplies the
+ * callbacks `:integration` asks for (navigate, failure, milestone, coupon text) and
+ * keeps every piece of demo state on this side of the line.
  */
 class MainViewModel : ViewModel() {
 
@@ -38,14 +49,14 @@ class MainViewModel : ViewModel() {
         val streamTokenInput: String = "",
         val userJwtInput: String = "",
         val ownFormExpanded: Boolean = false,
-        val authMethod: UserSetup.Method = UserSetup.Method.GUEST,
-        /** 인증 방식 선택 시트(Mission 3) 표시 여부. */
+        val authMethod: ShopliveUserSetup.Method = ShopliveUserSetup.Method.GUEST,
+        /** Whether the auth-method sheet is showing. */
         val askAuthMethod: Boolean = false,
-        /** 가짜 푸시 배너(Mission 2) 표시 여부. */
+        /** Whether the fake push banner is showing. */
         val showPushBanner: Boolean = false,
         val devSheetTab: DevSheetTab? = null,
         val message: String? = null,
-        /** 시작 화면에서 검증에 실패한 사유. */
+        /** Why the start screen rejected the input. */
         val validationError: String? = null,
     )
 
@@ -57,10 +68,18 @@ class MainViewModel : ViewModel() {
 
     val doneMissions get() = progress.done
 
-    /** 이벤트 수신자는 하나만 만들어 재사용한다 — 로그가 여러 벌로 갈라지지 않게. */
-    private val playerDelegate = DemoPlayerDelegate(
-        progress = DemoContainer.progress,
-        onFatalError = { text -> showMessage(text) },
+    /**
+     * One event receiver, reused, so the log does not split into several streams.
+     *
+     * The four callbacks below are everything the copy-paste layer needs from this
+     * app. Note what each one keeps on this side: routing (the app's Activity),
+     * localized text (the app's resources), mission progress (demo-only state).
+     */
+    private val playerDelegate = ShoplivePlayerEventLogger(
+        onNavigation = { url -> ProductRouter.open(url) },
+        onFailure = { failure -> reportFailure(failure) },
+        onMilestone = { milestone -> progress.record(milestone) },
+        couponMessage = { DemoContainer.string(R.string.coupon_issued) },
     )
 
     init {
@@ -74,7 +93,7 @@ class MainViewModel : ViewModel() {
         )
     }
 
-    // ── 유효 자격증명 ────────────────────────────────────────────────────────
+    // ── Effective credentials ────────────────────────────────────────────────
 
     val hasDemoKeys: Boolean get() = DemoContainer.hasDemoKeys
 
@@ -97,10 +116,10 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * 카드가 잠기는 사유. null 이면 실행 가능하다.
+     * Why a card is locked. Null means it can run.
      *
-     * 프로토타입과 다른 점: 송출 토큰은 둘러보기 모드에서도 필요하다. 토큰이 없으면
-     * 스튜디오는 열려도 방송을 시작할 수 없으므로, 없으면 잠그고 사유를 밝힌다.
+     * A stream token is required even in tour mode: without one the studio opens but
+     * cannot go live, so the card is locked and says why.
      */
     fun lockReason(mission: Mission): String? {
         if (_state.value.mode == null) return DemoContainer.string(R.string.lock_need_mode)
@@ -113,7 +132,7 @@ class MainViewModel : ViewModel() {
         return null
     }
 
-    // ── 시작 화면 ────────────────────────────────────────────────────────────
+    // ── Start screen ─────────────────────────────────────────────────────────
 
     fun onAccessKeyChange(value: String) = _state.update { it.copy(accessKeyInput = value) }
     fun onCampaignKeyChange(value: String) = _state.update { it.copy(campaignKeyInput = value) }
@@ -124,7 +143,7 @@ class MainViewModel : ViewModel() {
         it.copy(ownFormExpanded = !it.ownFormExpanded, validationError = null)
     }
 
-    /** 둘러보기 — 내장 데모 키로 즉시 초기화. */
+    /** Tour mode — initialize immediately with the built-in demo keys. */
     fun startTour(context: Context): Boolean {
         if (!hasDemoKeys) {
             _state.update {
@@ -136,15 +155,19 @@ class MainViewModel : ViewModel() {
         }
         credentials.mode = DemoMode.TOUR
         ShopliveInitializer.initialize(context, DemoContainer.demoAccessKey)
-        // 인증 방식을 따로 고르기 전까지는 비로그인이다.
-        UserSetup.apply(UserSetup.Method.GUEST)
+        // Not signed in until an auth method is chosen.
+        applyAuthMethod(ShopliveUserSetup.Method.GUEST)
         _state.update {
-            it.copy(mode = DemoMode.TOUR, validationError = null, authMethod = UserSetup.Method.GUEST)
+            it.copy(
+                mode = DemoMode.TOUR,
+                validationError = null,
+                authMethod = ShopliveUserSetup.Method.GUEST,
+            )
         }
         return true
     }
 
-    /** 내 계정 — 입력값을 검증하고 초기화. */
+    /** Own credentials — validate the input, then initialize. */
     fun startOwn(context: Context): Boolean {
         val current = _state.value
         val accessKey = current.accessKeyInput.trim()
@@ -152,7 +175,11 @@ class MainViewModel : ViewModel() {
 
         when (val result = ShopliveInitializer.validate(accessKey, campaignKey)) {
             is ShopliveInitializer.Validation.Invalid -> {
-                _state.update { it.copy(validationError = result.message) }
+                _state.update {
+                    it.copy(
+                        validationError = DemoContainer.string(DemoLabels.messageRes(result.reason))
+                    )
+                }
                 return false
             }
 
@@ -166,28 +193,28 @@ class MainViewModel : ViewModel() {
         credentials.mode = DemoMode.OWN
 
         ShopliveInitializer.initialize(context, accessKey)
-        UserSetup.apply(UserSetup.Method.GUEST)
+        applyAuthMethod(ShopliveUserSetup.Method.GUEST)
 
         _state.update {
             it.copy(
                 mode = DemoMode.OWN,
                 validationError = null,
-                authMethod = UserSetup.Method.GUEST,
+                authMethod = ShopliveUserSetup.Method.GUEST,
                 message = DemoContainer.string(R.string.msg_validation_ok),
             )
         }
         return true
     }
 
-    /** 시작 화면으로 되돌린다(⚙). 자격증명은 지우지 않는다. */
+    /** Back to the start screen (the gear icon). Credentials are kept. */
     fun openSettings() = _state.update {
         it.copy(ownFormExpanded = it.mode == DemoMode.OWN, validationError = null)
     }
 
-    // ── 미션 실행 ────────────────────────────────────────────────────────────
+    // ── Running a mission ────────────────────────────────────────────────────
 
     /**
-     * @return 피드 화면으로 이동해야 하면 true (Mission 4).
+     * @return true when the caller should navigate to the feed screen (Mission 4).
      */
     fun runMission(activity: Activity, number: Int): Boolean {
         val mission = missionOf(number)
@@ -207,7 +234,7 @@ class MainViewModel : ViewModel() {
             }
 
             MissionRun.DEEP_LINK -> {
-                // 전용 화면을 만들지 않는다 — 목록 위에 배너를 띄운다.
+                // No dedicated screen — a banner over the list.
                 _state.update { it.copy(showPushBanner = true, devSheetTab = null) }
                 false
             }
@@ -235,16 +262,19 @@ class MainViewModel : ViewModel() {
     }
 
     private fun launchPlayer(activity: Activity, referrerOverride: String? = null) {
-        PlayerLauncher.startWithOptions(
+        val options = DemoOptionsStore.current
+        ShoplivePlayerLauncher.start(
             activity = activity,
             campaignKey = effectiveCampaignKey(),
             delegate = playerDelegate,
-            demoOptions = DemoOptionsStore.current,
-            referrerOverride = referrerOverride,
+            // Demo-only assembly: every options-tab field at once. A customer app
+            // would pass one of the ShoplivePlayerPresets instead.
+            configuration = DemoConfigurationFactory.from(options),
+            options = DemoConfigurationFactory.playOptions(options, referrerOverride),
         )
     }
 
-    /** 옵션 탭의 "이 옵션으로 다시 재생". */
+    /** The options tab's "replay with these options". */
     fun replayWithCurrentOptions(activity: Activity) {
         if (effectiveCampaignKey().isBlank()) {
             showMessage(DemoContainer.string(R.string.msg_no_campaign_key))
@@ -256,51 +286,50 @@ class MainViewModel : ViewModel() {
     }
 
     private fun launchStudio(activity: Activity) {
-        val started = StudioLauncher.start(
+        val started = ShopliveStudioLauncher.start(
             activity = activity,
             campaignKey = effectiveCampaignKey(),
             streamToken = effectiveStreamToken(),
-            progress = progress,
+            onBroadcastLive = { progress.markBroadcastLive() },
             onFatalError = { text -> showMessage(text) },
         )
         if (!started) showMessage(DemoContainer.string(R.string.msg_studio_not_started))
     }
 
-    // ── Mission 2 · 가짜 푸시 ────────────────────────────────────────────────
+    // ── Deep link ────────────────────────────────────────────────────────────
 
     fun dismissPushBanner() = _state.update { it.copy(showPushBanner = false) }
 
-    /** 배너 탭 → **실제 딥링크 Intent** 를 발사한다. SchemeActivity 를 통과한다. */
+    /** Banner tap fires a **real** deep-link Intent, which goes through SchemeActivity. */
     fun onPushBannerTap(activity: Activity) {
         _state.update { it.copy(showPushBanner = false) }
-        DeepLinkRouter.sendFakePush(activity, effectiveCampaignKey(), referrer = "push_demo")
+        ShopliveDeepLinkRouter.sendTestLink(
+            context = activity,
+            scheme = BuildConfig.DEEP_LINK_SCHEME,
+            campaignKey = effectiveCampaignKey(),
+            referrer = "push_demo",
+        )
     }
 
-    /** 딥링크로 들어온 재생. MainActivity 가 Intent 를 받아 호출한다. */
-    fun playFromDeepLink(activity: Activity, link: DeepLinkRouter.Link) {
+    /** Playback that came in from a deep link. MainActivity receives the Intent. */
+    fun playFromDeepLink(activity: Activity, link: ShopliveDeepLinkRouter.Link) {
         val accessKey = effectiveAccessKey()
         if (accessKey.isBlank()) {
             showMessage(DemoContainer.string(R.string.msg_deeplink_no_access_key))
             return
         }
-        // 콜드 스타트 대비 — 재생 전에 초기화가 끝났음을 보장한다.
+        // Cold-start safety — make sure initialization finished before playing.
         ShopliveInitializer.initializeIfNeeded(activity, accessKey)
         progress.startMission(2)
-        PlayerLauncher.startWithOptions(
-            activity = activity,
-            campaignKey = link.campaignKey,
-            delegate = playerDelegate,
-            demoOptions = DemoOptionsStore.current,
-            referrerOverride = link.referrer,
-        )
+        launchPlayer(activity, referrerOverride = link.referrer)
     }
 
-    // ── Mission 3 · 인증 방식 ────────────────────────────────────────────────
+    // ── Auth method ──────────────────────────────────────────────────────────
 
     fun dismissAuthSheet() = _state.update { it.copy(askAuthMethod = false) }
 
-    fun chooseAuthMethod(activity: Activity, method: UserSetup.Method) {
-        val applied = UserSetup.apply(method, credentials.userJwt)
+    fun chooseAuthMethod(activity: Activity, method: ShopliveUserSetup.Method) {
+        val applied = applyAuthMethod(method)
         _state.update { it.copy(askAuthMethod = false, authMethod = applied) }
         if (applied != method) {
             showMessage(DemoContainer.string(R.string.msg_token_needs_jwt))
@@ -309,7 +338,20 @@ class MainViewModel : ViewModel() {
         launchPlayer(activity)
     }
 
-    // ── 개발자 시트 ──────────────────────────────────────────────────────────
+    /**
+     * The demo's profile values live here, not in `:integration` — a customer app
+     * passes its own logged-in user the same way.
+     */
+    private fun applyAuthMethod(method: ShopliveUserSetup.Method): ShopliveUserSetup.Method =
+        ShopliveUserSetup.apply(
+            method = method,
+            jwt = credentials.userJwt,
+            profile = ShopliveUserSetup.exampleProfile(
+                name = DemoContainer.string(R.string.demo_user_name),
+            ),
+        )
+
+    // ── Developer sheet ──────────────────────────────────────────────────────
 
     fun openDevSheet(tab: DevSheetTab = DevSheetTab.LOG) =
         _state.update { it.copy(devSheetTab = tab) }
@@ -318,7 +360,37 @@ class MainViewModel : ViewModel() {
 
     fun closeDevSheet() = _state.update { it.copy(devSheetTab = null) }
 
-    // ── 기타 ────────────────────────────────────────────────────────────────
+    // ── Failures ─────────────────────────────────────────────────────────────
+
+    /**
+     * Turns a [ShopliveFailure] into something the viewer can read.
+     *
+     * A Toast is used for repeated playback failure because at that moment the
+     * front-most window is the **SDK-owned player Activity** — this app's Compose
+     * snackbar is behind it and would never be seen. The snackbar still gets the
+     * long version for when the user comes back.
+     */
+    private fun reportFailure(failure: ShopliveFailure) {
+        val code = failure.code ?: "-"
+        when (failure.kind) {
+            ShopliveFailure.Kind.REPEATED_PLAYBACK_FAILURE -> {
+                // Toast wraps after two lines, so it gets the short sentence.
+                Toast.makeText(
+                    DemoContainer.appContext,
+                    DemoContainer.string(R.string.err_playback_failed_short, code),
+                    Toast.LENGTH_LONG,
+                ).show()
+                showMessage(DemoContainer.string(R.string.err_playback_failed, code))
+            }
+
+            ShopliveFailure.Kind.UNRECOVERABLE_ERROR -> {
+                val cause = failure.cause?.let { DemoContainer.string(DemoLabels.messageRes(it)) }
+                showMessage("${cause.orEmpty()} (code: $code)".trim())
+            }
+        }
+    }
+
+    // ── Misc ─────────────────────────────────────────────────────────────────
 
     fun showMessage(text: String) = _state.update { it.copy(message = text) }
 
@@ -330,6 +402,6 @@ class MainViewModel : ViewModel() {
         showMessage(DemoContainer.string(R.string.msg_progress_reset))
     }
 
-    /** 임베드 뷰(Mission 4)도 **같은 delegate** 를 쓴다 — 계약이 동일함을 드러내려고. */
-    fun delegateForEmbeddedView(): DemoPlayerDelegate = playerDelegate
+    /** The embedded view uses the **same** delegate — the contract is identical. */
+    fun delegateForEmbeddedView(): ShoplivePlayerEventLogger = playerDelegate
 }

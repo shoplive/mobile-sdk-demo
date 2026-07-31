@@ -210,7 +210,7 @@ Card ⑧ sets the token, launches the studio, and returns. The "done" badge appe
 The token is masked to 8 characters in the log, like every other credential:
 
 ```
-→SDK  setStreamToken("1-2XyVzj…")
+→SDK  setStreamToken("1-5QALAn…")
 →SDK  ShopliveStreamer(activity).start(campaignKey: "faea28dd96c3")
 ```
 

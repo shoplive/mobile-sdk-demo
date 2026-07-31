@@ -41,13 +41,14 @@ import cloud.shoplive.onboarding.ui.components.TipTone
 import cloud.shoplive.onboarding.ui.theme.Ok
 
 /**
- * S2 — 기능 목록. 앱의 사실상 유일한 메뉴.
+ * The feature list, and effectively the app's only menu.
  *
- * **카드 탭 = 즉시 실행.** 설명·단계·코드를 보여주는 중간 화면을 두지 않는다. 번호는
- * 연동 가이드의 Mission 번호와 같고, 카드의 파일 경로가 앱과 프로젝트 소스를 잇는
- * 유일한 다리다.
+ * **Tapping a card runs it.** There is no screen in between showing steps or code.
+ * The numbers match the integration guide's Mission numbers, and the file path on
+ * each card is the only bridge between the app and the project sources.
  *
- * "확인됨" 은 SDK 이벤트로 **자동 판정**된다 — 사용자가 체크할 것은 없다.
+ * "Verified" is decided **automatically from SDK events** — there is nothing for the
+ * user to tick.
  */
 @Composable
 fun MissionListScreen(
@@ -164,7 +165,7 @@ private fun MissionCard(
     }
 }
 
-/** 모드 표시 바. 어떤 자격증명으로 도는 중인지 항상 보이게 둔다. */
+/** The mode bar, keeping "which credentials am I running with" always visible. */
 @Composable
 fun ModeBar(text: String, isOwnMode: Boolean, modifier: Modifier = Modifier) {
     val tone = if (isOwnMode) Ok else MaterialTheme.colorScheme.primary

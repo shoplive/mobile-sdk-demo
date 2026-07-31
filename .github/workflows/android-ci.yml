@@ -1,0 +1,83 @@
+name: Android CI
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["Android/**", ".github/workflows/android-ci.yml"]
+  pull_request:
+    paths: ["Android/**", ".github/workflows/android-ci.yml"]
+
+defaults:
+  run:
+    working-directory: Android
+
+jobs:
+  boundary:
+    # The copy-paste boundary is checked first and on its own: it needs no SDK
+    # credentials, so it still runs on a fork or when the private Maven is down.
+    # Reviewers cannot be the enforcement here — adding one convenient log line to
+    # Android/integration/ is too easy, and that is exactly what breaks a customer's
+    # copy of these files.
+    name: Integration boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan integration/ for harness dependencies
+        run: python3 scripts/integration_boundary_scanner.py
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: boundary
+    env:
+      SHOPLIVE_MAVEN_URL: ${{ secrets.SHOPLIVE_MAVEN_URL }}
+      SHOPLIVE_MAVEN_USERNAME: ${{ secrets.SHOPLIVE_MAVEN_USERNAME }}
+      SHOPLIVE_MAVEN_PASSWORD: ${{ secrets.SHOPLIVE_MAVEN_PASSWORD }}
+      # CI builds against the published AAR, not a local SDK checkout.
+      SHOPLIVE_SDK_USE_LOCAL: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      # The SDK lives in a private Maven repository. Without credentials nothing can
+      # resolve, so the build is skipped with a notice instead of failing red on
+      # every push — the boundary job above is the gate that must always pass.
+      # Add SHOPLIVE_MAVEN_USERNAME / SHOPLIVE_MAVEN_PASSWORD as repository secrets
+      # to turn this on (SHOPLIVE_MAVEN_URL is optional; it defaults to repo.us1).
+      - name: Check for SDK credentials
+        id: creds
+        run: |
+          if [ -n "$SHOPLIVE_MAVEN_USERNAME" ] && [ -n "$SHOPLIVE_MAVEN_PASSWORD" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Build skipped::Shoplive Maven credentials are not \
+            configured, so the SDK cannot be resolved. Add SHOPLIVE_MAVEN_USERNAME \
+            and SHOPLIVE_MAVEN_PASSWORD as repository secrets to enable the build \
+            jobs. The integration boundary check ran and is unaffected."
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.creds.outputs.available == 'true'
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.creds.outputs.available == 'true'
+        with:
+          build-root-directory: Android
+
+      # The proof that the files are copyable: this module is compiled with the SDK
+      # and nothing else. It does not depend on :app, so a harness dependency in
+      # integration/ fails here even when the scanner's patterns miss it.
+      - name: Compile the copy-paste layer in isolation
+        if: steps.creds.outputs.available == 'true'
+        run: ./gradlew :integration:assembleDebug
+
+      - name: Build the demo app
+        if: steps.creds.outputs.available == 'true'
+        run: ./gradlew :app:assembleDebug
+
+      - name: Verification tasks
+        if: steps.creds.outputs.available == 'true'
+        run: ./gradlew check

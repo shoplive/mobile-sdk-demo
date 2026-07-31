@@ -7,11 +7,13 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 /**
- * accessKey · campaignKey · 송출 토큰을 **기기에만** 저장한다. 서버로 보내지 않는다.
+ * Stores the access key, campaign key and stream token **on the device only**. None
+ * of it is sent anywhere.
  *
- * 기본은 [EncryptedSharedPreferences](Android Keystore 로 파일을 암호화)이고, Keystore 를
- * 쓸 수 없는 기기에서는 일반 SharedPreferences 로 내려간다 — 데모앱이 아예 못 뜨는 것보다
- * 낫기 때문이다. 내려갔는지는 [isEncrypted] 로 확인할 수 있고 앱 화면에 그대로 노출한다.
+ * [EncryptedSharedPreferences] by default (the file is encrypted through the Android
+ * Keystore); on a device where the Keystore is unusable it falls back to plain
+ * SharedPreferences, which beats the demo failing to start at all. Whether it fell
+ * back is visible through [isEncrypted] and shown in the UI.
  */
 class CredentialStore(context: Context) {
 
@@ -29,7 +31,8 @@ class CredentialStore(context: Context) {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
     } catch (t: Throwable) {
-        // Keystore 손상·미지원 기기 폴백. 원인을 삼키지 않고 로그로 남긴다.
+        // Fallback for a corrupt or unsupported Keystore. Log the cause, do not
+        // swallow it.
         Log.w(TAG, "EncryptedSharedPreferences unavailable — falling back to plain SharedPreferences", t)
         encrypted = false
         context.getSharedPreferences("shoplive_demo_credentials_plain", Context.MODE_PRIVATE)
@@ -49,12 +52,12 @@ class CredentialStore(context: Context) {
         get() = prefs.getString(KEY_STREAM_TOKEN, "").orEmpty()
         set(value) = prefs.edit().putString(KEY_STREAM_TOKEN, value.trim()).apply()
 
-    /** 사용자 인증(Mission 3)용 JWT. `token` 방식을 고를 때만 쓴다. */
+    /** JWT for user authentication (Mission 3). Only used by the `token` method. */
     var userJwt: String
         get() = prefs.getString(KEY_USER_JWT, "").orEmpty()
         set(value) = prefs.edit().putString(KEY_USER_JWT, value.trim()).apply()
 
-    /** 마지막으로 쓴 모드. 재실행 시 시작 화면을 건너뛰기 위한 값. */
+    /** The last mode used, so a relaunch can skip the start screen. */
     var mode: DemoMode?
         get() = prefs.getString(KEY_MODE, null)?.let { saved ->
             DemoMode.entries.firstOrNull { it.name == saved }
@@ -75,11 +78,11 @@ class CredentialStore(context: Context) {
     }
 }
 
-/** 앱이 어떤 자격증명으로 동작 중인지. */
+/** Which credentials the app is running with. */
 enum class DemoMode {
-    /** 내장 데모 키로 입력 없이 확인. */
+    /** Try it with the built-in demo keys, no input needed. */
     TOUR,
 
-    /** 사용자가 입력한 자기 키로 확인. */
+    /** Try it with the user's own keys. */
     OWN,
 }

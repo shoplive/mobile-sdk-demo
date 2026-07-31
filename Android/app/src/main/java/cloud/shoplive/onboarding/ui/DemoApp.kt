@@ -42,10 +42,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import cloud.shoplive.onboarding.BuildConfig
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.DemoMode
-import cloud.shoplive.onboarding.sdk.DeepLinkRouter
-import cloud.shoplive.onboarding.sdk.UserSetup
+import cloud.shoplive.onboarding.demo.DemoLabels
+import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
+import cloud.shoplive.onboarding.integration.ShopliveUserSetup
 import cloud.shoplive.onboarding.ui.devtools.DevSheet
 import cloud.shoplive.onboarding.ui.feed.FeedScreen
 import cloud.shoplive.onboarding.ui.feed.findActivity
@@ -60,14 +62,16 @@ private object Routes {
 }
 
 /**
- * 화면 3개 구조를 그대로 옮겼다.
+ * The three-screen structure.
  *
- * - S1 [Routes.START] 시작
- * - S2 [Routes.MISSIONS] 기능 목록
- * - S3 실행 화면 — 플레이어·스튜디오는 **SDK 가 소유한 Activity** 라 라우트가 없다.
- *   앱이 소유하는 것은 홈 피드([Routes.FEED], Mission 4)뿐이다.
+ * - S1 [Routes.START] start
+ * - S2 [Routes.MISSIONS] feature list
+ * - S3 the running screen — the player and studio are **Activities owned by the SDK**,
+ *   so they have no route. The only one the app owns is the home feed
+ *   ([Routes.FEED], Mission 4).
  *
- * 오버레이 V1(개발자 시트)·V2(상품 상세)는 각각 ModalBottomSheet 와 별도 Activity 다.
+ * The two overlays are a ModalBottomSheet (developer sheet) and a separate Activity
+ * (product detail).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,21 +89,21 @@ fun DemoApp(
     val activity = remember(context) { context.findActivity() }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // 저장된 모드가 있으면 시작 화면을 건너뛴다.
+    // Skip the start screen when a mode was stored.
     val startRoute = if (state.mode == null) Routes.START else Routes.MISSIONS
 
-    // 현재 라우트는 한 번만 구독한다.
+    // Subscribe to the current route once.
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: startRoute
     val isStartRoute = currentRoute == Routes.START
 
-    // ── 딥링크 처리 ──────────────────────────────────────────────────────────
+    // ── Deep link handling ───────────────────────────────────────────────────
     LaunchedEffect(deepLinkCampaignKey) {
         val campaignKey = deepLinkCampaignKey ?: return@LaunchedEffect
         val host = activity ?: return@LaunchedEffect
         viewModel.playFromDeepLink(
             activity = host,
-            link = DeepLinkRouter.Link(campaignKey, deepLinkReferrer),
+            link = ShopliveDeepLinkRouter.Link(campaignKey, deepLinkReferrer),
         )
         onDeepLinkConsumed()
     }
@@ -225,7 +229,8 @@ fun DemoApp(
                 }
             }
 
-            // Mission 2 — 가짜 푸시 배너. 전용 화면을 만들지 않고 목록 위에 띄운다.
+            // Mission 2 — the fake push banner, shown over the list rather than on
+            // a screen of its own.
             if (state.showPushBanner) {
                 PushBanner(
                     campaignKey = viewModel.effectiveCampaignKey(),
@@ -239,7 +244,7 @@ fun DemoApp(
         }
     }
 
-    // Mission 3 — 인증 방식 선택. 화면을 추가하지 않고 다이얼로그로 묻는다.
+    // Mission 3 — choosing an auth method, asked in a dialog instead of a screen.
     if (state.askAuthMethod) {
         AuthMethodDialog(
             onDismiss = viewModel::dismissAuthSheet,
@@ -247,7 +252,7 @@ fun DemoApp(
         )
     }
 
-    // V1 — 개발자 시트
+    // The developer sheet.
     state.devSheetTab?.let { tab ->
         DevSheet(
             selectedTab = tab,
@@ -288,7 +293,11 @@ private fun PushBanner(
                 style = MaterialTheme.typography.titleSmall,
             )
             Text(
-                "shoplivedemo://live?campaign=$campaignKey&ref=push_demo",
+                ShopliveDeepLinkRouter.linkUri(
+                    scheme = BuildConfig.DEEP_LINK_SCHEME,
+                    campaignKey = campaignKey,
+                    referrer = "push_demo",
+                ).toString(),
                 style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -305,7 +314,7 @@ private fun PushBanner(
 @Composable
 private fun AuthMethodDialog(
     onDismiss: () -> Unit,
-    onSelect: (UserSetup.Method) -> Unit,
+    onSelect: (ShopliveUserSetup.Method) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -322,13 +331,14 @@ private fun AuthMethodDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                UserSetup.Method.entries.forEach { method ->
+                ShopliveUserSetup.Method.entries.forEach { method ->
                     TextButton(
                         onClick = { onSelect(method) },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            "${method.label} — ${stringResource(method.descriptionRes)}",
+                            "${method.label} — " +
+                                stringResource(DemoLabels.descriptionRes(method)),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.fillMaxWidth(),
                         )

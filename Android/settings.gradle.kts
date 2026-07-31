@@ -14,8 +14,8 @@ pluginManagement {
     }
 }
 
-// local.properties 는 커밋되지 않는다(.gitignore) — 자격증명·데모 키를 여기에 둔다.
-// 우선순위: local.properties → gradle.properties → 환경변수.
+// local.properties is not committed (.gitignore) — put credentials and demo keys
+// there. Precedence: local.properties -> gradle.properties -> environment.
 val localProps = Properties().apply {
     val file = File(rootDir, "local.properties")
     if (file.exists()) file.inputStream().use { load(it) }
@@ -26,18 +26,47 @@ fun secret(key: String, env: String): String? =
         ?: providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
         ?: System.getenv(env)?.takeIf { it.isNotBlank() }
 
+// ── Building against local SDK sources (composite build) ────────────────────
+// Wires matrix-sdk-android in from a local path. The two coordinates below are
+// substituted with local projects instead of the private Maven AAR, so the
+// dependency declarations in the module build files stay unchanged.
+//   - different path:  shoplive.sdk.localPath=/absolute/or/relative/path
+//   - turn it off:     shoplive.sdk.useLocal=false  -> back to the Maven AAR
+// A missing path falls back to the Maven AAR automatically.
+val useLocalSdk = (secret("shoplive.sdk.useLocal", "SHOPLIVE_SDK_USE_LOCAL") ?: "true").toBoolean()
+val localSdkDir = File(
+    secret("shoplive.sdk.localPath", "SHOPLIVE_SDK_LOCAL_PATH") ?: "../matrix-sdk-android"
+).let { if (it.isAbsolute) it else File(rootDir, it.path) }.canonicalFile
+
+if (useLocalSdk && File(localSdkDir, "settings.gradle").exists()) {
+    includeBuild(localSdkDir) {
+        dependencySubstitution {
+            substitute(module("cloud.shoplive:shoplive-player-sdk"))
+                .using(project(":shoplive-player-sdk"))
+            substitute(module("cloud.shoplive:shoplive-streamer-sdk"))
+                .using(project(":shoplive-streamer-sdk"))
+            // The shared public surface. Declared by :integration, so it needs a
+            // substitution too or the local build resolves it from Maven.
+            substitute(module("cloud.shoplive:shoplive-core"))
+                .using(project(":shoplive-core"))
+        }
+    }
+    logger.lifecycle("[shoplive] using local SDK sources: $localSdkDir")
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
         google()
 
-        // ── Shoplive 사설 Maven ──────────────────────────────────────────────
-        // SDK AAR 이 여기에서 내려온다.
+        // ── Shoplive private Maven ───────────────────────────────────────────
+        // Where the SDK AAR comes from.
         //
-        // 예전 안내(프로젝트 루트 build.gradle 의 `allprojects { repositories { ... } }`)도
-        // 동작하지만, 신규 프로젝트는 이 블록이 표준 위치다. 위 FAIL_ON_PROJECT_REPOS
-        // 때문에 모듈 build.gradle 에서 저장소를 따로 선언하면 빌드가 실패한다.
+        // The older advice (`allprojects { repositories { ... } }` in the root
+        // build.gradle) still works, but for a new project this block is the standard
+        // place. Because of FAIL_ON_PROJECT_REPOS above, declaring a repository in a
+        // module's build file fails the build.
         maven {
             name = "shoplive"
             url = uri(
@@ -55,4 +84,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ShopliveOnboardingDemo"
-include(":app")
+
+// :integration is the copy-paste layer — SDK calls only, no demo dependencies.
+// It is a separate module so the boundary is enforced by the build graph:
+// :app depends on :integration, never the other way round. Building
+// :integration alone reproduces the customer's situation (SDK only, no harness).
+include(":app", ":integration")

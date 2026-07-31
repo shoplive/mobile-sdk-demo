@@ -49,11 +49,12 @@ import cloud.shoplive.onboarding.ui.components.TipTone
 import cloud.shoplive.onboarding.ui.theme.Brand
 
 /**
- * S1 — 시작.
+ * The start screen.
  *
- * 입력 없이 바로 볼 길과 내 키로 확인할 길을 **한 화면에서** 고른다. 입력 폼은 접힌 상태가
- * 기본이라 "둘러보기" 가 먼저 눈에 들어온다. 인증 방식(guest/profile/token)은 여기서
- * 묻지 않는다 — Mission 3 에서 고른다.
+ * Both paths — look around with no input, or use your own keys — are chosen on **one
+ * screen**. The input form starts collapsed so that "look around" is what catches the
+ * eye first. The auth method (guest/profile/token) is not asked here; that is
+ * Mission 3.
  */
 @Composable
 fun StartScreen(
@@ -262,9 +263,10 @@ private fun KeyField(
 }
 
 /**
- * 표시 언어 전환. **기본값은 English** 이고 기기 언어를 따르지 않는다.
+ * The language switch. **English by default**, and it does not follow the device.
  *
- * 리소스는 Activity 생성 시점에 확정되므로, 바꾼 뒤 [Activity.recreate] 로 화면을 다시 만든다.
+ * Resources are resolved when the Activity is created, so changing it calls
+ * [Activity.recreate] to rebuild the screen.
  */
 @Composable
 private fun LanguageSwitcher() {
@@ -285,7 +287,7 @@ private fun LanguageSwitcher() {
                     onClick = {
                         if (language == current) return@SegmentedButton
                         LocaleSetting.set(language)
-                        // 언어가 바뀌면 리소스를 다시 읽어야 한다.
+                        // A language change means resources have to be read again.
                         context.findActivity()?.recreate()
                     },
                     shape = SegmentedButtonDefaults.itemShape(

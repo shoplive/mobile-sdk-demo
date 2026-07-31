@@ -8,8 +8,9 @@ composeBom = "2024.10.01"
 navigation = "2.8.4"
 securityCrypto = "1.1.0-alpha06"
 
-# Shoplive 통합 SDK v3 — Player / Streamer 공통 버전.
-# 두 아티팩트는 같은 버전으로만 올린다(core 는 내부 의존이라 선언하지 않는다).
+# Shoplive unified SDK v3 — one version for both Player and Streamer.
+# The two artifacts are only ever bumped together (core is an internal dependency
+# and is not declared).
 shoplive = "3.0.0"
 
 [libraries]
@@ -30,13 +31,25 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 # ── Shoplive SDK ────────────────────────────────────────────────────────────
-# 시청만 → player-sdk / 송출만 → streamer-sdk / 둘 다 → 둘 다.
-# core·exoplayer·webrtc·android-webrtc 는 내부 의존이라 선언하지 않아도 되고,
-# 둘을 함께 쓸 때의 중복도 SDK 쪽에서 제거된다.
+# Watching only -> player-sdk / broadcasting only -> streamer-sdk / both -> both.
+# core, exoplayer, webrtc and android-webrtc are internal dependencies you do not
+# declare, and the overlap between the two is resolved by the SDK.
 shoplive-player-sdk = { group = "cloud.shoplive", name = "shoplive-player-sdk", version.ref = "shoplive" }
+# The shared public surface (Shoplive, ShopliveUser, ShopliveConfiguration,
+# ShopliveError) lives in shoplive-core. Both SDK modules depend on it internally
+# (`implementation` / `compileOnly`), so it is NOT on a consumer's compile classpath
+# and has to be declared to use those types by name.
+# Measured 2026-07-30 against the local SDK sources (composite build), SDK 3.0.0.
+# TODO(verify): the same check against the published AAR. The private Maven
+# credentials were not available on the machine where this was measured, and the
+# generated pom drops all `cloud.shoplive` dependencies
+# (shoplive-core/build.gradle, pom.withXml), which suggests AAR consumers need this
+# line too — but that has not been observed, only read.
+shoplive-core = { group = "cloud.shoplive", name = "shoplive-core", version.ref = "shoplive" }
 shoplive-streamer-sdk = { group = "cloud.shoplive", name = "shoplive-streamer-sdk", version.ref = "shoplive" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
