@@ -57,35 +57,37 @@ shoplive.demo.streamToken=
 
 ---
 
-## 로컬 SDK 소스로 빌드하기 (SDK 개발자용)
+## Building against local SDK sources (SDK developers)
 
-`matrix-sdk-android` 를 사설 Maven AAR 대신 **로컬 경로 그대로** 물어서 빌드할 수 있다
-(Gradle composite build). SDK 를 고치고 바로 이 데모앱에서 확인할 때 쓴다.
-
-- 기본 경로는 이 프로젝트 옆의 `../matrix-sdk-android` 다. 그 경로가 있으면 **자동으로** 켜지고,
-  없으면 조용히 Maven AAR 로 폴백한다. 켜지면 설정 단계에 `[shoplive] 로컬 SDK 소스 사용: ...` 이 찍힌다.
-- `app/build.gradle.kts` 의 의존성 선언(`libs.shoplive.player.sdk` 등)은 **바꾸지 않는다** —
-  `settings.gradle.kts` 의 `dependencySubstitution` 이 `cloud.shoplive:shoplive-player-sdk` /
-  `:shoplive-streamer-sdk` 좌표를 로컬 프로젝트로 치환한다.
-
-`local.properties` 로 조절한다(환경변수 `SHOPLIVE_SDK_LOCAL_PATH` / `SHOPLIVE_SDK_USE_LOCAL` 도 가능):
-
-```properties
-# 다른 위치에 클론했을 때
-shoplive.sdk.localPath=/Users/me/work/matrix-sdk-android
-# 로컬 소스 대신 다시 Maven AAR 로 받고 싶을 때
-shoplive.sdk.useLocal=false
-```
-
-치환이 실제로 걸렸는지 확인:
+The customer-facing build uses **AARs**. Enable **dev mode** only when the SDK team
+needs to edit sources (logs, breakpoints) and run this demo against them. Disable to
+return to AARs.
 
 ```bash
-./gradlew :app:dependencyInsight --configuration debugCompileClasspath --dependency shoplive-player-sdk
+cd Android
+make                # menu: enable / disable / status
+# or
+make sdk-dev-on     # prompt for SDK path (default ../../matrix-sdk-android)
+make sdk-dev-off    # remove links → customer AARs
+make sdk-dev-status
 ```
 
-> SDK 라이브러리 모듈은 `distribution` 플레이버 차원(develop/qa/qaUs/ebay)을 갖는다. 이 앱은
-> 플레이버가 없으므로 `app/build.gradle.kts` 의 `missingDimensionStrategy("distribution", "develop")`
-> 로 develop 을 고른다. AAR 경로에서는 무해하다.
+- Enable creates `matrix-sdk-android`, `lines`, and `scripts/sdk-kotlin-metadata.pro`
+  symlinks at the project root (gitignored, not committed).
+- `settings.gradle.kts` includes SDK modules via `project()` when the links exist;
+  otherwise it falls back to embedded `fileTree` AARs.
+- Edit and commit in the linked `matrix-sdk-android` checkout (its own git).
+
+When enabled, configuration logs `[shoplive] matrix-sdk-android dev mode: ...`. Check:
+
+```bash
+make sdk-dev-status
+./gradlew projects   # :shoplive-player-sdk etc. appear in dev mode
+```
+
+> SDK library modules have a `distribution` flavour dimension (develop/qa/qaUs/ebay).
+> This app has none, so `missingDimensionStrategy("distribution", "develop")` in
+> `app/build.gradle.kts` selects develop. Harmless on the AAR path.
 
 ---
 

@@ -59,13 +59,22 @@ dependencies {
     // The Shoplive SDK, and nothing that belongs to the demo.
     // `api` because the public surface of this module hands SDK types back to
     // the caller (configurations, delegates, player handles).
-    api(libs.shoplive.player.sdk)
-    api(libs.shoplive.streamer.sdk)
-
-    // Shoplive, ShopliveUser, ShopliveConfiguration and ShopliveError live here, and
-    // neither SDK module exposes it transitively — see the note in
-    // gradle/libs.versions.toml. A customer app copying these files needs this line.
-    api(libs.shoplive.core)
+    // Dev mode: project(...). Otherwise: customer embedded AARs (SMV-1480).
+    if (findProject(":shoplive-player-sdk") != null) {
+        api(project(":shoplive-player-sdk"))
+        api(project(":shoplive-streamer-sdk"))
+        api(project(":shoplive-core"))
+    } else {
+        // Embedded AARs — no private Maven. fileTree has no POM transitives;
+        // :app declares AppCompat / Material / ExoPlayer for resource linking.
+        val embeddedAars = fileTree(
+            mapOf(
+                "dir" to "${rootProject.projectDir}/app/src/main/libs",
+                "include" to listOf("*.aar"),
+            )
+        )
+        api(embeddedAars)
+    }
 
     // LifecycleOwner only, for ShoplivePlayerView.bindLifecycle(...) in
     // ShopliveEmbeddedPlayer.kt. Any app that hosts an Activity already has it.

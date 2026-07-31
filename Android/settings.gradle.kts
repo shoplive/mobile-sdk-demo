@@ -26,47 +26,25 @@ fun secret(key: String, env: String): String? =
         ?: providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
         ?: System.getenv(env)?.takeIf { it.isNotBlank() }
 
-// ── Building against local SDK sources (composite build) ────────────────────
-// Wires matrix-sdk-android in from a local path. The two coordinates below are
-// substituted with local projects instead of the private Maven AAR, so the
-// dependency declarations in the module build files stay unchanged.
-//   - different path:  shoplive.sdk.localPath=/absolute/or/relative/path
-//   - turn it off:     shoplive.sdk.useLocal=false  -> back to the Maven AAR
-// A missing path falls back to the Maven AAR automatically.
-val useLocalSdk = (secret("shoplive.sdk.useLocal", "SHOPLIVE_SDK_USE_LOCAL") ?: "true").toBoolean()
-val localSdkDir = File(
-    secret("shoplive.sdk.localPath", "SHOPLIVE_SDK_LOCAL_PATH") ?: "../matrix-sdk-android"
-).let { if (it.isAbsolute) it else File(rootDir, it.path) }.canonicalFile
-
-if (useLocalSdk && File(localSdkDir, "settings.gradle").exists()) {
-    includeBuild(localSdkDir) {
-        dependencySubstitution {
-            substitute(module("cloud.shoplive:shoplive-player-sdk"))
-                .using(project(":shoplive-player-sdk"))
-            substitute(module("cloud.shoplive:shoplive-streamer-sdk"))
-                .using(project(":shoplive-streamer-sdk"))
-            // The shared public surface. Declared by :integration, so it needs a
-            // substitution too or the local build resolves it from Maven.
-            substitute(module("cloud.shoplive:shoplive-core"))
-                .using(project(":shoplive-core"))
-        }
-    }
-    logger.lifecycle("[shoplive] using local SDK sources: $localSdkDir")
-}
+// matrix-sdk-android dev mode: when `make` has created the root symlink, include
+// the international line modules in this project. Otherwise use customer AARs.
+val sdkLineRoot = file("matrix-sdk-android/lines/international")
+val localSdkAttached = File(sdkLineRoot, "shoplive-player-sdk").isDirectory
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // Local SDK modules declare their own repositories → PREFER_SETTINGS in
+    // dev mode. Keep FAIL_ON_PROJECT_REPOS for the customer (AAR) path.
+    repositoriesMode.set(
+        if (localSdkAttached) RepositoriesMode.PREFER_SETTINGS
+        else RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    )
 
     repositories {
         google()
 
         // ── Shoplive private Maven ───────────────────────────────────────────
-        // Where the SDK AAR comes from.
-        //
-        // The older advice (`allprojects { repositories { ... } }` in the root
-        // build.gradle) still works, but for a new project this block is the standard
-        // place. Because of FAIL_ON_PROJECT_REPOS above, declaring a repository in a
-        // module's build file fails the build.
+        // Where the SDK AAR comes from (customer mode). Kept in local-SDK mode
+        // for any remaining transitive coordinates.
         maven {
             name = "shoplive"
             url = uri(
@@ -90,3 +68,22 @@ rootProject.name = "ShopliveOnboardingDemo"
 // :app depends on :integration, never the other way round. Building
 // :integration alone reproduces the customer's situation (SDK only, no harness).
 include(":app", ":integration")
+
+if (localSdkAttached) {
+    fun includeSdkModule(name: String) {
+        include(":$name")
+        project(":$name").projectDir = File(sdkLineRoot, name)
+    }
+
+    listOf(
+        "shoplive-player-sdk",
+        "shoplive-streamer-sdk",
+        "shoplive-core-player",
+        "shoplive-exoplayer",
+        "shoplive-core",
+        "shoplive-webrtc",
+        "shoplive-android-webrtc",
+    ).forEach(::includeSdkModule)
+
+    logger.lifecycle("[shoplive] matrix-sdk-android dev mode: $sdkLineRoot")
+}

@@ -96,12 +96,25 @@ dependencies {
     implementation(project(":integration"))
 
     // ── Shoplive unified SDK v3 ─────────────────────────────────────────────
-    // Watching only: keep the first line. Broadcasting only: the second. Both: both.
-    // core / exoplayer / webrtc / android-webrtc are internal dependencies you do not
-    // declare, and the overlap between the two artifacts is resolved by the SDK.
-//    implementation(libs.shoplive.player.sdk)
-//    implementation(libs.shoplive.streamer.sdk)
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    // Dev mode (`make` menu): project(...). Otherwise: customer embedded AARs.
+    if (findProject(":shoplive-player-sdk") != null) {
+        implementation(project(":shoplive-player-sdk"))
+        implementation(project(":shoplive-streamer-sdk"))
+        // streamer-sdk depends on core as compileOnly, so public API types are
+        // not on the app compile classpath — declare core when using local sources.
+        implementation(project(":shoplive-core"))
+    } else {
+        // Customer path: AARs under app/src/main/libs (SMV-1480).
+        // fileTree has no POM transitives; declare the public Maven coords the
+        // SDK AARs expect (AppCompat / Material / ExoPlayer).
+        implementation(fileTree(mapOf("dir" to "src/main/libs", "include" to listOf("*.aar"))))
+        implementation("androidx.appcompat:appcompat:1.6.1")
+        implementation("com.google.android.material:material:1.9.0")
+        implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
+        implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1")
+        implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+        implementation("com.google.android.exoplayer:extension-okhttp:2.19.1")
+    }
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

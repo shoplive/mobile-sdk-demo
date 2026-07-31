@@ -9,3 +9,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# matrix-sdk-android dev mode (`make`) — local symlinks only.
+# Gradle switches AAR ↔ project() based on whether these links exist.
+/matrix-sdk-android
+/lines
+/scripts/sdk-kotlin-metadata.pro
