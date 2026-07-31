@@ -1,17 +1,23 @@
 package cloud.shoplive.onboarding.data
 
 import android.content.Context
+import cloud.shoplive.onboarding.integration.ShopliveMilestone
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * "확인됨" 판정. **사용자가 체크하는 것이 아니라 SDK 이벤트로 자동 판정**한다.
+ * The "verified" judgement. **Decided automatically from SDK events, not by the user
+ * ticking a box.**
  *
- * 어느 미션을 실행 중인지([activeMission])를 먼저 기록해 두고, 델리게이트에서 올라오는
- * 이벤트가 그 미션의 성공 조건을 만족할 때 완료로 넘긴다. 판정 규칙은
- * [markPlaybackStarted] · [markPipEntered] · [markRequestReceived] · [markBroadcastLive]
- * 네 곳에만 있다.
+ * Which mission is running is recorded first ([activeMission]); then when the events
+ * coming out of the delegate satisfy that mission's success condition, it is marked
+ * done. The rules live in [markPlaybackStarted], [markPipEntered],
+ * [markRequestReceived] and [markBroadcastLive] and nowhere else.
+ *
+ * This whole class is demo harness — mission numbers mean nothing to a customer app.
+ * It is fed by [record], which maps the milestones `:integration` reports onto the
+ * demo's own idea of progress.
  */
 class MissionProgress(context: Context) {
 
@@ -20,7 +26,7 @@ class MissionProgress(context: Context) {
     private val _done = MutableStateFlow(load())
     val done: StateFlow<Set<Int>> = _done.asStateFlow()
 
-    /** 지금 실행 중인 미션 번호. 이벤트를 어느 미션에 귀속시킬지 정한다. */
+    /** The mission currently running, which decides where an event is credited. */
     @Volatile
     var activeMission: Int? = null
         private set
@@ -29,23 +35,30 @@ class MissionProgress(context: Context) {
         activeMission = number
     }
 
-    /** 재생이 시작됐다 → 미션 1·2·3·4·7 의 성공 조건. */
+    /** Translates a copy-paste-layer milestone into this demo's progress rules. */
+    fun record(milestone: ShopliveMilestone) = when (milestone) {
+        ShopliveMilestone.PLAYBACK_STARTED -> markPlaybackStarted()
+        ShopliveMilestone.IN_APP_PIP_ENTERED -> markPipEntered()
+        ShopliveMilestone.REQUEST_RECEIVED -> markRequestReceived()
+    }
+
+    /** Playback started — the success condition for missions 1, 2, 3, 4 and 7. */
     fun markPlaybackStarted() {
         val active = activeMission ?: return
         if (active in setOf(1, 2, 3, 4, 7)) complete(active)
     }
 
-    /** in-App PIP 진입 → 미션 5. 다른 미션 중이어도 PIP 를 봤으면 5는 확인된 것으로 본다. */
+    /** Entered in-app PIP — mission 5. Seeing PIP counts even during another mission. */
     fun markPipEntered() {
         complete(5)
     }
 
-    /** navigation·coupon 요청 수신 → 미션 6. */
+    /** A navigation or coupon request arrived — mission 6. */
     fun markRequestReceived() {
         complete(6)
     }
 
-    /** 방송이 LIVE 로 전이 → 미션 8. */
+    /** The broadcast went LIVE — mission 8. */
     fun markBroadcastLive() {
         complete(8)
     }

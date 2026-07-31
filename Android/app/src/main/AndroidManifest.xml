@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- SDK 가 요구하는 권한. INTERNET·ACCESS_NETWORK_STATE·VIBRATE·CAMERA 는 AAR 매니페스트에
-         이미 선언돼 있어 병합되지만, 명시해 두면 무엇이 필요한지 한눈에 보인다. -->
+    <!-- Permissions the SDK needs. INTERNET, ACCESS_NETWORK_STATE, VIBRATE and CAMERA
+         are already declared in the AAR manifest and get merged, but listing them
+         makes it obvious what is required. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- 광고 ID 기반 어트리뷰션을 쓸 때만 필요 (선택) -->
+    <!-- Only needed for advertising-ID based attribution (optional). -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-    <!-- Mission 8 송출용. RECORD_AUDIO 는 AAR 에 없으므로 앱이 반드시 선언해야 한다.
-         런타임 요청은 ShopliveStreamer.start() 가 대신 해 준다. -->
+    <!-- For broadcasting (Mission 8). RECORD_AUDIO is not in the AAR, so the app must
+         declare it. The runtime request itself is made by ShopliveStreamer.start(). -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -41,9 +42,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Mission 2 — 딥링크 진입점.
+        <!-- Mission 2 — the deep-link entry point.
              shoplivedemo://live?campaign={CAMPAIGN_KEY}&ref={REFERRER}
-             콜드 스타트에서도 안전하도록 이 화면은 파싱만 하고 MainActivity 로 넘긴다. -->
+             For cold-start safety this screen only parses and hands over to
+             MainActivity. -->
         <activity
             android:name=".SchemeActivity"
             android:exported="true"
@@ -59,8 +61,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Mission 6 — navigation(url) 요청의 도착지.
-             SDK 플레이어 Activity 가 앞에 떠 있는 상태에서 열려야 하므로 화면(Activity)이다. -->
+        <!-- Mission 6 — where a navigation(url) request lands.
+             It has to open while the SDK player Activity is front-most, which is why it
+             is an Activity and not a Compose route. -->
         <activity
             android:name=".ProductDetailActivity"
             android:exported="false"

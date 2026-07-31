@@ -4,27 +4,33 @@ import androidx.annotation.StringRes
 import cloud.shoplive.onboarding.R
 
 /**
- * 기능 카드 8개. 번호는 **연동 가이드의 Mission 번호와 같다**
- * (https://sdk.shoplive.cloud — 한국어·English·日本語 가이드).
+ * The eight feature cards. The numbers are **the same Mission numbers as the
+ * integration guide** (https://sdk.shoplive.cloud).
  *
- * [sourcePath] 는 이 앱과 프로젝트 소스를 잇는 유일한 다리다. 실제 파일 경로와 반드시
- * 일치해야 한다 — 카드를 보고 그 파일을 열어 코드를 복사하는 것이 데모앱의 사용법이다.
- * 경로는 코드 위치라서 번역하지 않는다.
+ * [sourcePath] is the only bridge between this app and the project sources, so it
+ * must match the real file path — reading a card, opening that file and copying the
+ * code is how the demo is meant to be used. Paths are code locations, never
+ * translated.
+ *
+ * Every path but one points into `:integration`, the copy-paste module: what the card
+ * demonstrates is exactly what a customer takes. Mission 4 is the exception worth
+ * noting — the SDK-facing half lives in `ShopliveEmbeddedPlayer.kt`, while the Compose
+ * screen that hosts it stays in the demo.
  */
 enum class MissionRun {
-    /** SDK 풀스크린 플레이어 Activity 를 띄운다. */
+    /** Launches the SDK's full-screen player Activity. */
     PLAYER,
 
-    /** 가짜 푸시 배너 → 실제 딥링크 Intent → 플레이어. */
+    /** Fake push banner -> a real deep-link Intent -> the player. */
     DEEP_LINK,
 
-    /** 인증 방식 선택 시트를 띄운 뒤 플레이어. */
+    /** Asks for an auth method, then plays. */
     AUTH,
 
-    /** 데모앱이 소유하는 홈 피드 화면(임베드 View). */
+    /** The demo's own home feed screen, with an embedded view. */
     FEED,
 
-    /** SDK 스튜디오 Activity 를 띄운다. */
+    /** Launches the SDK's studio Activity. */
     STUDIO,
 }
 
@@ -32,19 +38,19 @@ data class Mission(
     val number: Int,
     @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int,
-    /** 무엇이 보이면 성공인지. */
+    /** What you should see if it worked. */
     @StringRes val checkPointRes: Int,
     val sourcePath: String,
     val run: MissionRun,
-    /** 실행 직후 개발자 시트를 어느 탭으로 열지. null 이면 열지 않는다. */
+    /** Which developer-sheet tab to open right after running. Null opens nothing. */
     val openSheet: DevSheetTab? = null,
     val needsStreamToken: Boolean = false,
 )
 
 enum class DevSheetTab { LOG, OPTIONS }
 
-private const val SDK_DIR = "app/src/main/java/cloud/shoplive/onboarding/sdk"
-private const val UI_DIR = "app/src/main/java/cloud/shoplive/onboarding/ui"
+/** The copy-paste module. Everything under here is meant to be taken as-is. */
+private const val INT_DIR = "integration/src/main/java/cloud/shoplive/onboarding/integration"
 
 val MISSIONS: List<Mission> = listOf(
     Mission(
@@ -52,7 +58,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission1_title,
         descriptionRes = R.string.mission1_desc,
         checkPointRes = R.string.mission1_check,
-        sourcePath = "$SDK_DIR/PlayerLauncher.kt",
+        sourcePath = "$INT_DIR/ShoplivePlayerLauncher.kt",
         run = MissionRun.PLAYER,
     ),
     Mission(
@@ -60,7 +66,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission2_title,
         descriptionRes = R.string.mission2_desc,
         checkPointRes = R.string.mission2_check,
-        sourcePath = "$SDK_DIR/DeepLinkRouter.kt",
+        sourcePath = "$INT_DIR/ShopliveDeepLinkRouter.kt",
         run = MissionRun.DEEP_LINK,
     ),
     Mission(
@@ -68,7 +74,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission3_title,
         descriptionRes = R.string.mission3_desc,
         checkPointRes = R.string.mission3_check,
-        sourcePath = "$SDK_DIR/UserSetup.kt",
+        sourcePath = "$INT_DIR/ShopliveUserSetup.kt",
         run = MissionRun.AUTH,
     ),
     Mission(
@@ -76,7 +82,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission4_title,
         descriptionRes = R.string.mission4_desc,
         checkPointRes = R.string.mission4_check,
-        sourcePath = "$UI_DIR/feed/FeedScreen.kt",
+        sourcePath = "$INT_DIR/ShopliveEmbeddedPlayer.kt",
         run = MissionRun.FEED,
     ),
     Mission(
@@ -84,7 +90,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission5_title,
         descriptionRes = R.string.mission5_desc,
         checkPointRes = R.string.mission5_check,
-        sourcePath = "$SDK_DIR/PipOptions.kt",
+        sourcePath = "$INT_DIR/ShoplivePipPresets.kt",
         run = MissionRun.PLAYER,
     ),
     Mission(
@@ -92,7 +98,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission6_title,
         descriptionRes = R.string.mission6_desc,
         checkPointRes = R.string.mission6_check,
-        sourcePath = "$SDK_DIR/DemoPlayerDelegate.kt",
+        sourcePath = "$INT_DIR/ShoplivePlayerEventLogger.kt",
         run = MissionRun.PLAYER,
         openSheet = DevSheetTab.LOG,
     ),
@@ -101,7 +107,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission7_title,
         descriptionRes = R.string.mission7_desc,
         checkPointRes = R.string.mission7_check,
-        sourcePath = "$SDK_DIR/PlayerConfigurationFactory.kt",
+        sourcePath = "$INT_DIR/ShoplivePlayerPresets.kt",
         run = MissionRun.PLAYER,
         openSheet = DevSheetTab.OPTIONS,
     ),
@@ -110,7 +116,7 @@ val MISSIONS: List<Mission> = listOf(
         titleRes = R.string.mission8_title,
         descriptionRes = R.string.mission8_desc,
         checkPointRes = R.string.mission8_check,
-        sourcePath = "$SDK_DIR/StudioLauncher.kt",
+        sourcePath = "$INT_DIR/ShopliveStudioLauncher.kt",
         run = MissionRun.STUDIO,
         needsStreamToken = true,
     ),

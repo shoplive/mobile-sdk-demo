@@ -33,23 +33,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cloud.shoplive.onboarding.R
-import cloud.shoplive.onboarding.data.DemoLog
 import cloud.shoplive.onboarding.data.DemoOptionsStore
-import cloud.shoplive.onboarding.sdk.PlayerSession
+import cloud.shoplive.onboarding.integration.ShoplivePlayerSession
 import cloud.shoplive.onboarding.ui.components.Tip
 import cloud.shoplive.onboarding.ui.components.TipTone
 import cloud.shoplive.onboarding.ui.theme.Brand
 import cloud.shoplive.player.ShopliveNavigationAction
 
 /**
- * V2 — 상품 상세.
+ * The product detail screen.
  *
- * `navigation(url)` 요청을 앱이 라우팅한 **결과 화면**이다. 수신 URL 을 그대로 노출해
- * "이 URL 을 앱이 받아 이 화면을 열었다"를 눈으로 확인시킨다.
+ * This is the **result** of the app routing a `navigation(url)` request. It shows the
+ * received URL verbatim, so that "the app got this URL and opened this screen" is
+ * visible rather than assumed.
  *
- * 결제·장바구니는 범위 밖이다. 이 화면의 목적은 두 가지뿐이다.
- * 1. navigation 은 앱이 반드시 처리해야 하는 유일한 요청임을 보여준다.
- * 2. `actionOnNavigation` 정책(pip/keep/close)에 따라 플레이어 거동이 달라짐을 보여준다.
+ * Checkout and cart are out of scope. The screen exists for two things only:
+ * 1. navigation is the one request the app must handle.
+ * 2. the `actionOnNavigation` policy (pip/keep/close) changes what the player does.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,8 +157,8 @@ fun ProductDetailScreen(
 
             OutlinedButton(
                 onClick = {
-                    DemoLog.sdkCall("exitPictureInPicture() — returning to full screen")
-                    PlayerSession.exitPictureInPicture()
+                    // The call is logged by ShoplivePlayerSession itself.
+                    ShoplivePlayerSession.exitPictureInPicture()
                     onClose()
                 },
                 modifier = Modifier.fillMaxWidth(),
