@@ -27,17 +27,12 @@ package cloud.shoplive.onboarding.demo
 object DemoDefaults {
 
     /** Demo account access key. */
-    const val ACCESS_KEY = "uv9CGthPzlvsInZerCw0"
+    const val ACCESS_KEY = "ZJZBkloYuh5zXsH7wuUi"
 
-    /**
-     * Demo campaign.
-     *
-     * Measured 2026-07-30: this campaign has no playable stream, so playback reports
-     * `playback(failed(code: 404))` on a loop and the player stays black. Swap in a
-     * campaign that is on air (or has a VOD asset) to see actual video.
-     */
-    const val CAMPAIGN_KEY = "faea28dd96c3"
+    /** Demo campaign. */
+    const val CAMPAIGN_KEY = "9c83384b5c93"
 
     /** Broadcast token for Mission 8. Expires; see the rotation note above. */
-    const val STREAM_TOKEN = "1-5QALAnGzVkSBHzzN-an2"
+    const val STREAM_TOKEN =
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAzODI2IiwiYWNjZXNzS2V5IjoiWkpaQmtsb1l1aDV6WHNIN3d1VWkiLCJzb3VyY2UiOiJTVFJFQU1fQVBQIiwiZXhwIjoxODE2OTk4MjcxLCJpYXQiOjE3ODU0NjIyNzF9.77ZUK-ztmLR0Ow4N3vllxwU9-s-ziAtqGezvzvaZHhw"
 }

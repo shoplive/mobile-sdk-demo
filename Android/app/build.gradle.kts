@@ -99,8 +99,9 @@ dependencies {
     // Watching only: keep the first line. Broadcasting only: the second. Both: both.
     // core / exoplayer / webrtc / android-webrtc are internal dependencies you do not
     // declare, and the overlap between the two artifacts is resolved by the SDK.
-    implementation(libs.shoplive.player.sdk)
-    implementation(libs.shoplive.streamer.sdk)
+//    implementation(libs.shoplive.player.sdk)
+//    implementation(libs.shoplive.streamer.sdk)
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
