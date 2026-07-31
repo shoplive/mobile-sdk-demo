@@ -16,6 +16,7 @@ import cloud.shoplive.onboarding.data.Mission
 import cloud.shoplive.onboarding.data.MissionRun
 import cloud.shoplive.onboarding.data.missionOf
 import cloud.shoplive.onboarding.demo.DemoConfigurationFactory
+import cloud.shoplive.onboarding.demo.DemoDefaults
 import cloud.shoplive.onboarding.demo.DemoLabels
 import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
 import cloud.shoplive.onboarding.integration.ShopliveFailure
@@ -85,9 +86,9 @@ class MainViewModel : ViewModel() {
     init {
         _state.value = UiState(
             mode = credentials.mode,
-            accessKeyInput = credentials.accessKey,
-            campaignKeyInput = credentials.campaignKey,
-            streamTokenInput = credentials.streamToken,
+            accessKeyInput = credentials.accessKey.ifBlank { DemoDefaults.ACCESS_KEY },
+            campaignKeyInput = credentials.campaignKey.ifBlank { DemoDefaults.CAMPAIGN_KEY },
+            streamTokenInput = credentials.streamToken.ifBlank { DemoDefaults.STREAM_TOKEN },
             userJwtInput = credentials.userJwt,
             ownFormExpanded = credentials.mode == DemoMode.OWN && credentials.accessKey.isBlank(),
         )
