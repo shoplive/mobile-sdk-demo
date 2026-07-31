@@ -298,9 +298,40 @@ PIP 로 승격되면 렌더 표면이 **앱 window 위 플로팅 컨테이너**�
   호스트를 숨겨도 뒤에 아무것도 없다).
 - `stateChanged(.inAppPIP)` 를 받으면 `PlayerHostViewController.setPipPresentation(true)` 로 호스트를 숨긴다
   → 뒤의 목록 화면이 보이고 PIP 만 떠 있는 정상 UX.
-- 복귀는 `stateChanged` 로 오지 않을 수 있어 `isInPictureInPicture` 를 0.5초 간격으로 폴링하는 안전망을 둔다.
+- 복귀는 `stateChanged` 로 오지 않을 수 있어 `isInPictureInPicture` 를 0.5초 간격으로 폴링하는 안전망을 둔다
+  (세션이 닫히면 폴링도 즉시 중단한다 — 아래 참고).
 
-`stateChanged` 는 **`.inAppPIP` 진입 때만** 오고 playing/loading 전이는 오지 않는다(실측).
+### PIP 창의 닫기 버튼을 누르면 화면이 한 번 검게 덮였다 사라지던 문제 (수정됨) ⚠️
+
+**증상**: PIP 상태에서 PIP 창의 닫기(X)를 누르면 화면 전체가 잠깐 검게 덮였다가 내려갔다.
+
+**원인**: PIP 창을 닫으면 오는 것은 PIP 이탈이 아니라 **`stateChanged(.closed)`(세션 종료)** 다.
+델리게이트가 상태를 boolean 으로 접어 `onPipStateChanged(state == .inAppPIP)` 로 넘기면 `.closed` 가
+`false` 로 전달되고, 비켜나 있던 호스트가 **렌더 표면이 이미 사라진 플레이어 위로 다시 보이게** 된다.
+그 순간 호스트의 검은 배경이 화면 전체를 덮고, 그 뒤에 dismiss 애니메이션이 실행된다.
+
+닫는 순간 실측값: `inPip=false state=closed hostDismissing=true`
+— **SDK 가 호스트를 스스로 dismiss** 하고 있으므로, 호스트는 그냥 계속 비켜나 있으면 됐다.
+
+**수정**: 세션 종료와 PIP 이탈을 분리했다. `ShopliveIntegration/DemoPlayerDelegate.swift` 가 `.closed` 를
+별도 `onSessionClosed` 훅으로 보내고, 호스트는 이를 래치해 진행 중인 복귀 요청이 다시 보이게 만들지 못하도록 막는다.
+**`isHidden` 은 일부러 건드리지 않는다** — 풀스크린에서 닫을 때는 기존 슬라이드다운 애니메이션이 유지돼야 하고,
+두 경로 모두 그 시점의 표시 상태가 이미 올바르기 때문이다.
+
+검증: PIP 에서 닫으면 **복귀 호출이 아예 발생하지 않고**, PIP 창을 탭해 풀스크린으로 돌아오는 경로는 그대로 동작한다.
+
+### `stateChanged` 가 실제로 오는 시점 (정정)
+
+이 문서의 이전 기록("`.inAppPIP` 진입 때만 온다")을 정정한다. PIP 세션 실측:
+
+| 상태 | 도착 |
+|---|---|
+| `.inAppPIP` | ✅ PIP 승격 시 |
+| `.playing` | ✅ PIP → 풀스크린 복귀 시 |
+| `.closed` | ✅ 세션 종료 시(PIP 창 닫기 포함) |
+
+여전히 오지 않는 것은 **최초 재생 시작 구간의 `stateChanged`** 다(§위 "정상 재생 중 오지 않는 이벤트" 표).
+즉 `stateChanged` 는 PIP·종료 전이에는 쓸 수 있지만 "재생이 시작됐다" 신호로는 쓸 수 없다.
 
 PIP 창은 `pip.padding = 0`(스펙 기본값)이면 화면 우/하단에 딱 붙어 홈 인디케이터까지 물려 잘려 보인다.
 데모는 기본값만 `12` 로 띄웠다(옵션 탭에서 0 으로 되돌릴 수 있음).
