@@ -104,7 +104,7 @@ mobile-sdk-demo/
 ├── iOS/
 │   ├── ShopliveIntegration/     ★ COPY THIS — SDK calls only, zero harness deps
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
-│   ├── Tuist/Package.swift        SDK dependency (SPM)
+│   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.0
 │   └── scripts/                   boundary scanner
 └── Android/
     └── app/src/main/java/cloud/shoplive/onboarding/
@@ -169,8 +169,8 @@ Until then, the per-language URLs work with anchors directly if you need to jump
 ## Before handing a build to a customer
 
 - **Credentials** — clear or replace the demo keys (`DemoDefaults` on iOS, `local.properties` on Android). Empty keys make the app prompt for input, which is usually what you want.
-- **iOS signing** — replace `DEVELOPMENT_TEAM` in `Project.swift` and the bundle ID `cloud.shoplive.onboarding.demo`.
+- **iOS signing** — pick your own team in Signing & Capabilities and replace the bundle ID `cloud.shoplive.onboarding.demo`.
 - **Android repository** — switch to the distribution Maven URL (`repo-mig.us1.shoplive.cloud`).
-- **iOS SDK version** — `Tuist/Package.swift` pins `exact: "3.0.0"`. Loosen it to a range if you want minor updates automatically.
+- **iOS SDK version** — the Xcode project pins the package to **Exact 3.0.0**. Loosen it in Package Dependencies if you want minor updates automatically.
 
 Details in [Getting Started](docs/01-getting-started.md).

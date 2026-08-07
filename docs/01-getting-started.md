@@ -42,21 +42,14 @@ Android additionally needs **Maven repository credentials** (username + password
 
 ```bash
 cd iOS
-tuist install                              # once per clone — fetches the SDK
-open ShopliveOnboardingDemo.xcworkspace
+open ShopliveOnboardingDemo.xcodeproj
 ```
 
-`tuist install` comes first because the SDK arrives over SPM and the downloaded binaries
-(~62MB) land in `Tuist/.build/`, which is not committed. `Tuist/Package.resolved` pins the
-exact version, so everyone gets the same build.
-
-After that the `.xcodeproj` is committed, so **you do not need Tuist** just to open and run the
-app. You only need it again if you change the project structure (add files, change build
-settings) or the SDK version:
-
-```bash
-tuist generate --no-open
-```
+**Xcode is the only thing you need** — no project generator, package manager, or extra CLI tool.
+The SDK arrives through Xcode's built-in SPM on the first build (so you need network access once),
+and `ShopliveOnboardingDemo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
+pins the exact revision, so everyone gets the same build. Add files and change build settings in
+Xcode directly — there is no regeneration step.
 
 **Credentials** live in [`iOS/ShopliveOnboardingDemo/Support/DemoCredentials.swift`](../iOS/ShopliveOnboardingDemo/Support/DemoCredentials.swift):
 
@@ -72,7 +65,7 @@ If these are filled in, the app skips the start screen and goes straight to the 
 
 > **`streamToken` ships empty on purpose.** A stream token grants **broadcast permission**, so it is not kept in source control. Missions 1–7 need no token and run with no typing; Mission 8 stays locked until you enter one on the start screen. The access and campaign keys are identifiers rather than secrets, which is why they can live in source.
 
-**Code signing:** `Project.swift` pins `DEVELOPMENT_TEAM = D237UGRPX6`. Simulator builds work on any machine (signing is disabled for the simulator SDK), but for a device build you must swap in your own team ID and bundle ID.
+**Code signing:** the app target sets `DEVELOPMENT_TEAM` in its build settings. Simulator builds work on any machine (signing is disabled for the simulator SDK), but for a device build you must select your own team in Signing & Capabilities and use your own bundle ID.
 
 ### What the SDK ships as
 
@@ -95,8 +88,8 @@ https://github.com/shoplive/shoplive-sdk-ios
 You do not `import ShopliveCore` either — the Player and Streamer modules re-export it, so
 `import ShoplivePlayerSDK` alone puts `Shoplive.*` in scope.
 
-This demo is a Tuist project, so the dependency lives in `iOS/Tuist/Package.swift` rather than
-in Xcode's package UI. Run `tuist install && tuist generate` after changing it.
+The dependency is registered in the Xcode project itself (Package Dependencies, pinned to
+**Exact 3.0.0**), and Xcode embeds the five xcframeworks into the app bundle automatically.
 
 ---
 

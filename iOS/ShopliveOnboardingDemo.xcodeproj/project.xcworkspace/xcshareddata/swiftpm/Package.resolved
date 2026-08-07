@@ -1,4 +1,5 @@
 {
+  "originHash" : "c88d2c1f0b2c1e2a581a700ecd8a9c7351fed5c3f5767675cd732b806f2ffec0",
   "pins" : [
     {
       "identity" : "shoplive-sdk-ios",
@@ -10,5 +11,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
