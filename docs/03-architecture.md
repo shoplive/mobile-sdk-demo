@@ -33,7 +33,7 @@ python3 iOS/scripts/integration_boundary_scanner.py
 
 ```bash
 cd iOS
-xcodebuild -workspace ShopliveOnboardingDemo.xcworkspace -scheme IntegrationCopyPasteProof \
+xcodebuild -project ShopliveOnboardingDemo.xcodeproj -scheme IntegrationCopyPasteProof \
   -destination 'generic/platform=iOS' build
 ```
 

@@ -149,11 +149,10 @@ playground.xcworkspace
 # Swift Package Manager
 # Package.resolved
 
-# Tuist's SPM checkout — `tuist install` puts the resolved packages and the downloaded
-# xcframeworks here. Well over 100MB, and fully reproducible from Tuist/Package.swift.
-# Tuist/Package.resolved is NOT ignored: it pins the exact versions and belongs in the repo.
-iOS/.build/
-iOS/Tuist/.build/
+# Xcode's SPM checkout — the resolved packages and the downloaded xcframeworks land in
+# DerivedData (already ignored above), so nothing extra to ignore here.
+# The pin itself is NOT ignored: ShopliveOnboardingDemo.xcodeproj/project.xcworkspace/
+# xcshareddata/swiftpm/Package.resolved fixes the exact SDK revision and belongs in the repo.
 
 # SwiftPM's per-user editor state, created next to any Package.swift.
 .swiftpm/

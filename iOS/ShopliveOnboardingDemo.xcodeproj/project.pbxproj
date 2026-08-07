@@ -3,16 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0127D1E885E15CC89B8A92A2 /* PlayerLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E529DBEFF16CA842EC3E781 /* PlayerLauncher.swift */; };
 		048AA6A3E99C8FB0F7F3AF4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8277FD204817511FCC91051E /* AppDelegate.swift */; };
 		0E671D3429E70CF9BAE2D175 /* ShopliveLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8885CD9783B19B262D451 /* ShopliveLabels.swift */; };
-		126A50F2C511CEAA3C234ABB /* ShoplivePlayerSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7B3C3D300F5B6EC0973F92 /* ShoplivePlayerSDK.xcframework */; };
 		1651E4585EDEF9F6C6FE25E4 /* MissionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6D5B1D17B9635A7323D36D /* MissionListViewController.swift */; };
-		20F366708F0184DCA35284F9 /* ShopliveStreamerSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8D805A3698CC9023F1C6805 /* ShopliveStreamerSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		21824D67A420BCB4C7596B14 /* DemoPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF15BAF2F7C30FC0714C37AA /* DemoPlayerDelegate.swift */; };
 		21F542A8A26643E28C21E569 /* DevSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BE5C850E8B3DB3F2060625 /* DevSheetViewController.swift */; };
 		2534FE99E0D3240F82EF8106 /* StudioLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961658DA0B2ECB873D81B1F5 /* StudioLauncher.swift */; };
@@ -22,41 +20,30 @@
 		42BAB1510BA59EB508CA00AC /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A21637917CE04E8F74B3E2A8 /* StartViewController.swift */; };
 		43EBE3049472D15480A1616D /* UserSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */; };
 		466421226B13D14B8C9C1F27 /* ProductDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2307BE53FD7F78E5F23C94 /* ProductDetailViewController.swift */; };
-		481DAB4C9217464B328EC7E7 /* ShopLiveWebRTCHelperSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C33EDFE2B9CF0B515CB0F6 /* ShopLiveWebRTCHelperSDK.xcframework */; };
 		569201E9CDD7C926AD559B80 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 34A5020368FB2478C14F763C /* Localizable.strings */; };
+		5A1000000000000000000006 /* ShoplivePlayerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000002 /* ShoplivePlayerSDK */; };
+		5A1000000000000000000007 /* ShopliveStreamerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000003 /* ShopliveStreamerSDK */; };
+		5A1000000000000000000008 /* ShoplivePlayerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000004 /* ShoplivePlayerSDK */; };
+		5A1000000000000000000009 /* ShopliveStreamerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000005 /* ShopliveStreamerSDK */; };
 		65F5CAD4445AAE349C49C757 /* PlayerConfigurationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D71BF3760AE628BB9E1D6A /* PlayerConfigurationFactory.swift */; };
-		6E5F2649E8A93A1EBD024C52 /* ShopliveCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9FD36E56D45BEF884228E9 /* ShopliveCore.xcframework */; };
 		70EE7F2623217C97CA3E1442 /* ShopliveBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752E05215E0B7E6177DE06B /* ShopliveBootstrap.swift */; };
 		78D581E599463D806D4F637D /* EmbeddedPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AADEFB01F140F904494527 /* EmbeddedPlayerView.swift */; };
-		7B44142668BE447DA0A320B3 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA34B602CE70221BCFEB198 /* WebRTC.xcframework */; };
 		87C3C6E221A52A937F5EFFFF /* ShopliveLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE7A9B6D543F320EC07603C /* ShopliveLog.swift */; };
-		8DFF23F12B03AFE6315D67AB /* ShoplivePlayerSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BF7B3C3D300F5B6EC0973F92 /* ShoplivePlayerSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8FCA575B2D84EE52D130B76C /* WebRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DEA34B602CE70221BCFEB198 /* WebRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		93E94E24B3FA095CBC2E2E75 /* DemoPlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF15BAF2F7C30FC0714C37AA /* DemoPlayerDelegate.swift */; };
 		9A808666DD3DA18219D4EB83 /* PlayerHostOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC89750E265E2A2A2E72954 /* PlayerHostOverlay.swift */; };
 		9AAAF961089B6F589ABEF6F7 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EDA95FFC10BE6E65C91320 /* DeepLinkRouter.swift */; };
-		9CF8B9B9AAD54950C84E5DE1 /* ShopLiveWebRTCHelperSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C33EDFE2B9CF0B515CB0F6 /* ShopLiveWebRTCHelperSDK.xcframework */; };
 		9FBA0C27C2476788A2E24FDC /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EDA95FFC10BE6E65C91320 /* DeepLinkRouter.swift */; };
 		A43C4D17E3D06BDFE45BEDFD /* PipOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC11398ED023B880B2D94E1 /* PipOptions.swift */; };
 		A6E103E32BC91530C35FDE81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6987DCE07C3BCE5DD6E66BA /* SceneDelegate.swift */; };
 		A8DEF7FF18BC7A1FF40BD238 /* DemoNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2858C4BE45006D47839F3D4E /* DemoNavBar.swift */; };
 		B44F2F3FE100610F86F1DC05 /* PlayerConfigurationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D71BF3760AE628BB9E1D6A /* PlayerConfigurationFactory.swift */; };
-		B93F66EE2BE7073265E017A3 /* TuistBundle+ShopliveOnboardingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A6C365C9831469C8B898FB /* TuistBundle+ShopliveOnboardingDemo.swift */; };
 		BBA72BDA8E86A0B8A155229F /* DemoConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1AB0D687C5F0002DA8618F /* DemoConfigBuilder.swift */; };
-		BC6C537DFA8198AF6D741AB0 /* ShopliveCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9FD36E56D45BEF884228E9 /* ShopliveCore.xcframework */; };
-		BE1C198BEDF756C52D319DE5 /* TuistStrings+ShopliveOnboardingDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2730A1FAE059142043F3D36F /* TuistStrings+ShopliveOnboardingDemo.swift */; };
 		C139BE30FDA1CE5F4D46AD34 /* DemoCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E49A2472CC04B53A46B170 /* DemoCredentials.swift */; };
-		C560B53A6F60002DC45DA741 /* ShopliveCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE9FD36E56D45BEF884228E9 /* ShopliveCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C59C1C7D7E5E7D363D5DEFF4 /* ShopLiveWebRTCHelperSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2C33EDFE2B9CF0B515CB0F6 /* ShopLiveWebRTCHelperSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C6BA387D7BE04A897F5FF864 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA34B602CE70221BCFEB198 /* WebRTC.xcframework */; };
-		C9E6753BE0A734A25668D16E /* ShoplivePlayerSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7B3C3D300F5B6EC0973F92 /* ShoplivePlayerSDK.xcframework */; };
 		C9F8F2508505CC1354CAD8A0 /* DemoAuthApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67C2275CB4B51806580754B0 /* DemoAuthApplier.swift */; };
 		CCDA313A4236AE9814DE3ADF /* ShopliveLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8885CD9783B19B262D451 /* ShopliveLabels.swift */; };
 		CFEB12732967B157A5DC4FF4 /* UserSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */; };
-		D45465742B575CE9584161A7 /* ShopliveStreamerSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D805A3698CC9023F1C6805 /* ShopliveStreamerSDK.xcframework */; };
 		DC228774CDA237CEC1178C79 /* ShopliveLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCE7A9B6D543F320EC07603C /* ShopliveLog.swift */; };
 		DE7BB8E88B1DEFFFD91F6C04 /* PlayerLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E529DBEFF16CA842EC3E781 /* PlayerLauncher.swift */; };
-		DF453E5958A199E1176F6D25 /* ShopliveStreamerSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D805A3698CC9023F1C6805 /* ShopliveStreamerSDK.xcframework */; };
 		E4A9277B70308B2E16974650 /* DemoStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7556B4FE33B8C942C008923B /* DemoStrings.swift */; };
 		E606CECE110348DB3709EAE6 /* DemoConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A6D351090B5ECB82590C98 /* DemoConfigStore.swift */; };
 		F266E2B9F18B4E3CF8E29AEE /* EventLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C406CEA33C73F1492EAE37B2 /* EventLog.swift */; };
@@ -67,41 +54,11 @@
 		FF2935921A8A9D53FD5AE288 /* PipOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC11398ED023B880B2D94E1 /* PipOptions.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		BD82933E7A84F77A0B78AB2C /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C59C1C7D7E5E7D363D5DEFF4 /* ShopLiveWebRTCHelperSDK.xcframework in Embed Frameworks */,
-				C560B53A6F60002DC45DA741 /* ShopliveCore.xcframework in Embed Frameworks */,
-				8DFF23F12B03AFE6315D67AB /* ShoplivePlayerSDK.xcframework in Embed Frameworks */,
-				20F366708F0184DCA35284F9 /* ShopliveStreamerSDK.xcframework in Embed Frameworks */,
-				8FCA575B2D84EE52D130B76C /* WebRTC.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E0AAC368D14CDAADFE867954 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		0320EC7631193F808724A754 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1D6D5B1D17B9635A7323D36D /* MissionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionListViewController.swift; sourceTree = "<group>"; };
-		22A6C365C9831469C8B898FB /* TuistBundle+ShopliveOnboardingDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistBundle+ShopliveOnboardingDemo.swift"; sourceTree = "<group>"; };
 		26BE5C850E8B3DB3F2060625 /* DevSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevSheetViewController.swift; sourceTree = "<group>"; };
 		26D71BF3760AE628BB9E1D6A /* PlayerConfigurationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerConfigurationFactory.swift; sourceTree = "<group>"; };
-		2730A1FAE059142043F3D36F /* TuistStrings+ShopliveOnboardingDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistStrings+ShopliveOnboardingDemo.swift"; sourceTree = "<group>"; };
 		2858C4BE45006D47839F3D4E /* DemoNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNavBar.swift; sourceTree = "<group>"; };
 		29C8885CD9783B19B262D451 /* ShopliveLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopliveLabels.swift; sourceTree = "<group>"; };
 		2E2307BE53FD7F78E5F23C94 /* ProductDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailViewController.swift; sourceTree = "<group>"; };
@@ -122,22 +79,17 @@
 		9BC89750E265E2A2A2E72954 /* PlayerHostOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerHostOverlay.swift; sourceTree = "<group>"; };
 		A21637917CE04E8F74B3E2A8 /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		A4BE877A48DBCF45E62C5EC1 /* ShopliveOnboardingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShopliveOnboardingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A5A4B1EF7534B4FC44224D85 /* ShopliveOnboardingDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "ShopliveOnboardingDemo-Info.plist"; sourceTree = "<group>"; };
+		A5A4B1EF7534B4FC44224D85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AF15BAF2F7C30FC0714C37AA /* DemoPlayerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoPlayerDelegate.swift; sourceTree = "<group>"; };
 		B0CC246411D83EC6FDFBC0C4 /* MissionCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionCatalog.swift; sourceTree = "<group>"; };
-		B2C33EDFE2B9CF0B515CB0F6 /* ShopLiveWebRTCHelperSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ShopLiveWebRTCHelperSDK.xcframework; path = "/Users/tabber/mobile-sdk-demo/iOS/Tuist/.build/artifacts/shoplive-sdk-ios/ShopLiveWebRTCHelperSDK/ShopLiveWebRTCHelperSDK.xcframework"; sourceTree = "<absolute>"; };
 		B91FA76773206C79135409D6 /* IntegrationCopyPasteProof.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IntegrationCopyPasteProof.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCE7A9B6D543F320EC07603C /* ShopliveLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopliveLog.swift; sourceTree = "<group>"; };
-		BF7B3C3D300F5B6EC0973F92 /* ShoplivePlayerSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ShoplivePlayerSDK.xcframework; path = "/Users/tabber/mobile-sdk-demo/iOS/Tuist/.build/artifacts/shoplive-sdk-ios/ShoplivePlayerSDK/ShoplivePlayerSDK.xcframework"; sourceTree = "<absolute>"; };
 		C406CEA33C73F1492EAE37B2 /* EventLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventLog.swift; sourceTree = "<group>"; };
 		C6987DCE07C3BCE5DD6E66BA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C9B1F8CD9264CE954DD8E839 /* DemoTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTheme.swift; sourceTree = "<group>"; };
-		CE9FD36E56D45BEF884228E9 /* ShopliveCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ShopliveCore.xcframework; path = "/Users/tabber/mobile-sdk-demo/iOS/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveCore/ShopliveCore.xcframework"; sourceTree = "<absolute>"; };
 		DA20055C0EB25B7882631934 /* DemoBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoBootstrap.swift; sourceTree = "<group>"; };
 		DCC11398ED023B880B2D94E1 /* PipOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipOptions.swift; sourceTree = "<group>"; };
-		DEA34B602CE70221BCFEB198 /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = "/Users/tabber/mobile-sdk-demo/iOS/Tuist/.build/artifacts/shoplive-sdk-ios/WebRTC/WebRTC.xcframework"; sourceTree = "<absolute>"; };
 		F752E05215E0B7E6177DE06B /* ShopliveBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopliveBootstrap.swift; sourceTree = "<group>"; };
-		F8D805A3698CC9023F1C6805 /* ShopliveStreamerSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ShopliveStreamerSDK.xcframework; path = "/Users/tabber/mobile-sdk-demo/iOS/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveStreamerSDK/ShopliveStreamerSDK.xcframework"; sourceTree = "<absolute>"; };
 		F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSetup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,11 +98,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CF8B9B9AAD54950C84E5DE1 /* ShopLiveWebRTCHelperSDK.xcframework in Frameworks */,
-				6E5F2649E8A93A1EBD024C52 /* ShopliveCore.xcframework in Frameworks */,
-				126A50F2C511CEAA3C234ABB /* ShoplivePlayerSDK.xcframework in Frameworks */,
-				D45465742B575CE9584161A7 /* ShopliveStreamerSDK.xcframework in Frameworks */,
-				C6BA387D7BE04A897F5FF864 /* WebRTC.xcframework in Frameworks */,
+				5A1000000000000000000006 /* ShoplivePlayerSDK in Frameworks */,
+				5A1000000000000000000007 /* ShopliveStreamerSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,11 +107,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				481DAB4C9217464B328EC7E7 /* ShopLiveWebRTCHelperSDK.xcframework in Frameworks */,
-				BC6C537DFA8198AF6D741AB0 /* ShopliveCore.xcframework in Frameworks */,
-				C9E6753BE0A734A25668D16E /* ShoplivePlayerSDK.xcframework in Frameworks */,
-				DF453E5958A199E1176F6D25 /* ShopliveStreamerSDK.xcframework in Frameworks */,
-				7B44142668BE447DA0A320B3 /* WebRTC.xcframework in Frameworks */,
+				5A1000000000000000000008 /* ShoplivePlayerSDK in Frameworks */,
+				5A1000000000000000000009 /* ShopliveStreamerSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,21 +124,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4FABC41B473F615102684268 /* InfoPlists */ = {
-			isa = PBXGroup;
-			children = (
-				7A74D6313AF47559A39C7FE3 /* IntegrationCopyPasteProof-Info.plist */,
-				A5A4B1EF7534B4FC44224D85 /* ShopliveOnboardingDemo-Info.plist */,
-			);
-			path = InfoPlists;
-			sourceTree = "<group>";
-		};
 		5CF67AC5E7BCA9CE8DA1B634 = {
 			isa = PBXGroup;
 			children = (
 				216A35C6F014FC239FA0B15B /* Products */,
 				DB5F2B028BB7B9400803281B /* Project */,
-				A75B11C303F4EAD5DEF373E7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -208,27 +144,6 @@
 				A21637917CE04E8F74B3E2A8 /* StartViewController.swift */,
 			);
 			path = Screens;
-			sourceTree = "<group>";
-		};
-		A75B11C303F4EAD5DEF373E7 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CE9FD36E56D45BEF884228E9 /* ShopliveCore.xcframework */,
-				BF7B3C3D300F5B6EC0973F92 /* ShoplivePlayerSDK.xcframework */,
-				F8D805A3698CC9023F1C6805 /* ShopliveStreamerSDK.xcframework */,
-				B2C33EDFE2B9CF0B515CB0F6 /* ShopLiveWebRTCHelperSDK.xcframework */,
-				DEA34B602CE70221BCFEB198 /* WebRTC.xcframework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		A8F46B6CB79242DD36158830 /* Derived */ = {
-			isa = PBXGroup;
-			children = (
-				4FABC41B473F615102684268 /* InfoPlists */,
-				E679748B4C01B3837E5B4C29 /* Sources */,
-			);
-			path = Derived;
 			sourceTree = "<group>";
 		};
 		B65C0BEA4287359B51D92EB6 /* ShopliveIntegration */ = {
@@ -277,7 +192,7 @@
 		DB5F2B028BB7B9400803281B /* Project */ = {
 			isa = PBXGroup;
 			children = (
-				A8F46B6CB79242DD36158830 /* Derived */,
+				7A74D6313AF47559A39C7FE3 /* IntegrationCopyPasteProof-Info.plist */,
 				B65C0BEA4287359B51D92EB6 /* ShopliveIntegration */,
 				FC3D0CAD650674D3F204CE18 /* ShopliveOnboardingDemo */,
 			);
@@ -292,18 +207,10 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		E679748B4C01B3837E5B4C29 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				22A6C365C9831469C8B898FB /* TuistBundle+ShopliveOnboardingDemo.swift */,
-				2730A1FAE059142043F3D36F /* TuistStrings+ShopliveOnboardingDemo.swift */,
-			);
-			path = Sources;
-			sourceTree = "<group>";
-		};
 		FC3D0CAD650674D3F204CE18 /* ShopliveOnboardingDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A5A4B1EF7534B4FC44224D85 /* Info.plist */,
 				BA7BE0AB95EE10362B22117A /* App */,
 				DF903AC0DB0F0E8AE8DE456B /* Resources */,
 				8703A2786037D5FCAD3E2DE4 /* Screens */,
@@ -322,7 +229,6 @@
 				0701ADD64FD4B5C5B530BC2F /* Sources */,
 				17F7E30BDEAD5C9A9FDBCE89 /* Resources */,
 				3996F9FD6937CDF97CD16789 /* Frameworks */,
-				BD82933E7A84F77A0B78AB2C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -330,6 +236,8 @@
 			);
 			name = ShopliveOnboardingDemo;
 			packageProductDependencies = (
+				5A1000000000000000000002 /* ShoplivePlayerSDK */,
+				5A1000000000000000000003 /* ShopliveStreamerSDK */,
 			);
 			productName = ShopliveOnboardingDemo;
 			productReference = A4BE877A48DBCF45E62C5EC1 /* ShopliveOnboardingDemo.app */;
@@ -342,7 +250,6 @@
 				4F2480C87850EA8495D85DBC /* Sources */,
 				75D75623875A293D46DFFB1A /* Resources */,
 				70FA865FD4E3149ACE4B6AB4 /* Frameworks */,
-				E0AAC368D14CDAADFE867954 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -350,6 +257,8 @@
 			);
 			name = IntegrationCopyPasteProof;
 			packageProductDependencies = (
+				5A1000000000000000000004 /* ShoplivePlayerSDK */,
+				5A1000000000000000000005 /* ShopliveStreamerSDK */,
 			);
 			productName = IntegrationCopyPasteProof;
 			productReference = B91FA76773206C79135409D6 /* IntegrationCopyPasteProof.framework */;
@@ -362,8 +271,6 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = B1EC2CF6A4C7D5215624BD11 /* Build configuration list for PBXProject "ShopliveOnboardingDemo" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -376,6 +283,9 @@
 				ko,
 			);
 			mainGroup = 5CF67AC5E7BCA9CE8DA1B634;
+			packageReferences = (
+				5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */,
+			);
 			productRefGroup = 216A35C6F014FC239FA0B15B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -409,8 +319,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B93F66EE2BE7073265E017A3 /* TuistBundle+ShopliveOnboardingDemo.swift in Sources */,
-				BE1C198BEDF756C52D319DE5 /* TuistStrings+ShopliveOnboardingDemo.swift in Sources */,
 				9AAAF961089B6F589ABEF6F7 /* DeepLinkRouter.swift in Sources */,
 				93E94E24B3FA095CBC2E2E75 /* DemoPlayerDelegate.swift in Sources */,
 				78D581E599463D806D4F637D /* EmbeddedPlayerView.swift in Sources */,
@@ -550,15 +458,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D237UGRPX6;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopLiveWebRTCHelperSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveCore",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShoplivePlayerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveStreamerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/WebRTC",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/ShopliveOnboardingDemo-Info.plist";
+				INFOPLIST_FILE = ShopliveOnboardingDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -574,10 +474,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-					"$(inherited)",
-					DEBUG,
-				);
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -596,15 +493,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D237UGRPX6;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopLiveWebRTCHelperSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveCore",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShoplivePlayerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveStreamerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/WebRTC",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/ShopliveOnboardingDemo-Info.plist";
+				INFOPLIST_FILE = ShopliveOnboardingDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -691,15 +580,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopLiveWebRTCHelperSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveCore",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShoplivePlayerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveStreamerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/WebRTC",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/IntegrationCopyPasteProof-Info.plist";
+				INFOPLIST_FILE = "IntegrationCopyPasteProof-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -718,10 +599,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-					"$(inherited)",
-					DEBUG,
-				);
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -740,15 +618,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopLiveWebRTCHelperSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveCore",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShoplivePlayerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/ShopliveStreamerSDK",
-					"$(SRCROOT)/Tuist/.build/artifacts/shoplive-sdk-ios/WebRTC",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/IntegrationCopyPasteProof-Info.plist";
+				INFOPLIST_FILE = "IntegrationCopyPasteProof-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -806,6 +676,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shoplive/shoplive-sdk-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5A1000000000000000000002 /* ShoplivePlayerSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */;
+			productName = ShoplivePlayerSDK;
+		};
+		5A1000000000000000000003 /* ShopliveStreamerSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */;
+			productName = ShopliveStreamerSDK;
+		};
+		5A1000000000000000000004 /* ShoplivePlayerSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */;
+			productName = ShoplivePlayerSDK;
+		};
+		5A1000000000000000000005 /* ShopliveStreamerSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A1000000000000000000001 /* XCRemoteSwiftPackageReference "shoplive-sdk-ios" */;
+			productName = ShopliveStreamerSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C5E8F5B95D309B89B8237A39 /* Project object */;
 }
