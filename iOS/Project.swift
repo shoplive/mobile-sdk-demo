@@ -8,9 +8,9 @@ import ProjectDescription
 //            · Integration/       ← the copy target. SDK calls only, no demo UI dependencies.
 //            · Screens/, Support/ ← the demo harness. Not a copy target.
 //
-// The 5 xcframeworks in Frameworks/ are linked and embedded directly rather than via SPM, because this
-// is a pre-release stage and we want to validate against local binaries. For customer distribution
-// this is replaced by SPM.
+// The SDK comes in over SPM, exactly as an integrator gets it — see Tuist/Package.swift.
+// Only two products are declared; ShopliveCore, ShopLiveWebRTCHelperSDK and WebRTC are linked
+// automatically because the two products carry them.
 
 private let bundleId = "cloud.shoplive.onboarding.demo"
 
@@ -56,11 +56,8 @@ let project = Project(
             sources: ["ShopliveOnboardingDemo/**/*.swift", "ShopliveIntegration/**/*.swift"],
             resources: ["ShopliveOnboardingDemo/Resources/**"],
             dependencies: [
-                .xcframework(path: "Frameworks/ShopliveCore.xcframework"),
-                .xcframework(path: "Frameworks/ShoplivePlayerSDK.xcframework"),
-                .xcframework(path: "Frameworks/ShopliveStreamerSDK.xcframework"),
-                .xcframework(path: "Frameworks/ShopLiveWebRTCHelperSDK.xcframework"),
-                .xcframework(path: "Frameworks/WebRTC.xcframework"),
+                .external(name: "ShoplivePlayerSDK"),
+                .external(name: "ShopliveStreamerSDK"),
             ],
             settings: .settings(base: [
                 "TARGETED_DEVICE_FAMILY": "1",
@@ -100,11 +97,8 @@ let project = Project(
             infoPlist: .default,
             sources: ["ShopliveIntegration/**/*.swift"],
             dependencies: [
-                .xcframework(path: "Frameworks/ShopliveCore.xcframework"),
-                .xcframework(path: "Frameworks/ShoplivePlayerSDK.xcframework"),
-                .xcframework(path: "Frameworks/ShopliveStreamerSDK.xcframework"),
-                .xcframework(path: "Frameworks/ShopLiveWebRTCHelperSDK.xcframework"),
-                .xcframework(path: "Frameworks/WebRTC.xcframework"),
+                .external(name: "ShoplivePlayerSDK"),
+                .external(name: "ShopliveStreamerSDK"),
             ],
             settings: .settings(base: [
                 "TARGETED_DEVICE_FAMILY": "1",

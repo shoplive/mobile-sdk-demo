@@ -10,10 +10,15 @@
 ## 1. 바로 실행하기
 
 ```bash
+tuist install                              # SDK 내려받기 (클론 후 최초 1회)
 open ShopliveOnboardingDemo.xcworkspace
 ```
 
-`.xcodeproj` 는 저장소에 포함돼 있어 **Tuist 없이** 열어서 바로 빌드됩니다.
+`tuist install` 이 먼저 필요합니다. SDK 를 SPM 으로 받는데, 내려받은 바이너리는
+`Tuist/.build/` 에 들어가고 저장소에는 포함되지 않기 때문입니다(약 62MB).
+받는 버전은 `Tuist/Package.resolved` 가 고정합니다.
+
+`.xcodeproj` 는 저장소에 포함돼 있어 그 다음부터는 **Tuist 없이** 열어서 바로 빌드됩니다.
 시뮬레이터/실기기 모두 동작하며, 내장 데모 캠페인 키가 들어 있어 **입력 없이** "둘러보기 · 바로 시작" 으로 미션 1~7 을 확인할 수 있습니다.
 미션 8(송출)은 송출 토큰이 필요하고 **토큰은 소스에 두지 않으므로**, S1 에서 직접 입력해야 잠금이 풀립니다(입력값은 Keychain 에만 저장).
 
@@ -22,6 +27,9 @@ open ShopliveOnboardingDemo.xcworkspace
 ```bash
 tuist generate --no-open
 ```
+
+> SDK 버전을 바꿀 때는 `Tuist/Package.swift` 를 고친 뒤 `tuist install && tuist generate` 를
+> 실행하고, 생성된 `.xcodeproj` 와 `Package.resolved` 를 함께 커밋합니다.
 
 ---
 
@@ -80,23 +88,39 @@ xcodebuild -workspace ShopliveOnboardingDemo.xcworkspace -scheme IntegrationCopy
 
 ## 3. 프레임워크
 
-`Frameworks/` 에 xcframework 5종이 들어 있고 앱 타깃이 직접 링크·임베드합니다.
+SDK 는 **SPM 으로** 들어옵니다 — 고객사가 받는 방식 그대로입니다.
 
-| xcframework | 내용 |
-|---|---|
-| `ShopliveCore` | 공통 — 인증 · 설정 · 사용자 · 에러 |
-| `ShoplivePlayerSDK` | 시청 — HLS/WebRTC 엔진 내장 · 자동 절체 · PIP · 오버레이 |
-| `ShopliveStreamerSDK` | 송출 — 스튜디오 UI 전체 (1차 WebRTC) |
-| `ShopLiveWebRTCHelperSDK` | Player/Streamer 의 내부 의존 |
-| `WebRTC` | rtc-ios 1.0.26 바이너리 |
+```swift
+// Tuist/Package.swift
+.package(url: "https://github.com/shoplive/shoplive-sdk-ios", exact: "3.0.0")
+
+// Project.swift
+dependencies: [
+    .external(name: "ShoplivePlayerSDK"),
+    .external(name: "ShopliveStreamerSDK"),
+]
+```
+
+**선언하는 건 두 개뿐**이고, 나머지 셋은 그 안에 실려 따라옵니다.
+
+| xcframework | 내용 | 직접 선언 |
+|---|---|---|
+| `ShoplivePlayerSDK` | 시청 — HLS/WebRTC 엔진 내장 · 자동 절체 · PIP · 오버레이 | ✅ |
+| `ShopliveStreamerSDK` | 송출 — 스튜디오 UI 전체 (WebRTC · RTMP) | ✅ |
+| `ShopliveCore` | 공통 — 인증 · 설정 · 사용자 · 에러 | 자동 |
+| `ShopLiveWebRTCHelperSDK` | Player/Streamer 의 내부 의존 | 자동 |
+| `WebRTC` | rtc-ios 1.0.26 바이너리 (약 34MB dynamic framework) | 자동 |
 
 각 슬라이스: `ios-arm64` (실기기) + `ios-arm64_x86_64-simulator`. `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` 로 빌드해 `.swiftinterface` 를 포함합니다.
 
-> **고객사 배포 시**: 로컬 xcframework 대신 SPM 으로 대체됩니다.
-> ```
-> https://github.com/shoplive/shoplive-ios-sdk
-> ```
-> 그때는 `Frameworks/` 참조를 지우고 `ShoplivePlayerSDK` / `ShopliveStreamerSDK` 만 타깃에 추가하면 됩니다(Core 는 자동으로 따라옵니다).
+`ShopliveCore` 를 따로 `import` 할 필요도 없습니다. Player/Streamer 모듈이 `@_exported import ShopliveCore` 로 재수출하고 있어서, `import ShoplivePlayerSDK` 한 줄이면 `Shoplive.*` 가 잡힙니다.
+
+```bash
+tuist install     # Tuist/Package.swift 기준으로 SDK 내려받기
+tuist generate    # 프로젝트 재생성
+```
+
+내려받은 바이너리는 `iOS/.build/` 에 들어가며 커밋 대상이 아닙니다. 버전은 `Tuist/Package.resolved` 가 고정합니다.
 
 ### 빌드 재현 (SDK 소스에서)
 

@@ -104,7 +104,7 @@ mobile-sdk-demo/
 ├── iOS/
 │   ├── ShopliveIntegration/     ★ COPY THIS — SDK calls only, zero harness deps
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
-│   ├── Frameworks/                5 xcframeworks
+│   ├── Tuist/Package.swift        SDK dependency (SPM)
 │   └── scripts/                   boundary scanner
 └── Android/
     └── app/src/main/java/cloud/shoplive/onboarding/
@@ -139,7 +139,7 @@ Both platforms report **`Shoplive.sdkVersion` = `3.0.0`**.
 
 | | Version | Built from | Delivery |
 |---|---|---|---|
-| iOS | `3.0.0` | `dev` commit `5f0ee781` | Local xcframeworks (SPM for customer projects) |
+| iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM — `github.com/shoplive/shoplive-sdk-ios` |
 | Android | `3.0.0` | Published artifacts | Private Maven — `cloud.shoplive:shoplive-{player,streamer}-sdk` |
 
 > **Same version number, not the same build.** The iOS binaries are packaged from a `dev` commit; Android consumes the published Maven artifacts. So a handful of fields still exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
@@ -171,6 +171,6 @@ Until then, the per-language URLs work with anchors directly if you need to jump
 - **Credentials** — clear or replace the demo keys (`DemoDefaults` on iOS, `local.properties` on Android). Empty keys make the app prompt for input, which is usually what you want.
 - **iOS signing** — replace `DEVELOPMENT_TEAM` in `Project.swift` and the bundle ID `cloud.shoplive.onboarding.demo`.
 - **Android repository** — switch to the distribution Maven URL (`repo-mig.us1.shoplive.cloud`).
-- **iOS SDK delivery** — drop the local `Frameworks/` references and add the SPM package instead.
+- **iOS SDK version** — `Tuist/Package.swift` pins `exact: "3.0.0"`. Loosen it to a range if you want minor updates automatically.
 
 Details in [Getting Started](docs/01-getting-started.md).

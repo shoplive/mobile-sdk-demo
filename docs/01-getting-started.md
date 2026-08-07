@@ -31,7 +31,7 @@ Android additionally needs **Maven repository credentials** (username + password
 |---|---|---|
 | Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.7.3 · Kotlin 2.0.21 · Java 17 |
 | Minimum OS | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | minSdk 24 · compileSdk 35 |
-| SDK delivery | 5 local `.xcframework` bundles in `iOS/Frameworks/` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
+| SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.0` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
 
 > ⚠️ **Both platforms report `3.0.0`, but they are not the same build.** The iOS binaries are packaged from a `dev` commit (`5f0ee781`); the Android demo consumes the published Maven artifacts. A handful of fields exist on one platform and not the other as a result — all of them are listed in [Platform Differences](platform-differences.md).
@@ -42,10 +42,17 @@ Android additionally needs **Maven repository credentials** (username + password
 
 ```bash
 cd iOS
+tuist install                              # once per clone — fetches the SDK
 open ShopliveOnboardingDemo.xcworkspace
 ```
 
-Build and run. The `.xcodeproj` is committed, so **you do not need Tuist** just to open and run the app. You only need Tuist if you change the project structure (add files, change build settings):
+`tuist install` comes first because the SDK arrives over SPM and the downloaded binaries
+(~62MB) land in `Tuist/.build/`, which is not committed. `Tuist/Package.resolved` pins the
+exact version, so everyone gets the same build.
+
+After that the `.xcodeproj` is committed, so **you do not need Tuist** just to open and run the
+app. You only need it again if you change the project structure (add files, change build
+settings) or the SDK version:
 
 ```bash
 tuist generate --no-open
@@ -69,23 +76,27 @@ If these are filled in, the app skips the start screen and goes straight to the 
 
 ### What the SDK ships as
 
-`iOS/Frameworks/` contains five xcframeworks that the app target links and embeds directly:
-
-| xcframework | What it is |
-|---|---|
-| `ShopliveCore` | Shared layer — auth, configuration, user, errors |
-| `ShoplivePlayerSDK` | Watching — HLS/WebRTC engines, automatic failover, PIP, overlay |
-| `ShopliveStreamerSDK` | Broadcasting — the entire studio UI |
-| `ShopLiveWebRTCHelperSDK` | Internal dependency of Player/Streamer |
-| `WebRTC` | `rtc-ios` 1.0.26 binary |
-
-In your own app you will use Swift Package Manager instead of local binaries:
+The demo pulls the SDK over Swift Package Manager, the same way your app will:
 
 ```
-https://github.com/shoplive/shoplive-ios-sdk
+https://github.com/shoplive/shoplive-sdk-ios
 ```
 
-Add `ShoplivePlayerSDK` and/or `ShopliveStreamerSDK` — `ShopliveCore` comes along automatically.
+**You add two products, and only two.** The other three ride along inside them:
+
+| xcframework | What it is | You add it |
+|---|---|---|
+| `ShoplivePlayerSDK` | Watching — HLS/WebRTC engines, automatic failover, PIP, overlay | ✅ |
+| `ShopliveStreamerSDK` | Broadcasting — the entire studio UI | ✅ |
+| `ShopliveCore` | Shared layer — auth, configuration, user, errors | comes along |
+| `ShopLiveWebRTCHelperSDK` | Internal dependency of Player/Streamer | comes along |
+| `WebRTC` | `rtc-ios` 1.0.26 binary | comes along |
+
+You do not `import ShopliveCore` either — the Player and Streamer modules re-export it, so
+`import ShoplivePlayerSDK` alone puts `Shoplive.*` in scope.
+
+This demo is a Tuist project, so the dependency lives in `iOS/Tuist/Package.swift` rather than
+in Xcode's package UI. Run `tuist install && tuist generate` after changing it.
 
 ---
 

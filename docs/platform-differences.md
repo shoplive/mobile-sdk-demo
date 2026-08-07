@@ -10,7 +10,7 @@ If you're integrating both platforms, read this page before you write shared des
 
 | | Version | Built from | Delivery |
 |---|---|---|---|
-| iOS | `3.0.0` | `dev` commit `5f0ee781` | Local xcframeworks in `iOS/Frameworks/` |
+| iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM — `github.com/shoplive/shoplive-sdk-ios` |
 | Android | `3.0.0` | Published artifacts | Private Maven |
 
 Both report the same version number, but they are **not the same build** — which is why the differences below exist at all.
