@@ -42,9 +42,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>라이브 방송 송출을 위해 카메라를 사용합니다.</string>
+	<string>The camera is used to broadcast live.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>라이브 방송 송출을 위해 마이크를 사용합니다.</string>
+	<string>The microphone is used to broadcast live.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -149,6 +149,15 @@ playground.xcworkspace
 # Swift Package Manager
 # Package.resolved
 
+# Tuist's SPM checkout — `tuist install` puts the resolved packages and the downloaded
+# xcframeworks here. Well over 100MB, and fully reproducible from Tuist/Package.swift.
+# Tuist/Package.resolved is NOT ignored: it pins the exact versions and belongs in the repo.
+iOS/.build/
+iOS/Tuist/.build/
+
+# SwiftPM's per-user editor state, created next to any Package.swift.
+.swiftpm/
+
 ### Exceptions — keep last
 # The Gradle wrapper must be committed. Several `*.jar` rules above would exclude
 # it, and in .gitignore the last matching pattern wins, so this has to stay at the

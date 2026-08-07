@@ -19,13 +19,13 @@
       disablePerformanceAntipatternChecker = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/kylekwon/Documents/workspace/Domo for SDK 3.0/iOS"
+      customWorkingDirectory = "/Users/tabber/mobile-sdk-demo/iOS"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <PathRunnable
-         FilePath = "/opt/homebrew/bin/tuist"
+         FilePath = "/Users/tabber/.local/share/mise/installs/tuist/4.156.0/bin/tuist"
          runnableDebuggingMode = "0">
       </PathRunnable>
       <CommandLineArguments>
