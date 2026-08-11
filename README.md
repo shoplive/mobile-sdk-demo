@@ -133,6 +133,91 @@ The `Integration` / `sdk` split is not just a convention — on iOS it's **enfor
 
 ---
 
+## Cost of integration — app size, minimum OS, build, dependencies
+
+The four questions every team asks before committing to an SDK.
+
+### How much does the app grow?
+
+Size **added to your app** by the SDK. Pick the row that matches what you actually ship: if you only need watching, you don't pay for the studio.
+
+**iOS**
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **17.0 MB** |
+| Player only (watching) | **13.1 MB** |
+| Streamer only (broadcasting) | **15.0 MB** |
+
+**Android — AAB** (the format Play Store requires, and what your users actually download)
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **19.9 MB** |
+| Player only | **13.5 MB** |
+| Streamer only | **18.7 MB** |
+
+**Android — universal APK** (direct distribution, sideloading, some enterprise channels)
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **53.8 MB** |
+| Player only | **47.4 MB** |
+| Streamer only | **52.6 MB** |
+
+Two things worth reading off these numbers:
+
+- **Both together costs far less than the sum.** iOS: 13.1 + 15.0 = 28.1 MB separately, but 17.0 MB together. Player and Streamer share `ShopliveCore` and the WebRTC binary, so the second one is close to free. Same effect on Android (13.5 + 18.7 → 19.9 MB).
+- **Ship an AAB, not a universal APK.** The ~34 MB gap is almost entirely native WebRTC libraries: a universal APK carries every ABI (`arm64-v8a`, `armeabi-v7a`, …), while an AAB delivers only the one each device needs. If a 50 MB APK is a problem for you, that's a packaging choice, not an SDK cost.
+
+### What is the minimum OS version?
+
+| | SDK requires | Why |
+|---|---|---|
+| **iOS** | **15.0** | WebRTC OS PIP uses iOS 15+ APIs |
+| **Android** | **API 23** (6.0 Marshmallow) | The transitive `shoplive-android-webrtc` declares `minSdk 23` |
+
+> **Android: the documented per-artifact floors are lower than the real one.** Player says 19 and Streamer says 21, but a build with `minSdk 21` **fails at manifest merge**:
+>
+> ```
+> minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]
+> ```
+>
+> So treat **23** as the floor regardless of which artifact you use. Measured 2026-07-30.
+
+The demo app itself sets `minSdk 24` (its `:integration` module is 23) — that is the demo's own choice, not an SDK requirement.
+
+### Build time
+
+**Not measured** — no controlled before/after benchmark has been run, so no number is claimed here.
+
+What can be said structurally is that both platforms ship **prebuilt binaries**, so the SDK is linked rather than compiled by your build:
+
+- iOS distributes `.xcframework` bundles built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES`, so they carry `.swiftinterface` and are not recompiled by your project.
+- Android distributes AARs.
+
+The expected cost is therefore in link and packaging time, not compilation. If build time matters to your decision, benchmark it on your own project — and tell us, because we'd like the number too.
+
+### Are there dependency conflicts?
+
+**Android — three real ones, all documented and all with known fixes:**
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `Unresolved reference 'core'` | `Shoplive`, `ShopliveUser`, `ShopliveConfiguration`, `ShopliveError` live in `shoplive-core`, which Player/Streamer consume as `implementation`/`compileOnly` — so it is **not** transitive to your compile classpath | Declare `cloud.shoplive:shoplive-core` explicitly alongside the others |
+| `minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]` | Transitive `shoplive-android-webrtc` requires API 23 | Raise your `minSdk` to 23 |
+| Missing flavor dimension error | The SDK library modules declare a `distribution` flavor dimension (`develop`/`qa`/`qaUs`/`ebay`); your app probably has no flavors | `missingDimensionStrategy("distribution", "develop")` in your app module |
+
+You do **not** declare `exoplayer`, `webrtc`, or `android-webrtc` — they are transitive, and overlaps between Player and Streamer are de-duplicated by the SDK.
+
+**iOS — none encountered.** Five xcframeworks link and embed directly with no conflicts in this project.
+
+> ⚠️ **One untested risk:** the SDK embeds its own `WebRTC.xcframework` (`rtc-ios` 1.0.26). If your app already links a *different* WebRTC build — via another vendor SDK, for example — that is a plausible duplicate-binary clash. Nothing in this project exercises that case, so it is **unverified**, not cleared. Worth checking early if you ship another RTC SDK.
+
+Full field-level platform differences: [Platform Differences](docs/platform-differences.md).
+
+---
+
 ## Versions covered
 
 Both platforms report **`Shoplive.sdkVersion` = `3.0.0`**.

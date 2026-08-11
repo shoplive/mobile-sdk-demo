@@ -30,9 +30,12 @@ Android additionally needs **Maven repository credentials** (username + password
 | | iOS | Android |
 |---|---|---|
 | Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.7.3 · Kotlin 2.0.21 · Java 17 |
-| Minimum OS | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | minSdk 24 · compileSdk 35 |
+| Minimum OS — **SDK requirement** | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | **API 23** (transitive `shoplive-android-webrtc` declares `minSdk 23`) |
+| Minimum OS — *this demo's own setting* | iOS 15.0 | `minSdk 24` · `compileSdk 35` |
 | SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.0` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
+
+> **Android: don't trust the per-artifact floors.** Player documents 19 and Streamer 21, but `minSdk 21` fails at manifest merge (`minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]`). **23 is the real floor.** App size, build-time and dependency-conflict details: [README § Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies).
 
 > ⚠️ **Both platforms report `3.0.0`, but they are not the same build.** The iOS binaries are packaged from a `dev` commit (`5f0ee781`); the Android demo consumes the published Maven artifacts. A handful of fields exist on one platform and not the other as a result — all of them are listed in [Platform Differences](platform-differences.md).
 
