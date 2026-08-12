@@ -1,20 +1,22 @@
-# local.properties.sample → local.properties 로 복사한 뒤 값을 채우세요.
-# local.properties 는 .gitignore 에 있어 커밋되지 않습니다.
+# Copy local.properties.sample → local.properties and fill in the values.
+# local.properties is in .gitignore, so it never gets committed.
+#
+# Nothing in here is required to build. The SDK comes from a public Maven
+# repository (https://github.com/shoplive/shoplive-sdk-android, maven-repo branch),
+# so there are no credentials to fill in.
 
-# Android SDK 위치 (Android Studio 가 자동으로 채워 줍니다)
+# Android SDK location (Android Studio fills this in for you)
 #sdk.dir=/Users/<you>/Library/Android/sdk
 
-# ── Shoplive 사설 Maven 자격증명 (필수) ─────────────────────────────────────
-# 담당자에게 발급받은 값을 넣으세요.
-shoplive.maven.username=
-shoplive.maven.password=
-
-# 고객사 배포용 저장소를 쓸 때만 지정 (기본값은 개발용 repo.us1)
-#shoplive.maven.url=https://repo-mig.us1.shoplive.cloud/repository/shoplive/
-
-# ── 둘러보기 모드용 데모 키 (선택) ──────────────────────────────────────────
-# 비워 두면 앱의 "둘러보기 · 바로 시작" 이 잠기고 직접 키를 입력해야 합니다.
-# streamToken 이 없으면 Mission 8(라이브 송출)만 잠깁니다.
+# ── Demo keys for "take a tour" mode (optional) ──────────────────────────────
+# Left empty, the app falls back to the demo account checked into the repo
+# (demo/DemoDefaults.kt). Set them to run the missions against your own account.
+# Without streamToken only Mission 8 (going live) stays locked.
 shoplive.demo.accessKey=
 shoplive.demo.campaignKey=
 shoplive.demo.streamToken=
+
+# ── SDK developers only: build against local SDK sources ────────────────────
+# Replaces the published AAR with a matrix-sdk-android checkout (composite build).
+#shoplive.sdk.useLocal=true
+#shoplive.sdk.localPath=../matrix-sdk-android

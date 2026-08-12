@@ -1,6 +1,6 @@
-# ShopLive Unified SDK v3 — Mobile Onboarding Demo
+# ShopLive SDK v3 — Mobile Onboarding Demo
 
-Two demo apps — **iOS (UIKit)** and **Android (Jetpack Compose)** — that walk you through integrating the ShopLive Unified SDK v3, one feature at a time. Each app shows 8 missions; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
+Two demo apps — **iOS (UIKit)** and **Android (Jetpack Compose)** — that walk you through integrating the ShopLive SDK v3, one feature at a time. Each app shows 8 missions; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
 
 > **📘 Official integration guide: <https://sdk.shoplive.cloud/>**
 >
@@ -133,14 +133,199 @@ The `Integration` / `sdk` split is not just a convention — on iOS it's **enfor
 
 ---
 
+## The two SDKs — what they are, where they live, how you pull them in
+
+Both platforms ship **prebuilt binaries only, from public GitHub repositories**. There is no source to build, no
+credential to request, and no artifact to commit into your project.
+
+| | iOS | Android |
+|---|---|---|
+| **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 AARs with POM metadata |
+| **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — AAR/POM only, no source |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.0`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.0), checksum-pinned in `Package.swift` | The [`maven-repo`](https://github.com/shoplive/shoplive-sdk-android/tree/maven-repo) branch, served as a static Maven repository over `raw.githubusercontent.com`. Same artifacts also attached to [release `v3.0.0`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0) |
+| **How you integrate** | Swift Package Manager | Gradle |
+| **You declare** | 2 products | 2 coordinates |
+| **Auth** | none — public | none — public |
+| **Minimum OS** | iOS 15.0 | API 23 |
+
+### iOS — Swift Package Manager
+
+Xcode → **File ▸ Add Package Dependencies…**, paste the repository URL, and pick **Exact 3.0.0**:
+
+```
+https://github.com/shoplive/shoplive-sdk-ios
+```
+
+Then add **`ShoplivePlayerSDK`** (watching) and/or **`ShopliveStreamerSDK`** (broadcasting) to your target.
+Xcode downloads the xcframeworks into DerivedData and embeds them automatically — no Embed step, nothing in your repo.
+
+For a package-based project:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/shoplive/shoplive-sdk-ios", exact: "3.0.0")
+],
+targets: [
+    .target(name: "YourApp", dependencies: [
+        .product(name: "ShoplivePlayerSDK", package: "ShopliveSDK"),
+        .product(name: "ShopliveStreamerSDK", package: "ShopliveSDK"),
+    ])
+]
+```
+
+`import ShoplivePlayerSDK` is enough — `ShopliveCore` is re-exported, so you never import it directly.
+
+| xcframework | Download (zip) | You declare it |
+|---|---|---|
+| `ShoplivePlayerSDK` | 10.9 MB | ✅ watching |
+| `ShopliveStreamerSDK` | 18.1 MB | ✅ broadcasting |
+| `ShopliveCore` | 7.4 MB | no — part of both products |
+| `ShopLiveWebRTCHelperSDK` | 2.0 MB | no — part of both products |
+| `WebRTC` (`rtc-ios` 1.0.26) | 15.4 MB | no — part of both products |
+
+### Android — Gradle
+
+`settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        maven {
+            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
+            content { includeGroup("cloud.shoplive") }   // optional, keeps other lookups off GitHub
+        }
+        mavenCentral()   // required: the SDK's POMs depend on kotlin-stdlib, appcompat, material, gson…
+    }
+}
+```
+
+Your app module:
+
+```kotlin
+implementation("cloud.shoplive:shoplive-player-sdk:3.0.0")     // watching
+implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.0")   // broadcasting
+```
+
+Those two lines resolve eight artifacts. Note the `shoplive-` prefix — the coordinates without it do not exist.
+
+| Artifact | Download (AAR) | You declare it |
+|---|---|---|
+| `shoplive-player-sdk:3.0.0` | 185 KB | ✅ watching |
+| `shoplive-streamer-sdk:3.0.0` | 67 KB | ✅ broadcasting |
+| `shoplive-core:3.0.0` | 1.1 MB | no — transitive from both |
+| `shoplive-core-player:3.0.0` | 617 KB | no — transitive |
+| `shoplive-exoplayer:2.19.1.11` | 73 KB | no — transitive (own version line) |
+| `shoplive-webrtc:3.0.0` | 1.3 MB | no — transitive |
+| `shoplive-android-webrtc:3.0.0` | 21.5 MB | no — transitive, and what forces API 23 |
+| `shoplive-rtmp:3.0.0` | 6.6 MB | no — transitive (RTMP ingest, new in 3.0.0) |
+
+**These are download sizes, not what your app grows by.** Both platforms strip and split at packaging time — for the
+numbers that matter to your users, see the next section. This demo's own wiring:
+[`Android/settings.gradle.kts`](Android/settings.gradle.kts) · [Android details](Android/README.md#gradle-dependencies-the-part-integrators-copy) ·
+[iOS details](iOS/README.md#3-frameworks)
+
+---
+
+## Cost of integration — app size, minimum OS, build, dependencies
+
+The four questions every team asks before committing to an SDK.
+
+### How much does the app grow?
+
+Size **added to your app** by the SDK. Pick the row that matches what you actually ship: if you only need watching, you don't pay for the studio.
+
+**iOS**
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **17.0 MB** |
+| Player only (watching) | **13.1 MB** |
+| Streamer only (broadcasting) | **15.0 MB** |
+
+**Android — AAB** (the format Play Store requires, and what your users actually download)
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **19.9 MB** |
+| Player only | **13.5 MB** |
+| Streamer only | **18.7 MB** |
+
+**Android — universal APK** (direct distribution, sideloading, some enterprise channels)
+
+| What you integrate | Added |
+|---|---|
+| Player + Streamer (both) | **53.8 MB** |
+| Player only | **47.4 MB** |
+| Streamer only | **52.6 MB** |
+
+Two things worth reading off these numbers:
+
+- **Both together costs far less than the sum.** iOS: 13.1 + 15.0 = 28.1 MB separately, but 17.0 MB together. Player and Streamer share `ShopliveCore` and the WebRTC binary, so the second one is close to free. Same effect on Android (13.5 + 18.7 → 19.9 MB).
+- **Ship an AAB, not a universal APK.** The ~34 MB gap is almost entirely native WebRTC libraries: a universal APK carries every ABI (`arm64-v8a`, `armeabi-v7a`, …), while an AAB delivers only the one each device needs. If a 50 MB APK is a problem for you, that's a packaging choice, not an SDK cost.
+
+### What is the minimum OS version?
+
+| | SDK requires | Why |
+|---|---|---|
+| **iOS** | **15.0** | WebRTC OS PIP uses iOS 15+ APIs |
+| **Android** | **API 23** (6.0 Marshmallow) | The transitive `shoplive-android-webrtc` declares `minSdk 23` |
+
+> **Android: the documented per-artifact floors are lower than the real one.** Player says 19 and Streamer says 21, but a build with `minSdk 21` **fails at manifest merge**:
+>
+> ```
+> minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]
+> ```
+>
+> So treat **23** as the floor regardless of which artifact you use. Measured 2026-07-30.
+
+The demo app itself sets `minSdk 24` (its `:integration` module is 23) — that is the demo's own choice, not an SDK requirement.
+
+### Build time
+
+**Not measured** — no controlled before/after benchmark has been run, so no number is claimed here.
+
+What can be said structurally is that both platforms ship **prebuilt binaries**, so the SDK is linked rather than compiled by your build:
+
+- iOS distributes `.xcframework` bundles built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES`, so they carry `.swiftinterface` and are not recompiled by your project.
+- Android distributes AARs.
+
+The expected cost is therefore in link and packaging time, not compilation. If build time matters to your decision, benchmark it on your own project — and tell us, because we'd like the number too.
+
+### Are there dependency conflicts?
+
+**Android — two real ones, both documented and both with known fixes:**
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]` | Transitive `shoplive-android-webrtc` requires API 23 | Raise your `minSdk` to 23 |
+| Coordinates don't resolve at all | The coordinates were written without the `shoplive-` prefix (`cloud.shoplive:player-sdk`), which is what the integration guide currently prints. Those artifacts do not exist in the distribution repository | Use `cloud.shoplive:shoplive-player-sdk` / `shoplive-streamer-sdk` |
+
+You do **not** declare `core`, `core-player`, `exoplayer`, `webrtc`, `android-webrtc` or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version.
+
+> A third one only bites SDK developers: the SDK's library modules declare a `distribution` flavor dimension
+> (`develop`/`qa`/`qaUs`/`ebay`), so building against **local SDK sources** in a composite build needs
+> `missingDimensionStrategy("distribution", "develop")` in the consuming module. Consuming the published AAR does not.
+>
+> `shoplive-core` used to be listed here as a required extra declaration. On the published channel it is **not**: the
+> released POMs list it at compile scope, so it is already on your compile classpath. Verified 2026-08-12.
+
+**iOS — none encountered.** Five xcframeworks link and embed directly with no conflicts in this project.
+
+> ⚠️ **One untested risk:** the SDK embeds its own `WebRTC.xcframework` (`rtc-ios` 1.0.26). If your app already links a *different* WebRTC build — via another vendor SDK, for example — that is a plausible duplicate-binary clash. Nothing in this project exercises that case, so it is **unverified**, not cleared. Worth checking early if you ship another RTC SDK.
+
+Full field-level platform differences: [Platform Differences](docs/platform-differences.md).
+
+---
+
 ## Versions covered
 
 Both platforms report **`Shoplive.sdkVersion` = `3.0.0`**.
 
 | | Version | Built from | Delivery |
 |---|---|---|---|
-| iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM — `github.com/shoplive/shoplive-sdk-ios` |
-| Android | `3.0.0` | Published artifacts | Private Maven — `cloud.shoplive:shoplive-{player,streamer}-sdk` |
+| iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.0 (`a1a168a6`) |
+| Android | `3.0.0` | Published artifacts | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0` |
 
 > **Same version number, not the same build.** The iOS binaries are packaged from a `dev` commit; Android consumes the published Maven artifacts. So a handful of fields still exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
@@ -170,7 +355,6 @@ Until then, the per-language URLs work with anchors directly if you need to jump
 
 - **Credentials** — clear or replace the demo keys (`DemoDefaults` on iOS, `local.properties` on Android). Empty keys make the app prompt for input, which is usually what you want.
 - **iOS signing** — pick your own team in Signing & Capabilities and replace the bundle ID `cloud.shoplive.onboarding.demo`.
-- **Android repository** — switch to the distribution Maven URL (`repo-mig.us1.shoplive.cloud`).
 - **iOS SDK version** — the Xcode project pins the package to **Exact 3.0.0**. Loosen it in Package Dependencies if you want minor updates automatically.
 
 Details in [Getting Started](docs/01-getting-started.md).

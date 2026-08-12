@@ -296,7 +296,7 @@ Honest gaps. Real-device verification is required before these can be called don
 | **Swift 6 build error switching on an SDK enum** | Missing `@unknown default`. The SDK's enums are resilient ([Architecture §3.6](03-architecture.md)) |
 | **Compile error on an old type name** | Every public type gained a `Shoplive` prefix in v3. See the [rename table](api-reference.md#v3-renames-ios-breaking) |
 | **iOS device build: "requires a development team"** | Set `DEVELOPMENT_TEAM` in `Project.swift` (or pick a team in Xcode) and change the bundle ID |
-| **Android: SDK artifacts won't resolve** | Maven credentials missing. Fill in `shoplive.maven.username` / `password` in `local.properties` |
+| **Android: SDK artifacts won't resolve** | The `cloud.shoplive` repository is missing from `settings.gradle.kts`, or the coordinates dropped the `shoplive-` prefix. The repository is public — see [Getting Started §1.4](01-getting-started.md#14-run-the-android-demo) |
 
 ---
 
