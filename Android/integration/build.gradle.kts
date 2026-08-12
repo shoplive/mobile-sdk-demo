@@ -62,9 +62,14 @@ dependencies {
     api(libs.shoplive.player.sdk)
     api(libs.shoplive.streamer.sdk)
 
-    // Shoplive, ShopliveUser, ShopliveConfiguration and ShopliveError live here, and
-    // neither SDK module exposes it transitively — see the note in
-    // gradle/libs.versions.toml. A customer app copying these files needs this line.
+    // Shoplive, ShopliveUser, ShopliveConfiguration and ShopliveError live here.
+    // NOT required on the published channel: the released POMs list shoplive-core at
+    // compile scope, so it is already on the consumer's compile classpath. Verified
+    // 2026-08-12 — deleting this line still compiles this module against
+    // cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0 alone.
+    // Kept for the composite build (settings.gradle.kts): the SDK's own modules
+    // consume core with implementation/compileOnly, so on the local-sources path it is
+    // not transitive and this line is what keeps those types resolvable.
     api(libs.shoplive.core)
 
     // LifecycleOwner only, for ShoplivePlayerView.bindLifecycle(...) in

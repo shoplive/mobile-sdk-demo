@@ -95,13 +95,13 @@ dependencies {
     // lines below are only for the app's own direct use of SDK types.
     implementation(project(":integration"))
 
-    // ── Shoplive unified SDK v3 ─────────────────────────────────────────────
+    // ── Shoplive SDK v3 ─────────────────────────────────────────────────────
     // Watching only: keep the first line. Broadcasting only: the second. Both: both.
-    // core / exoplayer / webrtc / android-webrtc are internal dependencies you do not
-    // declare, and the overlap between the two artifacts is resolved by the SDK.
-//    implementation(libs.shoplive.player.sdk)
-//    implementation(libs.shoplive.streamer.sdk)
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    // core / core-player / exoplayer / webrtc / android-webrtc / rtmp arrive as POM
+    // transitives — you do not declare them — and the overlap between the two entry
+    // points is de-duplicated by version.
+    implementation(libs.shoplive.player.sdk)
+    implementation(libs.shoplive.streamer.sdk)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

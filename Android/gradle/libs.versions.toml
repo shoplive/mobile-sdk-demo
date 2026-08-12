@@ -8,9 +8,11 @@ composeBom = "2024.10.01"
 navigation = "2.8.4"
 securityCrypto = "1.1.0-alpha06"
 
-# Shoplive unified SDK v3 — one version for both Player and Streamer.
-# The two artifacts are only ever bumped together (core is an internal dependency
-# and is not declared).
+# Shoplive SDK v3 — one version for both Player and Streamer.
+# The two entry-point artifacts are only ever bumped together. Everything else
+# (core, core-player, exoplayer, webrtc, android-webrtc, rtmp) arrives transitively
+# and carries its own version line — do not pin those here.
+# Releases: https://github.com/shoplive/shoplive-sdk-android/releases
 shoplive = "3.0.0"
 
 [libraries]
@@ -31,20 +33,19 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 # ── Shoplive SDK ────────────────────────────────────────────────────────────
+# From the public distribution channel wired up in settings.gradle.kts.
 # Watching only -> player-sdk / broadcasting only -> streamer-sdk / both -> both.
-# core, exoplayer, webrtc and android-webrtc are internal dependencies you do not
-# declare, and the overlap between the two is resolved by the SDK.
+# Everything else is a POM transitive you do not declare, and the overlap between
+# the two entry points is de-duplicated by version.
 shoplive-player-sdk = { group = "cloud.shoplive", name = "shoplive-player-sdk", version.ref = "shoplive" }
 # The shared public surface (Shoplive, ShopliveUser, ShopliveConfiguration,
-# ShopliveError) lives in shoplive-core. Both SDK modules depend on it internally
-# (`implementation` / `compileOnly`), so it is NOT on a consumer's compile classpath
-# and has to be declared to use those types by name.
-# Measured 2026-07-30 against the local SDK sources (composite build), SDK 3.0.0.
-# TODO(verify): the same check against the published AAR. The private Maven
-# credentials were not available on the machine where this was measured, and the
-# generated pom drops all `cloud.shoplive` dependencies
-# (shoplive-core/build.gradle, pom.withXml), which suggests AAR consumers need this
-# line too — but that has not been observed, only read.
+# ShopliveError) lives in shoplive-core.
+# On the published channel you do NOT need this line: the released POMs list
+# shoplive-core at compile scope, so it is already on the consumer's compile
+# classpath. Verified 2026-08-12 by compiling :integration with this declaration
+# removed against shoplive-{player,streamer}-sdk:3.0.0 from the GitHub Maven repo.
+# It is still declared (integration/build.gradle.kts) for the composite build, where
+# the SDK's own modules consume core with implementation/compileOnly.
 shoplive-core = { group = "cloud.shoplive", name = "shoplive-core", version.ref = "shoplive" }
 shoplive-streamer-sdk = { group = "cloud.shoplive", name = "shoplive-streamer-sdk", version.ref = "shoplive" }
 

@@ -14,28 +14,30 @@ pluginManagement {
     }
 }
 
-// local.properties is not committed (.gitignore) — put credentials and demo keys
-// there. Precedence: local.properties -> gradle.properties -> environment.
+// local.properties is not committed (.gitignore) — put the demo keys and the local
+// SDK path there. Precedence: local.properties -> gradle.properties -> environment.
+// Nothing here is a credential: the SDK repository below is public.
 val localProps = Properties().apply {
     val file = File(rootDir, "local.properties")
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
-fun secret(key: String, env: String): String? =
+fun setting(key: String, env: String): String? =
     localProps.getProperty(key)?.takeIf { it.isNotBlank() }
         ?: providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
         ?: System.getenv(env)?.takeIf { it.isNotBlank() }
 
 // ── Building against local SDK sources (composite build) ────────────────────
-// Wires matrix-sdk-android in from a local path. The two coordinates below are
-// substituted with local projects instead of the private Maven AAR, so the
-// dependency declarations in the module build files stay unchanged.
+// SDK developers only. Wires matrix-sdk-android in from a local path; the three
+// coordinates below are substituted with local projects instead of the published
+// AAR, so the dependency declarations in the module build files stay unchanged.
+//   - turn it on:      shoplive.sdk.useLocal=true
 //   - different path:  shoplive.sdk.localPath=/absolute/or/relative/path
-//   - turn it off:     shoplive.sdk.useLocal=false  -> back to the Maven AAR
-// A missing path falls back to the Maven AAR automatically.
-val useLocalSdk = (secret("shoplive.sdk.useLocal", "SHOPLIVE_SDK_USE_LOCAL") ?: "true").toBoolean()
+// Off by default: the demo builds from the public distribution channel below, the
+// same way a customer app does. A missing path falls back to the AAR anyway.
+val useLocalSdk = (setting("shoplive.sdk.useLocal", "SHOPLIVE_SDK_USE_LOCAL") ?: "false").toBoolean()
 val localSdkDir = File(
-    secret("shoplive.sdk.localPath", "SHOPLIVE_SDK_LOCAL_PATH") ?: "../matrix-sdk-android"
+    setting("shoplive.sdk.localPath", "SHOPLIVE_SDK_LOCAL_PATH") ?: "../matrix-sdk-android"
 ).let { if (it.isAbsolute) it else File(rootDir, it.path) }.canonicalFile
 
 if (useLocalSdk && File(localSdkDir, "settings.gradle").exists()) {
@@ -60,8 +62,11 @@ dependencyResolutionManagement {
     repositories {
         google()
 
-        // ── Shoplive private Maven ───────────────────────────────────────────
-        // Where the SDK AAR comes from.
+        // ── Shoplive SDK distribution channel ────────────────────────────────
+        // The `maven-repo` branch of https://github.com/shoplive/shoplive-sdk-android,
+        // served as a static Maven repository over raw.githubusercontent.com. The repo
+        // is public, so there is no `credentials { }` block here and nothing to
+        // request — this is the whole setup.
         //
         // The older advice (`allprojects { repositories { ... } }` in the root
         // build.gradle) still works, but for a new project this block is the standard
@@ -69,14 +74,11 @@ dependencyResolutionManagement {
         // module's build file fails the build.
         maven {
             name = "shoplive"
-            url = uri(
-                secret("shoplive.maven.url", "SHOPLIVE_MAVEN_URL")
-                    ?: "https://repo.us1.shoplive.cloud/repository/shoplive/"
-            )
-            credentials {
-                username = secret("shoplive.maven.username", "SHOPLIVE_MAVEN_USERNAME")
-                password = secret("shoplive.maven.password", "SHOPLIVE_MAVEN_PASSWORD")
-            }
+            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
+
+            // Only cloud.shoplive lives here. Without this filter every artifact that
+            // misses google()/mavenCentral() would also be looked up against GitHub.
+            content { includeGroup("cloud.shoplive") }
         }
 
         mavenCentral()

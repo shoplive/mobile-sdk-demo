@@ -98,19 +98,21 @@ The dependency is registered in the Xcode project itself (Package Dependencies, 
 
 ## 1.4 Run the Android demo
 
-Copy the sample properties file and fill it in:
+Clone and build — there is nothing to configure first, because the SDK comes from a **public** Maven repository:
 
 ```bash
 cd Android
+./gradlew :app:assembleDebug
+```
+
+Optionally, to run the missions against your own account, copy the sample properties file and fill in the keys:
+
+```bash
 cp local.properties.sample local.properties
 ```
 
 ```properties
 sdk.dir=/Users/<you>/Library/Android/sdk
-
-# Private Maven — required, issued by your ShopLive contact
-shoplive.maven.username=
-shoplive.maven.password=
 
 # Demo keys for "Take a tour" mode — optional
 shoplive.demo.accessKey=
@@ -118,30 +120,23 @@ shoplive.demo.campaignKey=
 shoplive.demo.streamToken=
 ```
 
-Then build:
-
-```bash
-./gradlew :app:assembleDebug
-```
-
-`local.properties` is git-ignored, so nothing you put there gets committed. For CI, the same values can come from environment variables — `SHOPLIVE_MAVEN_USERNAME`, `SHOPLIVE_MAVEN_PASSWORD`, `SHOPLIVE_DEMO_ACCESS_KEY`, `SHOPLIVE_DEMO_CAMPAIGN_KEY`, `SHOPLIVE_DEMO_STREAM_TOKEN`. Resolution order is `local.properties` → `gradle.properties` → environment.
+`local.properties` is git-ignored, so nothing you put there gets committed. For CI, the same values can come from environment variables — `SHOPLIVE_DEMO_ACCESS_KEY`, `SHOPLIVE_DEMO_CAMPAIGN_KEY`, `SHOPLIVE_DEMO_STREAM_TOKEN`. Resolution order is `local.properties` → `gradle.properties` → environment.
 
 If the demo keys are blank, the "Take a tour" button is disabled and the user enters keys on the start screen instead.
 
 ### Gradle wiring you will copy into your own project
 
-**Repository** — in `settings.gradle.kts` (the modern location):
+**Repository** — in `settings.gradle.kts` (the modern location). The SDK is published as AAR + POM to the `maven-repo`
+branch of [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) and served over
+`raw.githubusercontent.com`. It is public, so there is no `credentials { }` block and nothing to request:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         google()
         maven {
-            url = uri("https://repo.us1.shoplive.cloud/repository/shoplive/")
-            credentials {
-                username = "<issued username>"
-                password = "<issued password>"
-            }
+            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
+            content { includeGroup("cloud.shoplive") }   // optional, keeps other lookups off GitHub
         }
         mavenCentral()
     }
@@ -150,8 +145,8 @@ dependencyResolutionManagement {
 
 The older Groovy `allprojects { repositories { … } }` form in the root `build.gradle` works exactly the same way if that's what your project uses.
 
-> The default repository above is the **development** one. For customer-facing builds use
-> `https://repo-mig.us1.shoplive.cloud/repository/shoplive/`.
+> Keep `mavenCentral()`: the SDK's POMs depend on `kotlin-stdlib`, `kotlinx-coroutines-android`, `appcompat`,
+> `material`, `lifecycle-runtime-ktx` and `gson`.
 
 **Dependencies** — in your app module:
 
@@ -165,7 +160,7 @@ implementation "cloud.shoplive:shoplive-streamer-sdk:$shoplive_sdk_version"
 - Broadcasting only → `shoplive-streamer-sdk`
 - Both → declare both
 
-You never declare `core`, `exoplayer`, `webrtc`, or `android-webrtc` — they are transitive, and overlaps between Player and Streamer are de-duplicated by the SDK.
+You never declare `core`, `core-player`, `exoplayer`, `webrtc`, `android-webrtc`, or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version. Per-artifact sizes: [Android/README.md](../Android/README.md#what-the-two-lines-actually-pull-in).
 
 This demo manages the same declaration through a version catalog, [`Android/gradle/libs.versions.toml`](../Android/gradle/libs.versions.toml).
 

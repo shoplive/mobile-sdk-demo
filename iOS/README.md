@@ -1,4 +1,4 @@
-# ShopLive unified SDK v3 — iOS onboarding demo app
+# ShopLive SDK v3 — iOS onboarding demo app
 
 A UIKit demo app built so that integrators can finish their integration by **following the missions and pasting the code from `Integration/` straight into their own app**.
 

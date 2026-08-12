@@ -1,6 +1,6 @@
 # ShopLive onboarding demo app (Android)
 
-An app for **checking the 8 features of the unified SDK v3 (Player · Streamer) with a single tap**.
+An app for **checking the 8 features of the SDK v3 (Player · Streamer) with a single tap**.
 It is built so that an integrator's developer can see each behavior with their own eyes, then **open the file printed
 on the feature card and paste that code straight into their own app**.
 
@@ -9,17 +9,21 @@ on the feature card and paste that code straight into their own app**.
 
 ---
 
-## 1. Filling in credentials
+## 1. Clone and build
 
-Copy `local.properties.sample` to `local.properties` and fill in the values.
+**Nothing to fill in, no credentials to request.** The SDK is published to a public Maven repository
+(the `maven-repo` branch of [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)), which is
+already wired up in [`settings.gradle.kts`](settings.gradle.kts).
+
+```bash
+./gradlew :app:assembleDebug
+```
+
+Optionally, copy `local.properties.sample` to `local.properties` to run the missions against your own account.
 `local.properties` is git-ignored, so **it never gets committed.**
 
 ```
 sdk.dir=/Users/<you>/Library/Android/sdk
-
-# Private Maven (required) — values issued by your contact
-shoplive.maven.username=
-shoplive.maven.password=
 
 # Demo keys for "take a tour" mode (optional)
 shoplive.demo.accessKey=
@@ -27,7 +31,7 @@ shoplive.demo.campaignKey=
 shoplive.demo.streamToken=
 ```
 
-They can also be injected through the environment variables `SHOPLIVE_MAVEN_USERNAME` / `SHOPLIVE_MAVEN_PASSWORD` and
+They can also be injected through the environment variables
 `SHOPLIVE_DEMO_ACCESS_KEY` / `SHOPLIVE_DEMO_CAMPAIGN_KEY` / `SHOPLIVE_DEMO_STREAM_TOKEN` (for CI).
 Resolution order is `local.properties` → `gradle.properties` → environment.
 
@@ -44,36 +48,27 @@ If `local.properties` (or the environment) has values, those win. To check thing
 > to happen in the Shoplive console. The stream token in particular is short-lived: when it expires Mission 8 stops
 > working, and the fix is a new token from the console, entered on both Android and iOS.
 
-The default repository is the development one (`repo.us1`). To use the customer-distribution one, add
-`shoplive.maven.url=https://repo-mig.us1.shoplive.cloud/repository/shoplive/`.
-
-## 2. Building
-
-```bash
-./gradlew :app:assembleDebug
-```
-
 ---
 
 ## Building against local SDK sources (for SDK developers)
 
-`matrix-sdk-android` can be wired in **by local path** instead of the private Maven AAR (a Gradle composite build).
+`matrix-sdk-android` can be wired in **by local path** instead of the published AAR (a Gradle composite build).
 Use it when you change the SDK and want to check it in this demo app right away.
 
-- The default path is `../matrix-sdk-android`, next to this project. If that path exists it is enabled **automatically**;
-  if not, it quietly falls back to the Maven AAR. When enabled, the configuration phase prints
-  `[shoplive] using local SDK sources: ...`.
+- **Off by default** — the demo resolves the published artifacts, the same way a customer app does. Turn it on with
+  `shoplive.sdk.useLocal=true`; the default path is `../matrix-sdk-android`, next to this project. When it is on, the
+  configuration phase prints `[shoplive] using local SDK sources: ...`. A missing path falls back to the AAR.
 - **Do not change** the dependency declarations in `app/build.gradle.kts` (`libs.shoplive.player.sdk` and friends) —
   `dependencySubstitution` in `settings.gradle.kts` substitutes the `cloud.shoplive:shoplive-player-sdk` /
-  `:shoplive-streamer-sdk` coordinates with the local projects.
+  `:shoplive-streamer-sdk` / `:shoplive-core` coordinates with the local projects.
 
 Control it from `local.properties` (the environment variables `SHOPLIVE_SDK_LOCAL_PATH` / `SHOPLIVE_SDK_USE_LOCAL` work too):
 
 ```properties
+# Build against a local SDK checkout instead of the published AAR
+shoplive.sdk.useLocal=true
 # When cloned somewhere else
 shoplive.sdk.localPath=/path/to/matrix-sdk-android
-# When you want the Maven AAR again instead of local sources
-shoplive.sdk.useLocal=false
 ```
 
 Checking that the substitution actually took effect:
@@ -92,18 +87,20 @@ Checking that the substitution actually took effect:
 
 ### Repository — `settings.gradle.kts`
 
-The standard location for a new project.
+The SDK is distributed as AAR + POM from the **`maven-repo` branch of
+[shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)**, served over
+`raw.githubusercontent.com` as a static Maven repository. The repository is **public — no credentials, no account, no
+request**. This is the whole setup:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         google()
         maven {
-            url = uri("https://repo.us1.shoplive.cloud/repository/shoplive/")
-            credentials {
-                username = "<issued username>"
-                password = "<issued password>"
-            }
+            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
+            // Optional but recommended: only cloud.shoplive lives here, so nothing else
+            // gets looked up against GitHub.
+            content { includeGroup("cloud.shoplive") }
         }
         mavenCentral()
     }
@@ -116,67 +113,17 @@ The Groovy + older form (root `build.gradle`) works exactly the same way.
 allprojects {
     repositories {
         google()
-        maven {
-            url 'https://repo.us1.shoplive.cloud/repository/shoplive/'
-            credentials {
-                username = "<issued username>"
-                password = "<issued password>"
-            }
-        }
+        maven { url 'https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo' }
         mavenCentral()
     }
 }
 ```
 
-**Do not hardcode the credentials.** This is what the demo actually does — read them from `local.properties`
-(git-ignored), falling back to `gradle.properties` and then the environment, so nothing secret reaches the repository or
-CI logs. Copy this block as-is; it is the version in [`settings.gradle.kts`](settings.gradle.kts).
+`mavenCentral()` has to stay: the SDK's POMs depend on `kotlin-stdlib`, `kotlinx-coroutines-android`, `appcompat`,
+`material`, `lifecycle-runtime-ktx` and `gson`, and those resolve from Central / Google.
 
-```kotlin
-import java.util.Properties
-
-val localProps = Properties().apply {
-    val file = File(rootDir, "local.properties")
-    if (file.exists()) file.inputStream().use { load(it) }
-}
-
-fun secret(key: String, env: String): String? =
-    localProps.getProperty(key)?.takeIf { it.isNotBlank() }
-        ?: providers.gradleProperty(key).orNull?.takeIf { it.isNotBlank() }
-        ?: System.getenv(env)?.takeIf { it.isNotBlank() }
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
-    repositories {
-        google()
-        maven {
-            name = "shoplive"
-            url = uri(
-                secret("shoplive.maven.url", "SHOPLIVE_MAVEN_URL")
-                    ?: "https://repo.us1.shoplive.cloud/repository/shoplive/"
-            )
-            credentials {
-                username = secret("shoplive.maven.username", "SHOPLIVE_MAVEN_USERNAME")
-                password = secret("shoplive.maven.password", "SHOPLIVE_MAVEN_PASSWORD")
-            }
-        }
-        mavenCentral()
-    }
-}
-```
-
-```properties
-# local.properties — never committed. Values are issued by your ShopLive contact.
-shoplive.maven.username=
-shoplive.maven.password=
-# Only for customer-distribution builds; the default above is the development repo.
-#shoplive.maven.url=https://repo-mig.us1.shoplive.cloud/repository/shoplive/
-```
-
-On CI, supply `SHOPLIVE_MAVEN_USERNAME` / `SHOPLIVE_MAVEN_PASSWORD` as secrets instead of a file.
-Note that `FAIL_ON_PROJECT_REPOS` makes a repository declared in a module's build file an error — the repository belongs
-in `settings.gradle.kts` only.
+If your project uses `RepositoriesMode.FAIL_ON_PROJECT_REPOS` (this one does), a repository declared in a *module's*
+build file is an error — the repository belongs in `settings.gradle.kts` only.
 
 ### Dependencies — app module
 
@@ -184,19 +131,18 @@ in `settings.gradle.kts` only.
 def shoplive_sdk_version = "3.0.0"
 implementation "cloud.shoplive:shoplive-player-sdk:$shoplive_sdk_version"
 implementation "cloud.shoplive:shoplive-streamer-sdk:$shoplive_sdk_version"
-implementation "cloud.shoplive:shoplive-core:$shoplive_sdk_version"
 ```
 
 - **Watching only** → just `shoplive-player-sdk`
 - **Broadcasting only** → just `shoplive-streamer-sdk`
-- Both → declare both (exoplayer, webrtc, and android-webrtc are internal dependencies you never declare, and overlaps
-  are de-duplicated by the SDK)
-- **`shoplive-core` must be declared.** `Shoplive`, `ShopliveUser`, `ShopliveConfiguration`, and `ShopliveError`
-  (= `cloud.shoplive.core.publicsurface`) live in that artifact, and the player/streamer modules consume it as
-  `implementation`/`compileOnly`, so **it is not transitive on the compile classpath**. Without it you get
-  `Unresolved reference 'core'`.
-  (Measured 2026-07-30 against local SDK sources. Whether the published AAR behaves the same is unverified — see
-  `TODO(verify)` in `gradle/libs.versions.toml`.)
+- Both → declare both. Overlapping transitives are de-duplicated by version, so you do not pay for them twice.
+- **You do not declare anything else** — `shoplive-core`, `shoplive-core-player`, `shoplive-exoplayer`,
+  `shoplive-webrtc`, `shoplive-android-webrtc` and `shoplive-rtmp` arrive as POM transitives.
+- **`shoplive-core` included.** `Shoplive`, `ShopliveUser`, `ShopliveConfiguration` and `ShopliveError`
+  (= `cloud.shoplive.core.publicsurface`) live in that artifact, and the released POMs list it at **compile scope**, so
+  it *is* on your compile classpath without a declaration. Verified 2026-08-12 by compiling this project's
+  `:integration` module against the two entry points alone. (This module still declares it explicitly — that is for the
+  composite build, where the SDK's own modules consume core with `implementation`/`compileOnly`.)
 
 **minSdk must be 23 or higher.** The documented floor is player 19 / streamer 21, but the transitive
 `shoplive-android-webrtc` declares minSdk 23, so 21 fails manifest merging
@@ -204,61 +150,34 @@ implementation "cloud.shoplive:shoplive-core:$shoplive_sdk_version"
 
 This project manages the same declarations through the version catalog (`gradle/libs.versions.toml`).
 
+### What the two lines actually pull in
+
+Resolved for 3.0.0 on the published channel — the two declared entry points plus six transitives. Sizes are the AAR
+download sizes from the [v3.0.0 release](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0), not what
+they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
+
+| Artifact | AAR | You declare it | Comes from |
+|---|---|---|---|
+| `shoplive-player-sdk:3.0.0` | 185 KB | ✅ watching | — |
+| `shoplive-streamer-sdk:3.0.0` | 67 KB | ✅ broadcasting | — |
+| `shoplive-core:3.0.0` | 1.1 MB | no | both entry points |
+| `shoplive-core-player:3.0.0` | 617 KB | no | player-sdk |
+| `shoplive-exoplayer:2.19.1.11` | 73 KB | no | player-sdk (own version line) |
+| `shoplive-webrtc:3.0.0` | 1.3 MB | no | both entry points |
+| `shoplive-android-webrtc:3.0.0` | 21.5 MB | no | webrtc — **this is what forces minSdk 23** |
+| `shoplive-rtmp:3.0.0` | 6.6 MB | no | streamer-sdk (RTMP ingest, new in 3.0.0) |
+
+Checking what resolution actually picked, and from where:
+
+```bash
+./gradlew :app:dependencyInsight --configuration debugCompileClasspath --dependency cloud.shoplive
+```
+
 > ⚠️ **The integration guide prints different coordinates.**
 > <https://sdk.shoplive.cloud/shoplive-v3-integration-guide-ko.html> shows `cloud.shoplive:player-sdk:3.0.0` /
-> `cloud.shoplive:streamer-sdk:3.0.0` (no `shoplive-` prefix) and says core comes along automatically. The coordinates
-> above are the ones this project builds against, and they match the artifact names in the private Maven
-> (`shoplive-player-sdk-3.0.0.aar`, `shoplive-streamer-sdk-3.0.0.aar`, `shoplive-core-3.0.0.aar`). Use these; the guide's
-> form does not resolve. `NEEDS CHECK` — whether the guide or the repository is meant to change.
-
-### Pulling the SDK from the private Maven in this demo
-
-This demo currently consumes the SDK as **AARs committed under `app/src/main/libs/`**, so it builds with no credentials
-at all. To switch it back to the private Maven, edit
-[`app/build.gradle.kts`](app/build.gradle.kts) — the repository wiring in `settings.gradle.kts` is already in place:
-
-```kotlin
-dependencies {
-    implementation(project(":integration"))
-
-    // Remove the embedded AARs …
-//  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-
-    // … and restore the private Maven coordinates.
-    implementation(libs.shoplive.player.sdk)     // cloud.shoplive:shoplive-player-sdk:3.0.0
-    implementation(libs.shoplive.streamer.sdk)   // cloud.shoplive:shoplive-streamer-sdk:3.0.0
-    // core is declared by :integration with `api`, so the app inherits it.
-}
-```
-
-Then fill in `shoplive.maven.username` / `shoplive.maven.password` in `local.properties` and build:
-
-```bash
-cp local.properties.sample local.properties   # then fill in the two credential lines
-./gradlew :app:assembleDebug
-```
-
-Verifying that resolution actually goes to the private Maven (and which version it picked):
-
-```bash
-./gradlew :app:dependencyInsight --configuration debugCompileClasspath --dependency shoplive-player-sdk
-```
-
-The 7 AARs currently in `app/src/main/libs/` show what the Maven POMs resolve to transitively — useful if you ever have
-to wire the SDK up without a repository at all:
-
-| AAR | Declared |
-|---|---|
-| `shoplive-player-sdk-3.0.0.aar` | ✅ explicitly |
-| `shoplive-streamer-sdk-3.0.0.aar` | ✅ explicitly |
-| `shoplive-core-3.0.0.aar` | ✅ explicitly (not transitive — see above) |
-| `shoplive-core-player-3.0.0.aar` | transitive |
-| `shoplive-exoplayer-2.19.1.10.aar` | transitive (note the different version line) |
-| `shoplive-webrtc-3.0.0.aar` | transitive |
-| `shoplive-android-webrtc-3.0.0.aar` | transitive (this is what forces minSdk 23) |
-
-> A `fileTree` of AARs carries **no dependency metadata**, which is why all 7 have to be present in that mode. On the
-> Maven path you declare only the three marked ✅.
+> `cloud.shoplive:streamer-sdk:3.0.0` (no `shoplive-` prefix). Those artifacts **do not exist** in the distribution
+> repository — the only paths published under `cloud/shoplive/` are the eight in the table above, and the release notes
+> use the `shoplive-` prefixed form too. Use the coordinates above; the guide is what needs fixing.
 
 ### Manifest
 
@@ -512,7 +431,7 @@ Results for the `:integration` extraction refactor. Only things that were actual
 | Korean in code comments | 0 (excluding localization resources such as `values-ko/` and the `한국어` label in the language picker) |
 | Injection points | 1 — `shopliveLog` |
 | **Emulator run** | ❌ **unverified** — this machine has no AVD or connected device (`adb devices` is empty, no system image installed). The app has to be run on a real device again after the refactor |
-| AAR (private Maven) mode build | ❌ **unverified** — the Maven credentials in this machine's `local.properties` are empty, so verification used local SDK sources (composite build) only |
+| Published-AAR mode build | ✅ succeeded (2026-08-12) — `:app:assembleDebug` and `:integration:assembleDebug` against `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0` from the public GitHub Maven repo, with an empty Gradle cache (`GRADLE_USER_HOME` pointed at a fresh directory) and no credentials |
 
 ```bash
 # To reproduce the pre-refactor number, run the same grep against app/.../sdk/ at the earlier commit.
