@@ -116,7 +116,7 @@ This project manages the same declarations through the version catalog (`gradle/
 ### What the two lines actually pull in
 
 Resolved for 3.0.0 on the published channel — the two declared entry points plus six transitives. Sizes are the AAR
-download sizes from the [v3.0.0 release](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0), not what
+download sizes from the [3.0.0 release](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.0), not what
 they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
 
 | Artifact | AAR | You declare it | Comes from |
