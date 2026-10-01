@@ -4,10 +4,15 @@
 
 > **Guide cross-reference:** [Data field dictionary](https://sdk.shoplive.cloud/#fields) · [ShopliveConfiguration](https://sdk.shoplive.cloud/#f-config) · [Attribution](https://sdk.shoplive.cloud/#f-attr) · [ShopliveUser](https://sdk.shoplive.cloud/#f-user) · [PlayerConfiguration](https://sdk.shoplive.cloud/#f-playerconfig) · [PlayOptions](https://sdk.shoplive.cloud/#f-playoptions) · [Types & states](https://sdk.shoplive.cloud/#types) · [Error handling](https://sdk.shoplive.cloud/#errors)
 
-A lookup table for the public surface, both platforms side by side. This reflects what the demo apps actually compile against:
+A lookup table for the public surface, both platforms side by side. It is a **snapshot of SDK `3.0.0`**, taken when
+both demo apps compiled against 3.0.0:
 
 - **iOS** — `3.0.0`, packaged from `dev` commit `5f0ee781` as local xcframeworks
 - **Android** — `3.0.0`, from `cloud.shoplive:shoplive-{player,streamer}-sdk`
+
+The demos now build against newer versions (iOS `3.0.2`, Android `3.0.1`) and this table has not been re-checked
+against them. The Android 3.0.1 additions (in-app PIP options, OS PIP error codes 9510–9514) are in the
+[3.0.1 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1).
 
 Where the two disagree, the difference is called out here and explained in [Platform Differences](platform-differences.md).
 

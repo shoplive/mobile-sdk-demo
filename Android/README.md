@@ -12,8 +12,7 @@ on the feature card and paste that code straight into their own app**.
 ## 1. Clone and build
 
 **Nothing to fill in, no credentials to request.** The SDK is published to a public Maven repository
-(the `maven-repo` branch of [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)), which is
-already wired up in [`settings.gradle.kts`](settings.gradle.kts).
+(`https://sdk.shoplive.cloud/maven-repo`), which is already wired up in [`settings.gradle.kts`](settings.gradle.kts).
 
 ```bash
 ./gradlew :app:assembleDebug
@@ -64,6 +63,7 @@ dependencyResolutionManagement {
         google()
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
+            content { includeGroup("cloud.shoplive") }   // optional: only cloud.shoplive is looked up here
         }
         mavenCentral()
     }
@@ -76,7 +76,10 @@ The Groovy + older form (root `build.gradle`) works exactly the same way.
 allprojects {
     repositories {
         google()
-        maven { url 'https://sdk.shoplive.cloud/maven-repo' }
+        maven {
+            url 'https://sdk.shoplive.cloud/maven-repo'
+            content { includeGroup 'cloud.shoplive' }
+        }
         mavenCentral()
     }
 }
@@ -100,7 +103,7 @@ dependencies {
 - **Watching only** → just `shoplive-player-sdk`
 - **Broadcasting only** → just `shoplive-streamer-sdk`
 - Both → declare both. Overlapping transitives are de-duplicated by version, so you do not pay for them twice.
-- **You do not declare anything else** — `shoplive-core`, `shoplive-core-player`, `shoplive-exoplayer`,
+- **You do not declare anything else** — `shoplive-core`, `shoplive-core-player`, `shoplive-media3`,
   `shoplive-webrtc`, `shoplive-android-webrtc` and `shoplive-rtmp` arrive as POM transitives.
 - **`shoplive-core` included.** `Shoplive`, `ShopliveUser`, `ShopliveConfiguration` and `ShopliveError`
   (= `cloud.shoplive.core.publicsurface`) live in that artifact, and the released POMs list it at **compile scope**, so
@@ -111,24 +114,31 @@ dependencies {
 `shoplive-android-webrtc` declares minSdk 23, so 21 fails manifest merging
 (`minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]`). Measured 2026-07-30.
 
-This project manages the same declarations through the version catalog (`gradle/libs.versions.toml`).
+This project declares them the same way, as plain coordinates — see
+[`integration/build.gradle.kts`](integration/build.gradle.kts) and [`app/build.gradle.kts`](app/build.gradle.kts).
+
+> **Media3 is the default HLS engine as of 3.0.1.** `shoplive-player-sdk` pulls `shoplive-media3`, which depends on
+> AndroidX Media3 1.10.1 — and Media3 1.10.1 requires **compileSdk 36** (AGP 8.10+). To stay on ExoPlayer 2 instead,
+> exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11`; never depend on both
+> ([3.0.1 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1)).
 
 ### What the two lines actually pull in
 
-Resolved for 3.0.0 on the published channel — the two declared entry points plus six transitives. Sizes are the AAR
-download sizes from the [3.0.0 release](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.0), not what
+Resolved for 3.0.1 on the published channel — the two declared entry points plus six `cloud.shoplive` transitives
+(AndroidX/Kotlin/Media3 libraries come on top, from Google/Central). Sizes are the AAR download sizes from
+`sdk.shoplive.cloud` (measured 2026-10-01), not what
 they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
 
 | Artifact | AAR | You declare it | Comes from |
 |---|---|---|---|
-| `shoplive-player-sdk:3.0.0` | 185 KB | ✅ watching | — |
-| `shoplive-streamer-sdk:3.0.0` | 67 KB | ✅ broadcasting | — |
-| `shoplive-core:3.0.0` | 1.1 MB | no | both entry points |
-| `shoplive-core-player:3.0.0` | 617 KB | no | player-sdk |
-| `shoplive-exoplayer:2.19.1.11` | 73 KB | no | player-sdk (own version line) |
-| `shoplive-webrtc:3.0.0` | 1.3 MB | no | both entry points |
-| `shoplive-android-webrtc:3.0.0` | 21.5 MB | no | webrtc — **this is what forces minSdk 23** |
-| `shoplive-rtmp:3.0.0` | 6.6 MB | no | streamer-sdk (RTMP ingest, new in 3.0.0) |
+| `shoplive-player-sdk:3.0.1` | 444 KB | ✅ watching | — |
+| `shoplive-streamer-sdk:3.0.1` | 67 KB | ✅ broadcasting | — |
+| `shoplive-core:3.0.1` | 1.1 MB | no | both entry points |
+| `shoplive-core-player:3.0.1` | 294 KB | no | player-sdk |
+| `shoplive-media3:1.10.1.1` | 72 KB | no | player-sdk (own version line; pulls AndroidX Media3 1.10.1) |
+| `shoplive-webrtc:3.0.1` | 1.1 MB | no | both entry points |
+| `shoplive-android-webrtc:3.0.1` | 21.5 MB | no | webrtc — **this is what forces minSdk 23** |
+| `shoplive-rtmp:3.0.1` | 6.6 MB | no | streamer-sdk (RTMP ingest) |
 
 Checking what resolution actually picked, and from where:
 
@@ -139,7 +149,7 @@ Checking what resolution actually picked, and from where:
 > ⚠️ **The integration guide prints different coordinates.**
 > <https://sdk.shoplive.cloud/shoplive-v3-integration-guide-ko.html> shows `cloud.shoplive:player-sdk:3.0.0` /
 > `cloud.shoplive:streamer-sdk:3.0.0` (no `shoplive-` prefix). Those artifacts **do not exist** in the distribution
-> repository — the only paths published under `cloud/shoplive/` are the eight in the table above, and the release notes
+> repository — the artifacts published under `cloud/shoplive/` are the `shoplive-` prefixed ones in the table above, and the release notes
 > use the `shoplive-` prefixed form too. Use the coordinates above; the guide is what needs fixing.
 
 ### Manifest
@@ -250,7 +260,7 @@ Adding one log line is far too easy to be stopped by review. It is blocked in tw
 
 The scanner **strips comments** before checking — an explanation like "this value flows into the demo's event log" is not
 a violation. It looks at code only. It is wired into `./gradlew check`, and [CI](.github/workflows/ci.yml) runs both
-layers (the scanner is separated so it can run without SDK credentials).
+layers (the scanner is separated so it runs without building the SDK).
 
 ```bash
 # Boundary check (no credentials needed)

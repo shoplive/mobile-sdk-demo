@@ -19,7 +19,7 @@ You need three values. All of them come from the ShopLive Queenie console or fro
 | **campaignKey** | Playing a specific broadcast | Every `start` / `play` call |
 | **streamToken** | Broadcasting only (Mission 8) | `Shoplive.setStreamToken(...)` |
 
-Android additionally needs **Maven repository credentials** (username + password) to download the SDK artifacts. iOS does not — the demo ships the binaries in-tree.
+Neither platform needs repository credentials: iOS pulls the SDK through SPM from a public GitHub repository, Android from the public Maven repository at `https://sdk.shoplive.cloud/maven-repo`.
 
 > **Tip:** You can complete Missions 1–7 with just `accessKey` + `campaignKey`. Mission 8 stays locked until a `streamToken` is present, because there is no way to start a broadcast without one.
 
@@ -32,12 +32,12 @@ Android additionally needs **Maven repository credentials** (username + password
 | Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.10.1 · Kotlin 2.0.21 · Java 17 |
 | Minimum OS — **SDK requirement** | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | **API 23** (transitive `shoplive-android-webrtc` declares `minSdk 23`) |
 | Minimum OS — *this demo's own setting* | iOS 15.0 | `minSdk 24` · `compileSdk 36` |
-| SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.0` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
+| SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.2` | Public Maven (`sdk.shoplive.cloud`) — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.1` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
 
 > **Android: don't trust the per-artifact floors.** Player documents 19 and Streamer 21, but `minSdk 21` fails at manifest merge (`minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]`). **23 is the real floor.** App size, build-time and dependency-conflict details: [README § Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies).
 
-> ⚠️ **Both platforms report `3.0.0`, but they are not the same build.** The iOS binaries are packaged from a `dev` commit (`5f0ee781`); the Android demo consumes the published Maven artifacts. A handful of fields exist on one platform and not the other as a result — all of them are listed in [Platform Differences](platform-differences.md).
+> ⚠️ **The two platforms are on different SDK versions** (iOS `3.0.2`, Android `3.0.1`), and the behavior described in these docs was measured on `3.0.0`. A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](platform-differences.md).
 
 ---
 
@@ -136,6 +136,7 @@ dependencyResolutionManagement {
         google()
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
+            content { includeGroup("cloud.shoplive") }   // optional: only cloud.shoplive is looked up here
         }
         mavenCentral()
     }
@@ -160,9 +161,11 @@ dependencies {
 - Broadcasting only → `shoplive-streamer-sdk`
 - Both → declare both
 
-You never declare `core`, `core-player`, `exoplayer`, `webrtc`, `android-webrtc`, or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version. Per-artifact sizes: [Android/README.md](../Android/README.md#what-the-two-lines-actually-pull-in).
+You never declare `core`, `core-player`, `media3`, `webrtc`, `android-webrtc`, or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version. Per-artifact sizes: [Android/README.md](../Android/README.md#what-the-two-lines-actually-pull-in).
 
-This demo manages the same declaration through a version catalog, [`Android/gradle/libs.versions.toml`](../Android/gradle/libs.versions.toml).
+This demo declares them the same way, as plain coordinates in [`Android/integration/build.gradle.kts`](../Android/integration/build.gradle.kts) and [`Android/app/build.gradle.kts`](../Android/app/build.gradle.kts).
+
+> **3.0.1 needs compileSdk 36.** The player's default HLS engine is now AndroidX Media3 1.10.1 (via `shoplive-media3`), which requires compileSdk 36 / AGP 8.10+. To stay on ExoPlayer 2, exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11` instead — never both.
 
 **Manifest permissions.** `INTERNET`, `ACCESS_NETWORK_STATE`, `VIBRATE`, and `CAMERA` are already declared in the AAR and merge in automatically. **`RECORD_AUDIO` is not** — any app that broadcasts must declare it itself:
 

@@ -91,7 +91,7 @@ dependencies {
 
     // ── Shoplive SDK v3 ─────────────────────────────────────────────────────
     // Watching only: keep the first line. Broadcasting only: the second. Both: both.
-    // core / core-player / exoplayer / webrtc / android-webrtc / rtmp arrive as POM
+    // core / core-player / media3 / webrtc / android-webrtc / rtmp arrive as POM
     // transitives — you do not declare them — and the overlap between the two entry
     // points is de-duplicated by version.
     implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")

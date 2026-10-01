@@ -8,12 +8,16 @@ If you're integrating both platforms, read this page before you write shared des
 
 **Snapshots compared:**
 
+The comparison below was taken on these builds:
+
 | | Version | Built from | Delivery |
 |---|---|---|---|
 | iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM — `github.com/shoplive/shoplive-sdk-ios` |
-| Android | `3.0.0` | Published artifacts | Private Maven |
+| Android | `3.0.0` | Published artifacts | Public Maven |
 
-Both report the same version number, but they are **not the same build** — which is why the differences below exist at all.
+They reported the same version number but were **not the same build** — which is why the differences below exist at all.
+The demos now build against iOS `3.0.2` / Android `3.0.1` (public Maven at `sdk.shoplive.cloud`); this page has not been
+re-checked against those versions.
 
 Some of the differences below are **snapshot skew** (one platform is simply ahead) rather than deliberate design. Those are marked, since they may resolve on their own.
 

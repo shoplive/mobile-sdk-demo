@@ -21,6 +21,9 @@ dependencyResolutionManagement {
         // cloud.shoplive artifacts (e.g. shoplive-media3) also exist on Central.
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
+            // Only cloud.shoplive lives here. Without this, every dependency that
+            // misses google() would be looked up against this server first.
+            content { includeGroup("cloud.shoplive") }
         }
         mavenCentral()
     }

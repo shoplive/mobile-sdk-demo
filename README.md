@@ -135,14 +135,15 @@ The `Integration` / `sdk` split is not just a convention — on iOS it's **enfor
 
 ## The two SDKs — what they are, where they live, how you pull them in
 
-Both platforms ship **prebuilt binaries only, from public GitHub repositories**. There is no source to build, no
-credential to request, and no artifact to commit into your project.
+Both platforms ship **prebuilt binaries only, from public channels** — iOS from a public GitHub repository (SPM),
+Android from a public Maven repository at `sdk.shoplive.cloud`. There is no source to build, no credential to request,
+and no artifact to commit into your project.
 
 | | iOS | Android |
 |---|---|---|
-| **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 AARs with POM metadata |
-| **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — AAR/POM only, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.2`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.2), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo`. Same artifacts also attached to [release `3.0.1`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1) |
+| **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 `cloud.shoplive` AARs with POM metadata (2 declared + 6 transitive) |
+| **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — release notes and AAR/POM release assets, no source |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.2`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.2), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.1`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
@@ -193,6 +194,7 @@ dependencyResolutionManagement {
         google()
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
+            content { includeGroup("cloud.shoplive") }   // optional: only cloud.shoplive is looked up here
         }
         mavenCentral()   // required: the SDK's POMs depend on kotlin-stdlib, appcompat, material, gson…
     }
@@ -208,18 +210,20 @@ dependencies {
 }
 ```
 
-Those two lines resolve eight artifacts. Note the `shoplive-` prefix — the coordinates without it do not exist.
+Those two lines resolve eight `cloud.shoplive` artifacts, plus AndroidX / Kotlin / Media3 libraries from Google and Central. Note the `shoplive-` prefix — the coordinates without it do not exist.
 
 | Artifact | Download (AAR) | You declare it |
 |---|---|---|
-| `shoplive-player-sdk:3.0.0` | 185 KB | ✅ watching |
-| `shoplive-streamer-sdk:3.0.0` | 67 KB | ✅ broadcasting |
-| `shoplive-core:3.0.0` | 1.1 MB | no — transitive from both |
-| `shoplive-core-player:3.0.0` | 617 KB | no — transitive |
-| `shoplive-exoplayer:2.19.1.11` | 73 KB | no — transitive (own version line) |
-| `shoplive-webrtc:3.0.0` | 1.3 MB | no — transitive |
-| `shoplive-android-webrtc:3.0.0` | 21.5 MB | no — transitive, and what forces API 23 |
-| `shoplive-rtmp:3.0.0` | 6.6 MB | no — transitive (RTMP ingest, new in 3.0.0) |
+| `shoplive-player-sdk:3.0.1` | 444 KB | ✅ watching |
+| `shoplive-streamer-sdk:3.0.1` | 67 KB | ✅ broadcasting |
+| `shoplive-core:3.0.1` | 1.1 MB | no — transitive from both |
+| `shoplive-core-player:3.0.1` | 294 KB | no — transitive |
+| `shoplive-media3:1.10.1.1` | 72 KB | no — transitive (own version line; pulls AndroidX Media3 1.10.1) |
+| `shoplive-webrtc:3.0.1` | 1.1 MB | no — transitive |
+| `shoplive-android-webrtc:3.0.1` | 21.5 MB | no — transitive, and what forces API 23 |
+| `shoplive-rtmp:3.0.1` | 6.6 MB | no — transitive (RTMP ingest) |
+
+Sizes measured 2026-10-01 from `sdk.shoplive.cloud`. As of 3.0.1 the player's HLS engine is AndroidX Media3 1.10.1, which requires **compileSdk 36**; to stay on ExoPlayer 2, exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11` instead (never both).
 
 **These are download sizes, not what your app grows by.** Both platforms strip and split at packaging time — for the
 numbers that matter to your users, see the next section. This demo's own wiring:
@@ -302,7 +306,7 @@ The expected cost is therefore in link and packaging time, not compilation. If b
 | `minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]` | Transitive `shoplive-android-webrtc` requires API 23 | Raise your `minSdk` to 23 |
 | Coordinates don't resolve at all | The coordinates were written without the `shoplive-` prefix (`cloud.shoplive:player-sdk`), which is what the integration guide currently prints. Those artifacts do not exist in the distribution repository | Use `cloud.shoplive:shoplive-player-sdk` / `shoplive-streamer-sdk` |
 
-You do **not** declare `core`, `core-player`, `exoplayer`, `webrtc`, `android-webrtc` or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version.
+You do **not** declare `core`, `core-player`, `media3`, `webrtc`, `android-webrtc` or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version.
 
 > `shoplive-core` used to be listed here as a required extra declaration. On the published channel it is **not**: the
 > released POMs list it at compile scope, so it is already on your compile classpath. Verified 2026-08-12.
@@ -317,16 +321,17 @@ Full field-level platform differences: [Platform Differences](docs/platform-diff
 
 ## Versions covered
 
-Both platforms report **`Shoplive.sdkVersion` = `3.0.0`**.
+The two platforms are on **different SDK versions**, and the version a project is configured with is not the version
+its behavior was measured on:
 
-| | Version | Built from | Delivery |
+| | Configured in this repo | Delivery | Behavior measured on |
 |---|---|---|---|
-| iOS | `3.0.0` | `dev` commit `5f0ee781` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.0 (`a1a168a6`) |
-| Android | `3.0.0` | Published artifacts | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0` |
+| iOS | `3.0.2` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.2 | `3.0.0` |
+| Android | `3.0.1` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.1` from `sdk.shoplive.cloud` | `3.0.0` |
 
-> **Same version number, not the same build.** The iOS binaries are packaged from a `dev` commit; Android consumes the published Maven artifacts. So a handful of fields still exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
+A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
-Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. Where something is unverified, it says so.
+Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 against SDK 3.0.0 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. The Android move to 3.0.1 has been verified to **build** (2026-10-01), not re-run on a device. Where something is unverified, it says so.
 
 ---
 
