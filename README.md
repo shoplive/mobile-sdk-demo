@@ -191,10 +191,10 @@ targets: [
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenCentral()   // required: the SDK's POMs depend on kotlin-stdlib, appcompat, material, gson…
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
         }
+        mavenCentral()   // required: the SDK's POMs depend on kotlin-stdlib, appcompat, material, gson…
     }
 }
 ```

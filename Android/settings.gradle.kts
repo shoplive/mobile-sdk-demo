@@ -17,10 +17,12 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenCentral()
+        // Before mavenCentral(): repositories are searched in order, and some
+        // cloud.shoplive artifacts (e.g. shoplive-media3) also exist on Central.
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
         }
+        mavenCentral()
     }
 }
 

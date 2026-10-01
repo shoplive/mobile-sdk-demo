@@ -62,10 +62,10 @@ request**. This is the whole setup:
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenCentral()
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
         }
+        mavenCentral()
     }
 }
 ```

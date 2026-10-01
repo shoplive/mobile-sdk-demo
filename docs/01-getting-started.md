@@ -134,10 +134,10 @@ If the demo keys are blank, the "Take a tour" button is disabled and the user en
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenCentral()
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
         }
+        mavenCentral()
     }
 }
 ```
