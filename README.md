@@ -104,7 +104,7 @@ mobile-sdk-demo/
 ├── iOS/
 │   ├── ShopliveIntegration/     ★ COPY THIS — SDK calls only, zero harness deps
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
-│   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.0
+│   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.2
 │   └── scripts/                   boundary scanner
 └── Android/
     └── app/src/main/java/cloud/shoplive/onboarding/
@@ -142,7 +142,7 @@ credential to request, and no artifact to commit into your project.
 |---|---|---|
 | **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 AARs with POM metadata |
 | **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — AAR/POM only, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.0`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.0), checksum-pinned in `Package.swift` | The [`maven-repo`](https://github.com/shoplive/shoplive-sdk-android/tree/maven-repo) branch, served as a static Maven repository over `raw.githubusercontent.com`. Same artifacts also attached to [release `v3.0.0`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0) |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.2`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.2), checksum-pinned in `Package.swift` | The [`maven-repo`](https://github.com/shoplive/shoplive-sdk-android/tree/maven-repo) branch, served as a static Maven repository over `raw.githubusercontent.com`. Same artifacts also attached to [release `v3.0.0`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
