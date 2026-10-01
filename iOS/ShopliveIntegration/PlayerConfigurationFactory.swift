@@ -19,10 +19,10 @@ enum PlayerConfigurationFactory {
 
     /// Full-screen live viewing — all features on.
     ///
-    /// The SDK provides a `.live` constant. Its value equals `.init()`, but using it leaves the
+    /// The SDK provides a `.default` constant. Its value equals `.init()`, but using it leaves the
     /// intent visible by name at the call site.
     static func fullScreenLive() -> ShoplivePlayerConfiguration {
-        ShoplivePlayerConfiguration.live
+        ShoplivePlayerConfiguration.default
     }
 
     /// Embedded preview — a small inline preview placed in a product list and the like.
