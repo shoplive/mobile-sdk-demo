@@ -50,59 +50,22 @@ If `local.properties` (or the environment) has values, those win. To check thing
 
 ---
 
-## Building against local SDK sources (for SDK developers)
-
-`matrix-sdk-android` can be wired in **by local path** instead of the published AAR (a Gradle composite build).
-Use it when you change the SDK and want to check it in this demo app right away.
-
-- **Off by default** — the demo resolves the published artifacts, the same way a customer app does. Turn it on with
-  `shoplive.sdk.useLocal=true`; the default path is `../matrix-sdk-android`, next to this project. When it is on, the
-  configuration phase prints `[shoplive] using local SDK sources: ...`. A missing path falls back to the AAR.
-- **Do not change** the dependency declarations in `app/build.gradle.kts` (`libs.shoplive.player.sdk` and friends) —
-  `dependencySubstitution` in `settings.gradle.kts` substitutes the `cloud.shoplive:shoplive-player-sdk` /
-  `:shoplive-streamer-sdk` / `:shoplive-core` coordinates with the local projects.
-
-Control it from `local.properties` (the environment variables `SHOPLIVE_SDK_LOCAL_PATH` / `SHOPLIVE_SDK_USE_LOCAL` work too):
-
-```properties
-# Build against a local SDK checkout instead of the published AAR
-shoplive.sdk.useLocal=true
-# When cloned somewhere else
-shoplive.sdk.localPath=/path/to/matrix-sdk-android
-```
-
-Checking that the substitution actually took effect:
-
-```bash
-./gradlew :app:dependencyInsight --configuration debugCompileClasspath --dependency shoplive-player-sdk
-```
-
-> The SDK library modules have a `distribution` flavor dimension (develop/qa/qaUs/ebay). This app has no flavors, so
-> `missingDimensionStrategy("distribution", "develop")` in `app/build.gradle.kts` picks develop. It is harmless on the
-> AAR path.
-
----
-
 ## Gradle dependencies (the part integrators copy)
 
 ### Repository — `settings.gradle.kts`
 
-The SDK is distributed as AAR + POM from the **`maven-repo` branch of
-[shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)**, served over
-`raw.githubusercontent.com` as a static Maven repository. The repository is **public — no credentials, no account, no
+The SDK is distributed as AAR + POM from the static Maven repository at **`https://sdk.shoplive.cloud/maven-repo`**
+(release notes: [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)). The repository is **public — no credentials, no account, no
 request**. This is the whole setup:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         google()
-        maven {
-            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
-            // Optional but recommended: only cloud.shoplive lives here, so nothing else
-            // gets looked up against GitHub.
-            content { includeGroup("cloud.shoplive") }
-        }
         mavenCentral()
+        maven {
+            url = uri("https://sdk.shoplive.cloud/maven-repo")
+        }
     }
 }
 ```
@@ -113,7 +76,7 @@ The Groovy + older form (root `build.gradle`) works exactly the same way.
 allprojects {
     repositories {
         google()
-        maven { url 'https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo' }
+        maven { url 'https://sdk.shoplive.cloud/maven-repo' }
         mavenCentral()
     }
 }
@@ -122,15 +85,16 @@ allprojects {
 `mavenCentral()` has to stay: the SDK's POMs depend on `kotlin-stdlib`, `kotlinx-coroutines-android`, `appcompat`,
 `material`, `lifecycle-runtime-ktx` and `gson`, and those resolve from Central / Google.
 
-If your project uses `RepositoriesMode.FAIL_ON_PROJECT_REPOS` (this one does), a repository declared in a *module's*
-build file is an error — the repository belongs in `settings.gradle.kts` only.
+If your project uses `RepositoriesMode.FAIL_ON_PROJECT_REPOS`, a repository declared in a *module's* build file is an
+error — the repository belongs in `settings.gradle.kts` only.
 
 ### Dependencies — app module
 
-```groovy
-def shoplive_sdk_version = "3.0.0"
-implementation "cloud.shoplive:shoplive-player-sdk:$shoplive_sdk_version"
-implementation "cloud.shoplive:shoplive-streamer-sdk:$shoplive_sdk_version"
+```kotlin
+dependencies {
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+}
 ```
 
 - **Watching only** → just `shoplive-player-sdk`
@@ -140,9 +104,8 @@ implementation "cloud.shoplive:shoplive-streamer-sdk:$shoplive_sdk_version"
   `shoplive-webrtc`, `shoplive-android-webrtc` and `shoplive-rtmp` arrive as POM transitives.
 - **`shoplive-core` included.** `Shoplive`, `ShopliveUser`, `ShopliveConfiguration` and `ShopliveError`
   (= `cloud.shoplive.core.publicsurface`) live in that artifact, and the released POMs list it at **compile scope**, so
-  it *is* on your compile classpath without a declaration. Verified 2026-08-12 by compiling this project's
-  `:integration` module against the two entry points alone. (This module still declares it explicitly — that is for the
-  composite build, where the SDK's own modules consume core with `implementation`/`compileOnly`.)
+  it *is* on your compile classpath without a declaration. This project's `:integration` module declares only the two
+  entry points.
 
 **minSdk must be 23 or higher.** The documented floor is player 19 / streamer 21, but the transitive
 `shoplive-android-webrtc` declares minSdk 23, so 21 fails manifest merging
@@ -198,7 +161,7 @@ Checking what resolution actually picked, and from where:
 ## Composition
 
 - **Jetpack Compose + Material 3**, single Activity + Navigation Compose, ViewModel + StateFlow
-- compileSdk 35 / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.7.3
+- compileSdk 36 (required by SDK 3.0.1's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
 - Two modules — `:app` (the demo harness) and `:integration` (**the integration code you copy verbatim**, see below)
 - applicationId `cloud.shoplive.onboarding` — it can be installed alongside the SDK's internal demo app
   (`cloud.shoplive.demo`) on one device.
@@ -245,8 +208,8 @@ in English.
 
 1. Copy the 12 files into your source tree and change only the `package` declaration to your own package.
    (Nothing else needs editing.)
-2. Add the 3 SDK lines to `build.gradle` — `shoplive-player-sdk`, `shoplive-streamer-sdk`, `shoplive-core`.
-   (`shoplive-core` holds `Shoplive`, `ShopliveUser`, and `ShopliveError`, and the two SDKs do not expose it transitively.)
+2. Add the 2 SDK lines to `build.gradle` — `shoplive-player-sdk`, `shoplive-streamer-sdk`.
+   (`shoplive-core`, which holds `Shoplive`, `ShopliveUser`, and `ShopliveError`, comes in transitively.)
 3. If you want logs, one line in `Application.onCreate()`:
    `shopliveLog = { kind, message -> Log.d("Shoplive", "${kind.tag} $message") }`
 
@@ -444,5 +407,6 @@ grep -rn "DemoLog\|DemoContainer\|ProductRouter\|MissionProgress\|DemoOptions\|B
 1. **A `ShopliveError.cause` extension is silently defeated.** Because `ShopliveError` inherits `Throwable`, a `cause`
    extension property is shadowed by `Throwable.cause` at every call site — so callers get a `Throwable?` instead of the
    error cause classification. It was renamed to `causeGroup`.
-2. **`shoplive-core` is not transitive.** See "Dependencies — app module" above.
+2. **`shoplive-core` looked non-transitive** — but only against local SDK sources. On the published channel it is a
+   compile-scope transitive and is not declared. See "Dependencies — app module" above.
 3. **The effective minSdk floor is 23** (the docs say 19/21). See the same section above.

@@ -21,7 +21,7 @@ fun demoKey(key: String, env: String): String =
 
 android {
     namespace = "cloud.shoplive.onboarding"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         // A separate id so this can sit alongside the SDK demo app (cloud.shoplive.demo)
@@ -36,12 +36,6 @@ android {
 
         versionCode = 1
         versionName = "3.0.0"
-
-        // Only relevant when the local SDK sources are wired in (composite build). The
-        // SDK library modules have a "distribution" flavour dimension
-        // (develop/qa/qaUs/ebay) and this app has none, so variant matching needs a
-        // target. Harmless when consuming the AAR.
-        missingDimensionStrategy("distribution", "develop")
 
         buildConfigField("String", "DEMO_ACCESS_KEY", "\"${demoKey("shoplive.demo.accessKey", "SHOPLIVE_DEMO_ACCESS_KEY")}\"")
         buildConfigField("String", "DEMO_CAMPAIGN_KEY", "\"${demoKey("shoplive.demo.campaignKey", "SHOPLIVE_DEMO_CAMPAIGN_KEY")}\"")
@@ -100,8 +94,8 @@ dependencies {
     // core / core-player / exoplayer / webrtc / android-webrtc / rtmp arrive as POM
     // transitives — you do not declare them — and the overlap between the two entry
     // points is de-duplicated by version.
-    implementation(libs.shoplive.player.sdk)
-    implementation(libs.shoplive.streamer.sdk)
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

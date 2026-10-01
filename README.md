@@ -142,7 +142,7 @@ credential to request, and no artifact to commit into your project.
 |---|---|---|
 | **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 AARs with POM metadata |
 | **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — AAR/POM only, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.0`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.0), checksum-pinned in `Package.swift` | The [`maven-repo`](https://github.com/shoplive/shoplive-sdk-android/tree/maven-repo) branch, served as a static Maven repository over `raw.githubusercontent.com`. Same artifacts also attached to [release `v3.0.0`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0) |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.0`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.0), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo`. Same artifacts also attached to [release `v3.0.0`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/v3.0.0) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
@@ -191,11 +191,10 @@ targets: [
 dependencyResolutionManagement {
     repositories {
         google()
-        maven {
-            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
-            content { includeGroup("cloud.shoplive") }   // optional, keeps other lookups off GitHub
-        }
         mavenCentral()   // required: the SDK's POMs depend on kotlin-stdlib, appcompat, material, gson…
+        maven {
+            url = uri("https://sdk.shoplive.cloud/maven-repo")
+        }
     }
 }
 ```
@@ -203,8 +202,10 @@ dependencyResolutionManagement {
 Your app module:
 
 ```kotlin
-implementation("cloud.shoplive:shoplive-player-sdk:3.0.0")     // watching
-implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.0")   // broadcasting
+dependencies {
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+}
 ```
 
 Those two lines resolve eight artifacts. Note the `shoplive-` prefix — the coordinates without it do not exist.
@@ -303,10 +304,6 @@ The expected cost is therefore in link and packaging time, not compilation. If b
 
 You do **not** declare `core`, `core-player`, `exoplayer`, `webrtc`, `android-webrtc` or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version.
 
-> A third one only bites SDK developers: the SDK's library modules declare a `distribution` flavor dimension
-> (`develop`/`qa`/`qaUs`/`ebay`), so building against **local SDK sources** in a composite build needs
-> `missingDimensionStrategy("distribution", "develop")` in the consuming module. Consuming the published AAR does not.
->
 > `shoplive-core` used to be listed here as a required extra declaration. On the published channel it is **not**: the
 > released POMs list it at compile scope, so it is already on your compile classpath. Verified 2026-08-12.
 

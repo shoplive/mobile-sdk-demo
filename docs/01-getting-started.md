@@ -29,9 +29,9 @@ Android additionally needs **Maven repository credentials** (username + password
 
 | | iOS | Android |
 |---|---|---|
-| Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.7.3 · Kotlin 2.0.21 · Java 17 |
+| Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.10.1 · Kotlin 2.0.21 · Java 17 |
 | Minimum OS — **SDK requirement** | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | **API 23** (transitive `shoplive-android-webrtc` declares `minSdk 23`) |
-| Minimum OS — *this demo's own setting* | iOS 15.0 | `minSdk 24` · `compileSdk 35` |
+| Minimum OS — *this demo's own setting* | iOS 15.0 | `minSdk 24` · `compileSdk 36` |
 | SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.0` | Private Maven — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.0` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
 
@@ -126,19 +126,18 @@ If the demo keys are blank, the "Take a tour" button is disabled and the user en
 
 ### Gradle wiring you will copy into your own project
 
-**Repository** — in `settings.gradle.kts` (the modern location). The SDK is published as AAR + POM to the `maven-repo`
-branch of [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) and served over
-`raw.githubusercontent.com`. It is public, so there is no `credentials { }` block and nothing to request:
+**Repository** — in `settings.gradle.kts` (the modern location). The SDK is published as AAR + POM to
+`https://sdk.shoplive.cloud/maven-repo` (release notes:
+[shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android)). It is public, so there is no `credentials { }` block and nothing to request:
 
 ```kotlin
 dependencyResolutionManagement {
     repositories {
         google()
-        maven {
-            url = uri("https://raw.githubusercontent.com/shoplive/shoplive-sdk-android/maven-repo")
-            content { includeGroup("cloud.shoplive") }   // optional, keeps other lookups off GitHub
-        }
         mavenCentral()
+        maven {
+            url = uri("https://sdk.shoplive.cloud/maven-repo")
+        }
     }
 }
 ```
@@ -150,10 +149,11 @@ The older Groovy `allprojects { repositories { … } }` form in the root `build.
 
 **Dependencies** — in your app module:
 
-```groovy
-def shoplive_sdk_version = "3.0.0"
-implementation "cloud.shoplive:shoplive-player-sdk:$shoplive_sdk_version"
-implementation "cloud.shoplive:shoplive-streamer-sdk:$shoplive_sdk_version"
+```kotlin
+dependencies {
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+}
 ```
 
 - Watching only → `shoplive-player-sdk`
