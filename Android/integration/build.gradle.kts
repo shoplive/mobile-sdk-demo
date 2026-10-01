@@ -23,7 +23,7 @@ plugins {
 
 android {
     namespace = "cloud.shoplive.onboarding.integration"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         // The documented SDK floor is player 19 / streamer 21, but that is not the
@@ -33,12 +33,6 @@ android {
         // library [org.webrtc]". Measured 2026-07-30 against the local SDK sources by
         // compiling an empty app with only the SDK plus these files.
         minSdk = 23
-
-        // Only relevant when the local SDK sources are wired in through the
-        // composite build (see settings.gradle.kts). The SDK library modules
-        // carry a "distribution" flavour dimension; this module has none, so
-        // variant matching needs a target. Harmless when consuming the AAR.
-        missingDimensionStrategy("distribution", "develop")
     }
 
     compileOptions {
@@ -59,18 +53,12 @@ dependencies {
     // The Shoplive SDK, and nothing that belongs to the demo.
     // `api` because the public surface of this module hands SDK types back to
     // the caller (configurations, delegates, player handles).
-    api(libs.shoplive.player.sdk)
-    api(libs.shoplive.streamer.sdk)
+    api("cloud.shoplive:shoplive-player-sdk:3.0.1")
+    api("cloud.shoplive:shoplive-streamer-sdk:3.0.1")
 
-    // Shoplive, ShopliveUser, ShopliveConfiguration and ShopliveError live here.
-    // NOT required on the published channel: the released POMs list shoplive-core at
-    // compile scope, so it is already on the consumer's compile classpath. Verified
-    // 2026-08-12 — deleting this line still compiles this module against
-    // cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.0 alone.
-    // Kept for the composite build (settings.gradle.kts): the SDK's own modules
-    // consume core with implementation/compileOnly, so on the local-sources path it is
-    // not transitive and this line is what keeps those types resolvable.
-    api(libs.shoplive.core)
+    // Nothing else is declared: shoplive-core (Shoplive, ShopliveUser,
+    // ShopliveConfiguration, ShopliveError) and the other SDK modules arrive as
+    // POM transitives of the two lines above.
 
     // LifecycleOwner only, for ShoplivePlayerView.bindLifecycle(...) in
     // ShopliveEmbeddedPlayer.kt. Any app that hosts an Activity already has it.

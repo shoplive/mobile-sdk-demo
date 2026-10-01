@@ -2,7 +2,7 @@
 # local.properties is in .gitignore, so it never gets committed.
 #
 # Nothing in here is required to build. The SDK comes from a public Maven
-# repository (https://github.com/shoplive/shoplive-sdk-android, maven-repo branch),
+# repository (https://sdk.shoplive.cloud/maven-repo),
 # so there are no credentials to fill in.
 
 # Android SDK location (Android Studio fills this in for you)
@@ -16,7 +16,3 @@ shoplive.demo.accessKey=
 shoplive.demo.campaignKey=
 shoplive.demo.streamToken=
 
-# ── SDK developers only: build against local SDK sources ────────────────────
-# Replaces the published AAR with a matrix-sdk-android checkout (composite build).
-#shoplive.sdk.useLocal=true
-#shoplive.sdk.localPath=../matrix-sdk-android

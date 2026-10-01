@@ -28,12 +28,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     needs: boundary
-    # The SDK comes from a public Maven repository (the maven-repo branch of
-    # shoplive/shoplive-sdk-android), so there are no secrets to configure and the
-    # build runs on every push and on forks.
-    env:
-      # CI builds against the published AAR, not a local SDK checkout.
-      SHOPLIVE_SDK_USE_LOCAL: "false"
+    # The SDK comes from a public Maven repository (https://sdk.shoplive.cloud/maven-repo),
+    # so there are no secrets to configure and the build runs on every push and on forks.
     steps:
       - uses: actions/checkout@v4
 
