@@ -185,4 +185,12 @@
     <string name="language_note">既定は English です。アプリ独自の設定で、端末の言語には従いません。</string>
     <string name="err_playback_failed">再生が繰り返し失敗しています (code %1$s)。キャンペーンが配信中でないか、再生可能なストリームがありません。SDK は数秒ごとに再試行するため、ストリームが用意されるまで画面は黒いままです。</string>
     <string name="err_playback_failed_short">再生失敗 (code %1$s) — 配信中でない可能性があります</string>
+
+    <!-- ── QR input (start screen) ─────────────────────────────────────── -->
+    <string name="qr_button">QR コードで入力</string>
+    <string name="qr_title">認証情報 QR をスキャン</string>
+    <string name="qr_hint">テストアプリの QR コードにカメラを向けてください。ak(accessKey)・ck(campaignKey)・st(配信トークン)・userjwt を読み取ります。</string>
+    <string name="qr_rejected">この QR には使える値がありません。URL クエリに ak と ck の両方、または st、または userjwt が必要です。</string>
+    <string name="qr_camera_error">カメラを使用できません(%1$s)。設定でカメラへのアクセスを許可するか、キーを直接入力してください。</string>
+    <string name="qr_applied">QR「%1$s」— %2$s を入力しました。値を確認してから「検証して開始」を押してください。</string>
 </resources>

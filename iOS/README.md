@@ -174,7 +174,9 @@ enum DemoDefaults {
 **The values themselves are not copied into this document** — look at that one file for the real ones.
 
 - When handing the project to a customer, **empty these three or replace them with the customer's keys**. Emptied, the app asks for input on S1.
-- What the user types stays on the device (accessKey/campaignKey → `UserDefaults`, stream token → Keychain). Nothing is sent to a server.
+- What the user types stays on the device (accessKey/campaignKey → `UserDefaults`, stream token and User JWT → Keychain). Nothing is sent to a server.
+- **QR input**: "Use my own account" → "Scan a QR code" fills the form from a test-app QR (`ak`·`ck`·`title`·`userjwt`, plus `st` for the stream token). Format and rules: [Demo App Tour § QR code input](../docs/02-demo-app-tour.md#qr-code-input). Code: `Support/QrCredentials.swift`, `Screens/QRScanViewController.swift`.
+- **Mission 3 token method** uses the **User JWT** field. (Before 2026-10-15 it borrowed the stream token, which is a different credential.)
 - Logs and on-screen display keep only the first 8 characters and mask the rest (`DemoCredentials.masked(_:)`).
 
 > **The defaults belong to a throwaway internal demo account** and are committed so that missions up to 8 run with no setup.
@@ -190,10 +192,12 @@ enum DemoDefaults {
 
 ## 5. Localization (en default / ko / ja)
 
-- Strings: `ShopliveOnboardingDemo/Resources/{en,ko,ja}.lproj/Localizable.strings` (108 keys each; zero missing and zero extra across the three)
+- Strings: `ShopliveOnboardingDemo/Resources/{en,ko,ja}.lproj/Localizable.strings` (120 keys each; zero missing and zero extra across the three)
 - Lookup: `L("key")` / `L("key", args...)` in `Support/DemoStrings.swift`
-- **The base (development) language is `en`** — a device set to ko/ja gets that language, anything else falls back to en.
-  (`CFBundleDevelopmentRegion = en`, `CFBundleLocalizations = [en, ko, ja]`)
+- **The language is an app setting, English by default — it does not follow the device** (same as Android and Flutter).
+  Switch it with the `English / 한국어 / 日本語` control at the top of the start screen; the choice is stored in
+  `UserDefaults` (`demo.language`), and `L()` reads the matching `<lang>.lproj` bundle. The start screen rebuilds at once,
+  keeping what was typed; other screens pick it up when they are next built.
 - **EventLog messages are not localized** — they are a record of SDK calls and events for developers, so showing the API names verbatim is more accurate.
 - **All source comments are in English** (switched 2026-07-30). `ShopliveIntegration/` is teaching material that
   integrators copy and read, so an English-speaking integrator must be able to understand it from the comments alone.
@@ -201,11 +205,7 @@ enum DemoDefaults {
   project never mixes languages.
   Verification: `grep -rn '[가-힣]' ShopliveIntegration ShopliveOnboardingDemo` → 0 hits outside `Resources/*.lproj`.
 
-Checking a specific language:
-
-```bash
-xcrun simctl launch <UDID> cloud.shoplive.onboarding.demo -AppleLanguages "(ja)"
-```
+Checking a specific language: pick it on the start screen (the device language is ignored).
 
 `en.lproj` is the base language, and the other two are its translations — when you add a new string, add it to all three files.
 

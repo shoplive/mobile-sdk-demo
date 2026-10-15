@@ -20,7 +20,7 @@
 "start.field.streamToken.placeholder" = "Optional";
 "start.validate" = "Validate and start";
 "start.tip.code" = "The code is not in this app. Read it in the demo project shipped alongside — each feature card names the file to open.";
-"start.tip.privacy" = "Values are stored on this device only and never sent to a server. The stream token is kept in the Keychain.";
+"start.tip.privacy" = "Values are stored on this device only and never sent to a server. The stream token and User JWT are kept in the Keychain.";
 "start.toast.required" = "accessKey and campaignKey are required";
 "start.toast.initialized" = "✅ Initialized — key validity is confirmed on playback";
 "start.toast.tourMissing" = "The bundled demo keys are empty — fill in DemoDefaults in DemoCredentials.swift, or use “Use my own account” below";
@@ -127,3 +127,17 @@
 
 /* 재생 실패 안내 (세션당 1회) */
 "player.failure.notice" = "⚠️ Playback failed (%@) — the stream is not being broadcast. The player is left open; check the log, and tap '‹ List' to leave.";
+
+/* ── Language · QR input (start screen) ── */
+"common.back" = "Back";
+"language.label" = "Display language";
+"language.note" = "English is the default. This is an app-level setting and does not follow the device language.";
+"start.field.userJwt" = "User JWT (Mission 3)";
+"start.field.userJwt.hint" = "Optional — used to try the token method in Mission 3";
+"start.field.userJwt.placeholder" = "Optional";
+"qr.button" = "Scan a QR code";
+"qr.title" = "Scan credentials QR";
+"qr.hint" = "Point the camera at a test-app QR code. It reads ak (accessKey), ck (campaignKey), st (stream token) and userjwt.";
+"qr.rejected" = "This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.";
+"qr.cameraError" = "The camera is not available (%@). Allow camera access in Settings, or type the keys instead.";
+"qr.applied" = "QR “%@” — filled %@. Check the values, then tap “Validate and start”.";

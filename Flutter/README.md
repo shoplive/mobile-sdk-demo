@@ -66,7 +66,7 @@ https://<any host>/<any path>?ak=<accessKey>&ck=<campaignKey>&title=<label>&st=<
 | `ak` + `ck` | accessKey + campaignKey (only as a pair) | Android `CampaignListActivity`, iOS `SLQRReaderViewController` |
 | `title` | the confirmation message only | same |
 | `userjwt` | User JWT (Mission 3) | iOS PlayerDemo2 |
-| `st` | Stream token (Mission 8) | **new in this demo** — no native test app reads a stream token from QR; add it to your QR generator |
+| `st` | Stream token (Mission 8) | **new in these demos** (iOS · Android · Flutter) — no native test app reads a stream token from QR; add it to your QR generator |
 
 Nothing is saved or initialized until you tap "Validate and start". Parser:
 [`lib/demo/data/qr_credentials.dart`](lib/demo/data/qr_credentials.dart), tests: `test/qr_credentials_test.dart`.

@@ -189,6 +189,13 @@ const Map<String, Map<String, String>> generatedStrings = {
     'err_playback_failed':
         'Playback keeps failing (code {0}). The campaign may not be on air, or it has no playable stream. The SDK retries every few seconds — the screen stays black until a stream is available.',
     'err_playback_failed_short': 'Playback failed (code {0}) — campaign may not be on air',
+    'qr_button': 'Scan a QR code',
+    'qr_title': 'Scan credentials QR',
+    'qr_hint':
+        'Point the camera at a test-app QR code. It reads ak (accessKey), ck (campaignKey), st (stream token) and userjwt.',
+    'qr_rejected': 'This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.',
+    'qr_camera_error': 'The camera is not available ({0}). Allow camera access in Settings, or type the keys instead.',
+    'qr_applied': 'QR “{0}” — filled {1}. Check the values, then tap “Validate and start”.',
   },
   'ko': {
     'app_name': 'ShopLive 데모',
@@ -361,6 +368,12 @@ const Map<String, Map<String, String>> generatedStrings = {
     'err_playback_failed':
         '재생이 계속 실패합니다 (code {0}). 캠페인이 방송 중이 아니거나 재생 가능한 스트림이 없습니다. SDK 가 수 초 주기로 재시도하므로, 스트림이 생기기 전까지 화면은 검게 유지됩니다.',
     'err_playback_failed_short': '재생 실패 (code {0}) — 캠페인이 방송 중이 아닐 수 있습니다',
+    'qr_button': 'QR 코드로 입력',
+    'qr_title': '인증 정보 QR 스캔',
+    'qr_hint': '테스트앱 QR 코드에 카메라를 맞추세요. ak(accessKey)·ck(campaignKey)·st(송출 토큰)·userjwt 를 읽습니다.',
+    'qr_rejected': '이 QR 에는 쓸 수 있는 값이 없습니다. URL 쿼리에 ak 와 ck 를 함께, 또는 st, 또는 userjwt 가 있어야 합니다.',
+    'qr_camera_error': '카메라를 쓸 수 없습니다({0}). 설정에서 카메라 접근을 허용하거나 키를 직접 입력하세요.',
+    'qr_applied': 'QR “{0}” — {1} 입력 완료. 값을 확인한 뒤 “검증하고 시작하기” 를 누르세요.',
   },
   'ja': {
     'app_name': 'ShopLive デモ',
@@ -533,5 +546,11 @@ const Map<String, Map<String, String>> generatedStrings = {
     'err_playback_failed':
         '再生が繰り返し失敗しています (code {0})。キャンペーンが配信中でないか、再生可能なストリームがありません。SDK は数秒ごとに再試行するため、ストリームが用意されるまで画面は黒いままです。',
     'err_playback_failed_short': '再生失敗 (code {0}) — 配信中でない可能性があります',
+    'qr_button': 'QR コードで入力',
+    'qr_title': '認証情報 QR をスキャン',
+    'qr_hint': 'テストアプリの QR コードにカメラを向けてください。ak(accessKey)・ck(campaignKey)・st(配信トークン)・userjwt を読み取ります。',
+    'qr_rejected': 'この QR には使える値がありません。URL クエリに ak と ck の両方、または st、または userjwt が必要です。',
+    'qr_camera_error': 'カメラを使用できません({0})。設定でカメラへのアクセスを許可するか、キーを直接入力してください。',
+    'qr_applied': 'QR「{0}」— {1} を入力しました。値を確認してから「検証して開始」を押してください。',
   },
 };

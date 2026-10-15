@@ -42,7 +42,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>The camera is used to broadcast live.</string>
+	<string>The camera scans credential QR codes and is used by the broadcast studio (Mission 8).</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>The microphone is used to broadcast live.</string>
 	<key>UIApplicationSceneManifest</key>

@@ -284,10 +284,18 @@ adb shell am start -a android.intent.action.VIEW \
   -d "shoplivedemo://live?campaign=<CAMPAIGN_KEY>&ref=push_test"
 ```
 
+### QR code input
+
+"Use my own account" → **Scan a QR code** fills the form from a test-app QR (`ak`·`ck`·`title`·`userjwt`, plus `st`
+for the stream token), using `com.journeyapps:zxing-android-embedded` — the same scanner library as the native test app.
+Format and rules: [Demo App Tour § QR code input](../docs/02-demo-app-tour.md#qr-code-input). Code:
+[`data/QrCredentials.kt`](app/src/main/java/cloud/shoplive/onboarding/data/QrCredentials.kt) (unit tests:
+`./gradlew :app:testDebugUnitTest`), [`ui/start/QrScanScreen.kt`](app/src/main/java/cloud/shoplive/onboarding/ui/start/QrScanScreen.kt).
+
 ### Localization
 
 - `values/` = **English** · `values-ko/` = 한국어 · `values-ja/` = 日本語
-- All 159 string keys are defined in all three locales (zero missing, zero extra).
+- All 167 string keys are defined in all three locales (zero missing, zero extra).
 
 **The default language is English, and the app does not follow the device language.** On a Korean device the app still
 opens in English. This build is handed to integrators in several countries, and if it followed the device language there

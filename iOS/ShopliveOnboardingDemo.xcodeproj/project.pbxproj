@@ -20,6 +20,7 @@
 		42BAB1510BA59EB508CA00AC /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A21637917CE04E8F74B3E2A8 /* StartViewController.swift */; };
 		43EBE3049472D15480A1616D /* UserSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */; };
 		466421226B13D14B8C9C1F27 /* ProductDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2307BE53FD7F78E5F23C94 /* ProductDetailViewController.swift */; };
+		527989B735062368500EFD89 /* QrCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D900C3D8B186228AB6818F3 /* QrCredentials.swift */; };
 		569201E9CDD7C926AD559B80 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 34A5020368FB2478C14F763C /* Localizable.strings */; };
 		5A1000000000000000000006 /* ShoplivePlayerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000002 /* ShoplivePlayerSDK */; };
 		5A1000000000000000000007 /* ShopliveStreamerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1000000000000000000003 /* ShopliveStreamerSDK */; };
@@ -36,6 +37,7 @@
 		A43C4D17E3D06BDFE45BEDFD /* PipOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC11398ED023B880B2D94E1 /* PipOptions.swift */; };
 		A6E103E32BC91530C35FDE81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6987DCE07C3BCE5DD6E66BA /* SceneDelegate.swift */; };
 		A8DEF7FF18BC7A1FF40BD238 /* DemoNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2858C4BE45006D47839F3D4E /* DemoNavBar.swift */; };
+		AF8B6F6161123F327877A07A /* QRScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 125C6B94F527C72D98EC0F1C /* QRScanViewController.swift */; };
 		B44F2F3FE100610F86F1DC05 /* PlayerConfigurationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D71BF3760AE628BB9E1D6A /* PlayerConfigurationFactory.swift */; };
 		BBA72BDA8E86A0B8A155229F /* DemoConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1AB0D687C5F0002DA8618F /* DemoConfigBuilder.swift */; };
 		C139BE30FDA1CE5F4D46AD34 /* DemoCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E49A2472CC04B53A46B170 /* DemoCredentials.swift */; };
@@ -56,6 +58,7 @@
 
 /* Begin PBXFileReference section */
 		0320EC7631193F808724A754 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		125C6B94F527C72D98EC0F1C /* QRScanViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QRScanViewController.swift; sourceTree = "<group>"; };
 		1D6D5B1D17B9635A7323D36D /* MissionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionListViewController.swift; sourceTree = "<group>"; };
 		26BE5C850E8B3DB3F2060625 /* DevSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevSheetViewController.swift; sourceTree = "<group>"; };
 		26D71BF3760AE628BB9E1D6A /* PlayerConfigurationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerConfigurationFactory.swift; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		8277FD204817511FCC91051E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		83A6D351090B5ECB82590C98 /* DemoConfigStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoConfigStore.swift; sourceTree = "<group>"; };
 		85E49A2472CC04B53A46B170 /* DemoCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCredentials.swift; sourceTree = "<group>"; };
+		8D900C3D8B186228AB6818F3 /* QrCredentials.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QrCredentials.swift; sourceTree = "<group>"; };
 		92F1281F79BF09B8051B23A6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		961658DA0B2ECB873D81B1F5 /* StudioLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioLauncher.swift; sourceTree = "<group>"; };
 		9B1AB0D687C5F0002DA8618F /* DemoConfigBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoConfigBuilder.swift; sourceTree = "<group>"; };
@@ -142,6 +146,7 @@
 				9BC89750E265E2A2A2E72954 /* PlayerHostOverlay.swift */,
 				2E2307BE53FD7F78E5F23C94 /* ProductDetailViewController.swift */,
 				A21637917CE04E8F74B3E2A8 /* StartViewController.swift */,
+				125C6B94F527C72D98EC0F1C /* QRScanViewController.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -185,6 +190,7 @@
 				C9B1F8CD9264CE954DD8E839 /* DemoTheme.swift */,
 				C406CEA33C73F1492EAE37B2 /* EventLog.swift */,
 				B0CC246411D83EC6FDFBC0C4 /* MissionCatalog.swift */,
+				8D900C3D8B186228AB6818F3 /* QrCredentials.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -348,6 +354,8 @@
 				F9E487D4654AAC34B7A092F2 /* DemoTheme.swift in Sources */,
 				F266E2B9F18B4E3CF8E29AEE /* EventLog.swift in Sources */,
 				F5BC89D698FE69AA558AED08 /* MissionCatalog.swift in Sources */,
+				527989B735062368500EFD89 /* QrCredentials.swift in Sources */,
+				AF8B6F6161123F327877A07A /* QRScanViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

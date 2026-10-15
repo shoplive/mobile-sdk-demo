@@ -53,12 +53,14 @@ import cloud.shoplive.onboarding.ui.feed.FeedScreen
 import cloud.shoplive.onboarding.ui.feed.findActivity
 import cloud.shoplive.onboarding.ui.missions.MissionListScreen
 import cloud.shoplive.onboarding.ui.missions.ModeBar
+import cloud.shoplive.onboarding.ui.start.QrScanScreen
 import cloud.shoplive.onboarding.ui.start.StartScreen
 
 private object Routes {
     const val START = "start"
     const val MISSIONS = "missions"
     const val FEED = "feed"
+    const val QR = "qr"
 }
 
 /**
@@ -96,6 +98,8 @@ fun DemoApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: startRoute
     val isStartRoute = currentRoute == Routes.START
+    // The start screen and the QR scanner draw their own chrome.
+    val hideChrome = isStartRoute || currentRoute == Routes.QR
 
     // ── Deep link handling ───────────────────────────────────────────────────
     LaunchedEffect(deepLinkCampaignKey) {
@@ -116,7 +120,7 @@ fun DemoApp(
 
     Scaffold(
         topBar = {
-            if (!isStartRoute) {
+            if (!hideChrome) {
                 TopAppBar(
                     title = {
                         Text(
@@ -152,7 +156,7 @@ fun DemoApp(
             SnackbarHost(snackbarHostState) { data -> Snackbar(snackbarData = data) }
         },
         floatingActionButton = {
-            if (!isStartRoute) {
+            if (!hideChrome) {
                 ExtendedFloatingActionButton(
                     onClick = { viewModel.openDevSheet() },
                     text = {
@@ -172,7 +176,7 @@ fun DemoApp(
                 .padding(padding)
         ) {
             Column {
-                if (state.mode != null && !isStartRoute) {
+                if (state.mode != null && !hideChrome) {
                     val modeText = when (state.mode) {
                         DemoMode.OWN -> stringResource(
                             R.string.mode_own,
@@ -205,6 +209,17 @@ fun DemoApp(
                                     popUpTo(Routes.START) { inclusive = true }
                                 }
                             },
+                            onScanQr = { navController.navigate(Routes.QR) },
+                        )
+                    }
+
+                    composable(Routes.QR) {
+                        QrScanScreen(
+                            onResult = { qr ->
+                                viewModel.applyQrCredentials(qr)
+                                navController.popBackStack()
+                            },
+                            onBack = { navController.popBackStack() },
                         )
                     }
 

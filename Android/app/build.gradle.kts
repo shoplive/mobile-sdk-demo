@@ -112,5 +112,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
 
+    // Demo harness only: scanning credential QR codes on the start screen.
+    implementation(libs.zxing.android.embedded)
+
+    testImplementation(libs.junit)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

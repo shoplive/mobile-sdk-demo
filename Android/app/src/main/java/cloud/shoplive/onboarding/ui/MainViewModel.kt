@@ -14,6 +14,7 @@ import cloud.shoplive.onboarding.data.DemoOptionsStore
 import cloud.shoplive.onboarding.data.DevSheetTab
 import cloud.shoplive.onboarding.data.Mission
 import cloud.shoplive.onboarding.data.MissionRun
+import cloud.shoplive.onboarding.data.QrCredentials
 import cloud.shoplive.onboarding.data.missionOf
 import cloud.shoplive.onboarding.demo.DemoConfigurationFactory
 import cloud.shoplive.onboarding.demo.DemoDefaults
@@ -205,6 +206,27 @@ class MainViewModel : ViewModel() {
             )
         }
         return true
+    }
+
+    /**
+     * Fills the own-account form from a scanned QR. Only the fields the QR carries are
+     * replaced; nothing is saved or initialized until "Validate and start".
+     */
+    fun applyQrCredentials(qr: QrCredentials) {
+        val title = qr.title ?: QrCredentials.UNKNOWN_TITLE
+        val filled = qr.filledFields.joinToString(", ")
+        _state.update {
+            it.copy(
+                accessKeyInput = qr.accessKey ?: it.accessKeyInput,
+                campaignKeyInput = qr.campaignKey ?: it.campaignKeyInput,
+                streamTokenInput = qr.streamToken ?: it.streamTokenInput,
+                userJwtInput = qr.userJwt ?: it.userJwtInput,
+                ownFormExpanded = true,
+                validationError = null,
+                message = DemoContainer.string(R.string.qr_applied, title, filled),
+            )
+        }
+        DemoLog.sdkCall("QR scanned — title: $title, filled: $filled, accessKey: ${DemoLog.mask(qr.accessKey)}")
     }
 
     /** Back to the start screen (the gear icon). Credentials are kept. */
