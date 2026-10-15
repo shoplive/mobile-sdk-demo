@@ -49,6 +49,13 @@ String tr(String key, [List<Object?> args = const []]) => DemoStrings.tr(key, ar
 
 const Map<String, Map<String, String>> flutterOverrides = {
   'en': {
+    'qr_button': 'Scan a QR code',
+    'qr_title': 'Scan credentials QR',
+    'qr_hint':
+        'Point the camera at a test-app QR code. It reads ak (accessKey), ck (campaignKey), st (stream token) and userjwt.',
+    'qr_rejected': 'This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.',
+    'qr_camera_error': 'The camera is not available ({0}). Allow camera access in Settings, or type the keys instead.',
+    'qr_applied': 'QR “{0}” — filled {1}. Check the values, then tap “Validate and start”.',
     'app_name': 'ShopLive Flutter Demo',
     'start_title': 'ShopLive Flutter SDK\nIntegration Demo',
     'start_storage': 'Your input is stored only on this device (shared_preferences) and is never sent to a server.',
@@ -86,6 +93,12 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'action_read': 'Read',
   },
   'ko': {
+    'qr_button': 'QR 코드로 입력',
+    'qr_title': '인증 정보 QR 스캔',
+    'qr_hint': '테스트앱 QR 코드에 카메라를 맞추세요. ak(accessKey)·ck(campaignKey)·st(스트림 토큰)·userjwt 를 읽습니다.',
+    'qr_rejected': '이 QR 에는 쓸 수 있는 값이 없습니다. URL 쿼리에 ak 와 ck 를 함께, 또는 st, 또는 userjwt 가 있어야 합니다.',
+    'qr_camera_error': '카메라를 쓸 수 없습니다({0}). 설정에서 카메라 접근을 허용하거나 키를 직접 입력하세요.',
+    'qr_applied': 'QR “{0}” — {1} 입력 완료. 값을 확인한 뒤 “검증하고 시작하기” 를 누르세요.',
     'app_name': 'ShopLive Flutter 데모',
     'start_title': 'ShopLive Flutter SDK\n연동 데모',
     'start_storage': '입력값은 이 기기(shared_preferences)에만 저장되며 서버로 전송되지 않습니다.',
@@ -120,6 +133,12 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'action_read': '읽기',
   },
   'ja': {
+    'qr_button': 'QR コードで入力',
+    'qr_title': '認証情報 QR をスキャン',
+    'qr_hint': 'テストアプリの QR コードにカメラを向けてください。ak(accessKey)・ck(campaignKey)・st(ストリームトークン)・userjwt を読み取ります。',
+    'qr_rejected': 'この QR には使える値がありません。URL クエリに ak と ck の両方、または st、または userjwt が必要です。',
+    'qr_camera_error': 'カメラを使用できません({0})。設定でカメラへのアクセスを許可するか、キーを直接入力してください。',
+    'qr_applied': 'QR「{0}」— {1} を入力しました。値を確認してから「検証して開始」を押してください。',
     'app_name': 'ShopLive Flutter デモ',
     'start_title': 'ShopLive Flutter SDK\n連携デモ',
     'start_storage': '入力値はこの端末(shared_preferences)にのみ保存され、サーバーへは送信されません。',

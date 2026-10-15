@@ -52,6 +52,26 @@ The Android Maven repository (`https://sdk.shoplive.cloud/maven-repo`, `exclusiv
 added **by the Shoplive plugins themselves** — this project declares nothing. On iOS, `pod install` downloads and
 checksum-verifies the SDK XCFrameworks; run it with a UTF-8 locale (`LANG=en_US.UTF-8`) if you run it by hand.
 
+### QR code input
+
+"Use my own account" → **Scan a QR code** fills the form from the same QR codes the native test apps scan.
+The QR holds a URL; only its query is read:
+
+```
+https://<any host>/<any path>?ak=<accessKey>&ck=<campaignKey>&title=<label>&st=<streamToken>&userjwt=<JWT>
+```
+
+| Key | Fills | Taken from |
+|---|---|---|
+| `ak` + `ck` | accessKey + campaignKey (only as a pair) | Android `CampaignListActivity`, iOS `SLQRReaderViewController` |
+| `title` | the confirmation message only | same |
+| `userjwt` | User JWT (Mission 3) | iOS PlayerDemo2 |
+| `st` | Stream token (Mission 8) | **new in this demo** — no native test app reads a stream token from QR; add it to your QR generator |
+
+Nothing is saved or initialized until you tap "Validate and start". Parser:
+[`lib/demo/data/qr_credentials.dart`](lib/demo/data/qr_credentials.dart), tests: `test/qr_credentials_test.dart`.
+QR input is a tester convenience, so it lives in the demo harness, not in `shoplive_integration/`.
+
 ---
 
 ## 2. The copy boundary

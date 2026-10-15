@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../data/demo_defaults.dart';
 import '../data/demo_store.dart';
+import '../data/qr_credentials.dart';
 import '../demo_controller.dart';
 import '../l10n/demo_strings.dart';
 import '../widgets/common.dart';
+import 'qr_scan_screen.dart';
 
 /// S1 — choose a mode: the built-in demo campaign, or your own keys.
 ///
@@ -37,6 +39,17 @@ class _StartScreenState extends State<StartScreen> {
     super.dispose();
   }
 
+  /// Opens the scanner and copies what the QR carries into the form fields.
+  Future<void> _scanQr() async {
+    final qr = await Navigator.of(context).push<QrCredentials>(MaterialPageRoute(builder: (_) => const QrScanScreen()));
+    if (qr == null || !mounted) return;
+    c.applyQrCredentials(qr);
+    _accessKey.text = c.accessKeyInput;
+    _campaignKey.text = c.campaignKeyInput;
+    _streamToken.text = c.streamTokenInput;
+    _userJwt.text = c.userJwtInput;
+  }
+
   void _proceed() => Navigator.of(context).pushNamedAndRemoveUntil(Routes.missions, (_) => false);
 
   @override
@@ -48,8 +61,12 @@ class _StartScreenState extends State<StartScreen> {
           listenable: c,
           builder:
               (context, _) => ListView(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 40),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
                 children: [
+                  // Language first and fixed in place: below the collapsible form it
+                  // jumped up and down every time the form opened or closed.
+                  Align(alignment: Alignment.centerRight, child: _LanguagePicker(controller: c)),
+                  const SizedBox(height: 12),
                   Text(tr('start_title'), style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 10),
                   Text(tr('start_subtitle'), style: text.bodyMedium),
@@ -90,8 +107,6 @@ class _StartScreenState extends State<StartScreen> {
                   ],
                   const SizedBox(height: 18),
                   Tip(tr('start_code_tip'), tone: TipTone.ok),
-                  const SizedBox(height: 18),
-                  _LanguagePicker(controller: c),
                 ],
               ),
         ),
@@ -103,6 +118,13 @@ class _StartScreenState extends State<StartScreen> {
     const SizedBox(height: 12),
     Text(tr('start_own_tip'), style: text.bodySmall),
     const SizedBox(height: 8),
+    OutlinedButton.icon(
+      onPressed: _scanQr,
+      icon: const Icon(Icons.qr_code_scanner),
+      label: Text(tr('qr_button')),
+      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+    ),
+    const SizedBox(height: 12),
     _field(_accessKey, 'field_access_key', 'field_access_key_hint', (v) => c.accessKeyInput = v),
     _field(_campaignKey, 'field_campaign_key', 'field_campaign_key_hint', (v) => c.campaignKeyInput = v),
     _field(_streamToken, 'field_stream_token', 'field_stream_token_hint', (v) => c.streamTokenInput = v),
@@ -139,25 +161,32 @@ class _StartScreenState extends State<StartScreen> {
   );
 }
 
+/// Compact, top-right language switch. The note that explains it ("app-level, not
+/// the device language") moves into the tooltip so the header stays one row.
 class _LanguagePicker extends StatelessWidget {
   const _LanguagePicker({required this.controller});
 
   final DemoController controller;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Text(tr('language_label'), style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 6),
+      Tooltip(
+        message: '${tr('language_label')} — ${tr('language_note')}',
+        triggerMode: TooltipTriggerMode.tap,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Icon(Icons.language, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ),
       SegmentedButton<DemoLanguage>(
         segments: [for (final l in DemoLanguage.values) ButtonSegment(value: l, label: Text(l.nativeName))],
         selected: {DemoStrings.language.value},
         onSelectionChanged: (s) => controller.setLanguage(s.first),
         showSelectedIcon: false,
+        style: const ButtonStyle(visualDensity: VisualDensity.compact, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       ),
-      const SizedBox(height: 6),
-      Text(tr('language_note'), style: Theme.of(context).textTheme.bodySmall),
     ],
   );
 }

@@ -16,6 +16,7 @@ import 'data/demo_log.dart';
 import 'data/demo_options.dart';
 import 'data/demo_store.dart';
 import 'data/missions.dart';
+import 'data/qr_credentials.dart';
 import 'l10n/demo_strings.dart';
 
 /// Route names. The SDK's player and studio are native screens owned by the SDK,
@@ -187,6 +188,23 @@ class DemoController extends ChangeNotifier {
     notifyListeners();
     showMessage(tr('msg_validation_ok'));
     return true;
+  }
+
+  /// Fills the own-account form from a scanned QR. Only the fields the QR carries
+  /// are replaced; nothing is saved or initialized until "Validate and start".
+  void applyQrCredentials(QrCredentials qr) {
+    if (qr.accessKey != null) accessKeyInput = qr.accessKey!;
+    if (qr.campaignKey != null) campaignKeyInput = qr.campaignKey!;
+    if (qr.streamToken != null) streamTokenInput = qr.streamToken!;
+    if (qr.userJwt != null) userJwtInput = qr.userJwt!;
+    ownFormExpanded = true;
+    validationError = null;
+    logCall(
+      'QR scanned — title: ${qr.title ?? 'Unknown Title (QR)'}, '
+      'filled: ${qr.filledFields.join(', ')}, accessKey: ${shopliveMasked(qr.accessKey)}',
+    );
+    notifyListeners();
+    showMessage(tr('qr_applied', [qr.title ?? 'Unknown Title (QR)', qr.filledFields.join(', ')]));
   }
 
   /// Back to the start screen (the gear icon). Credentials are kept.

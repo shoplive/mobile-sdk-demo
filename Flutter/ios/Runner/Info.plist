@@ -62,7 +62,7 @@
 	<false/>
 	<!-- Mission 8 (studio). Without these iOS terminates the app when the studio asks for the camera. -->
 	<key>NSCameraUsageDescription</key>
-	<string>The broadcast studio (Mission 8) uses the camera.</string>
+	<string>The camera scans credential QR codes and is used by the broadcast studio (Mission 8).</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>The broadcast studio (Mission 8) uses the microphone.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
