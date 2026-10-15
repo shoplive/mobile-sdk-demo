@@ -1,0 +1,55 @@
+PODS:
+  - app_links (6.4.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - shoplive_core (3.0.2):
+    - Flutter
+  - shoplive_player (3.0.2):
+    - Flutter
+    - shoplive_core (= 3.0.2)
+  - shoplive_streamer (3.0.2):
+    - Flutter
+    - shoplive_core (= 3.0.2)
+  - url_launcher_ios (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - app_links (from `.symlinks/plugins/app_links/ios`)
+  - Flutter (from `Flutter`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - shoplive_core (from `.symlinks/plugins/shoplive_core/ios`)
+  - shoplive_player (from `.symlinks/plugins/shoplive_player/ios`)
+  - shoplive_streamer (from `.symlinks/plugins/shoplive_streamer/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+EXTERNAL SOURCES:
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
+  Flutter:
+    :path: Flutter
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  shoplive_core:
+    :path: ".symlinks/plugins/shoplive_core/ios"
+  shoplive_player:
+    :path: ".symlinks/plugins/shoplive_player/ios"
+  shoplive_streamer:
+    :path: ".symlinks/plugins/shoplive_streamer/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+SPEC CHECKSUMS:
+  app_links: 3dbc685f76b1693c66a6d9dd1e9ab6f73d97dc0a
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  shoplive_core: f2acb929d9b23b88533d57a83d0b9c342cf5e2a9
+  shoplive_player: 075f0e642629f5b1eea1651f747b72082006fb96
+  shoplive_streamer: 8d30ad98134a29fec7126c94002295a434186b33
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+
+PODFILE CHECKSUM: 9e1eb34606813207cf2f04e2fe2d5d503fb83031
+
+COCOAPODS: 1.16.2
