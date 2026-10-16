@@ -199,8 +199,8 @@ Same class of problem, different symptom. Both measured 2026-07-30 — full deta
 
 | | iOS | Android |
 |---|---|---|
-| Follows device language | **Yes** (ko/ja recognized, else falls back to en) | **No** — explicit in-app selector, persisted |
-| Mechanism | `.lproj` bundles + `CFBundleDevelopmentRegion = en` | Custom `LocaleSetting` + `attachBaseContext` (not Android 13+ per-app languages, so behavior is identical down to minSdk 24) |
+| Follows device language | **No** — explicit in-app selector, persisted (English default) | **No** — explicit in-app selector, persisted |
+| Mechanism | `L()` looks up the chosen `<lang>.lproj` bundle (`DemoLanguage` in `DemoStrings.swift`); the start screen rebuilds on change | Custom `LocaleSetting` + `attachBaseContext` (not Android 13+ per-app languages, so behavior is identical down to minSdk 24) |
 | SDK-drawn screens | Not affected by your app's setting | Not affected by your app's setting |
 | Developer log | English only, by design | English only, by design |
 

@@ -18,6 +18,7 @@ final class StartViewController: UIViewController {
     private let accessKeyField = StartViewController.makeField(placeholder: L("start.field.accessKey.placeholder"))
     private let campaignKeyField = StartViewController.makeField(placeholder: L("start.field.campaignKey.placeholder"))
     private let streamTokenField = StartViewController.makeField(placeholder: L("start.field.streamToken.placeholder"))
+    private let userJwtField = StartViewController.makeField(placeholder: L("start.field.userJwt.placeholder"))
 
     private lazy var tourButton = DemoButton(L("start.tour"), style: .primary)
     private lazy var ownButton = DemoButton(L("start.own.collapsed"), style: .outline)
@@ -74,10 +75,52 @@ final class StartViewController: UIViewController {
         ownButton.setDemoTitle(isFormExpanded ? L("start.own.expanded") : L("start.own.collapsed"))
     }
 
+    /// Opens the scanner and copies what the QR carries into the form fields. Only the fields the
+    /// QR carries are replaced; nothing is saved or initialized until "Validate and start".
+    @objc private func scanQR() {
+        let scanner = QRScanViewController { [weak self] qr in
+            guard let self else { return }
+            if let v = qr.accessKey { self.accessKeyField.text = v }
+            if let v = qr.campaignKey { self.campaignKeyField.text = v }
+            if let v = qr.streamToken { self.streamTokenField.text = v }
+            if let v = qr.userJwt { self.userJwtField.text = v }
+            self.expandForm()
+            let title = qr.title ?? QrCredentials.unknownTitle
+            let filled = qr.filledFields.joined(separator: ", ")
+            EventLog.shared.log(.sdk,
+                "QR scanned — title: \(title), filled: \(filled), accessKey: \(DemoCredentials.masked(qr.accessKey ?? ""))")
+            DemoToast.show(L("qr.applied", title, filled), in: self.view)
+        }
+        navigationController?.pushViewController(scanner, animated: true)
+    }
+
+    /// Switches the app language and rebuilds this screen in it (the form state is kept).
+    @objc private func languageChanged(_ control: UISegmentedControl) {
+        let language = DemoLanguage.allCases[control.selectedSegmentIndex]
+        guard language != DemoLanguage.current else { return }
+        DemoLanguage.current = language
+        let rebuilt = StartViewController(expandForm: isFormExpanded)
+        rebuilt.loadViewIfNeeded()
+        rebuilt.accessKeyField.text = accessKeyField.text
+        rebuilt.campaignKeyField.text = campaignKeyField.text
+        rebuilt.streamTokenField.text = streamTokenField.text
+        rebuilt.userJwtField.text = userJwtField.text
+        var stack = navigationController?.viewControllers ?? []
+        stack.removeLast()
+        navigationController?.setViewControllers(stack + [rebuilt], animated: false)
+    }
+
+    /// The note that explains the language setting, shown on tapping the globe (a tooltip on
+    /// Android and Flutter).
+    @objc private func showLanguageNote() {
+        DemoToast.show("\(L("language.label")) — \(L("language.note"))", in: view)
+    }
+
     @objc private func validateAndStart() {
         let accessKey = accessKeyField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let campaignKey = campaignKeyField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let streamToken = streamTokenField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let userJwt = userJwtField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
         guard !accessKey.isEmpty, !campaignKey.isEmpty else {
             DemoToast.show(L("start.toast.required"), in: view)
@@ -89,6 +132,7 @@ final class StartViewController: UIViewController {
         credentials.accessKey = accessKey
         credentials.campaignKey = campaignKey
         credentials.streamToken = streamToken
+        credentials.userJwt = userJwt
 
         // All that is validated here is "are the fields filled in". Whether the keys are actually
         // valid is decided by the SDK on first playback, and on failure the reason arrives as an
@@ -112,6 +156,7 @@ final class StartViewController: UIViewController {
         accessKeyField.text = credentials.enteredAccessKey
         campaignKeyField.text = credentials.enteredCampaignKey
         streamTokenField.text = credentials.streamToken
+        userJwtField.text = credentials.userJwt
         tourButton.setEnabledAppearance(true)
     }
 
@@ -137,7 +182,18 @@ final class StartViewController: UIViewController {
             play.centerXAnchor.constraint(equalTo: logo.centerXAnchor),
             play.centerYAnchor.constraint(equalTo: logo.centerYAnchor),
         ])
-        let logoRow = UIStackView.demo(.horizontal, alignment: .leading, [logo, UIView()])
+        // Language sits in the header and never moves: below the collapsible form it would jump
+        // up and down every time the form opened or closed. Same layout as Android and Flutter.
+        let globe = UIButton(type: .system)
+        globe.setImage(UIImage(systemName: "globe"), for: .normal)
+        globe.tintColor = DemoTheme.textSecondary
+        globe.accessibilityLabel = L("language.label")
+        globe.addTarget(self, action: #selector(showLanguageNote), for: .touchUpInside)
+        let languages = UISegmentedControl(items: DemoLanguage.allCases.map(\.nativeName))
+        languages.selectedSegmentIndex = DemoLanguage.allCases.firstIndex(of: DemoLanguage.current) ?? 0
+        languages.addTarget(self, action: #selector(languageChanged(_:)), for: .valueChanged)
+        let languageRow = UIStackView.demo(.horizontal, spacing: 4, alignment: .center, [globe, languages])
+        let logoRow = UIStackView.demo(.horizontal, alignment: .center, [logo, UIView(), languageRow])
 
         let title = UILabel.demo(L("start.title"), size: 23, weight: .heavy)
         let subtitle = UILabel.demo(
@@ -199,11 +255,20 @@ final class StartViewController: UIViewController {
         let validate = DemoButton(L("start.validate"), style: .primary)
         validate.addTarget(self, action: #selector(validateAndStart), for: .touchUpInside)
 
+        let qrButton = DemoButton(L("qr.button"), style: .outline)
+        // A configuration-based button ignores setImage(_:for:) — set it on the configuration.
+        qrButton.configuration?.image = UIImage(systemName: "qrcode.viewfinder")
+        qrButton.configuration?.imagePadding = 8
+        qrButton.configuration?.baseForegroundColor = DemoTheme.brand
+        qrButton.addTarget(self, action: #selector(scanQR), for: .touchUpInside)
+
         let inner = UIStackView.demo(.vertical, spacing: 11, [
             DemoTipView(.info, L("start.form.tip")),
+            qrButton,
             fieldGroup(L("start.field.accessKey"), accessKeyField, hint: L("start.field.accessKey.hint")),
             fieldGroup(L("start.field.campaignKey"), campaignKeyField, hint: L("start.field.campaignKey.hint")),
             fieldGroup(L("start.field.streamToken"), streamTokenField, hint: L("start.field.streamToken.hint")),
+            fieldGroup(L("start.field.userJwt"), userJwtField, hint: L("start.field.userJwt.hint")),
         ])
         inner.isLayoutMarginsRelativeArrangement = true
         inner.layoutMargins = UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)

@@ -20,7 +20,7 @@
 "start.field.streamToken.placeholder" = "任意";
 "start.validate" = "検証して開始";
 "start.tip.code" = "コードはアプリ内にありません。一緒にお渡しするデモアプリのプロジェクトで確認してください — 各カードに開くファイルのパスが書かれています。";
-"start.tip.privacy" = "入力値は端末内にのみ保存され、サーバーへ送信されません。配信トークンは Keychain に保管します。";
+"start.tip.privacy" = "入力値は端末内にのみ保存され、サーバーへ送信されません。配信トークンとユーザー JWT は Keychain に保管します。";
 "start.toast.required" = "accessKey と campaignKey は必須です";
 "start.toast.initialized" = "✅ 初期化完了 — キーの有効性は再生時に確認されます";
 "start.toast.tourMissing" = "内蔵デモキーが空です — DemoCredentials.swift の DemoDefaults を埋めるか、下の「自分のアカウントで試す」を使ってください";
@@ -127,3 +127,17 @@
 
 /* 재생 실패 안내 (세션당 1회) */
 "player.failure.notice" = "⚠️ 再生に失敗しました（%@）— ストリームが配信されていません。プレーヤーはそのままにしてあります。ログを確認し、戻るには「‹ 一覧」を押してください。";
+
+/* ── Language · QR input (start screen) ── */
+"common.back" = "戻る";
+"language.label" = "表示言語";
+"language.note" = "既定は English です。アプリ独自の設定で、端末の言語には従いません。";
+"start.field.userJwt" = "ユーザー JWT（ミッション3）";
+"start.field.userJwt.hint" = "任意 — ミッション3 の token 方式を確認するときに使います";
+"start.field.userJwt.placeholder" = "任意";
+"qr.button" = "QR コードで入力";
+"qr.title" = "認証情報 QR をスキャン";
+"qr.hint" = "テストアプリの QR コードにカメラを向けてください。ak(accessKey)・ck(campaignKey)・st(配信トークン)・userjwt を読み取ります。";
+"qr.rejected" = "この QR には使える値がありません。URL クエリに ak と ck の両方、または st、または userjwt が必要です。";
+"qr.cameraError" = "カメラを使用できません(%@)。設定でカメラへのアクセスを許可するか、キーを直接入力してください。";
+"qr.applied" = "QR「%@」— %@ を入力しました。値を確認してから「検証して開始」を押してください。";

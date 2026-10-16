@@ -1,5 +1,17 @@
 package cloud.shoplive.onboarding.ui.start
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,6 +73,7 @@ fun StartScreen(
     viewModel: MainViewModel,
     isEncryptedStorage: Boolean,
     onProceed: () -> Unit,
+    onScanQr: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -73,17 +86,21 @@ fun StartScreen(
             .padding(top = 40.dp, bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(
-            Modifier
-                .size(54.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Brand),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text("▶", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+        // Language sits in the header and never moves: below the collapsible form it
+        // jumped up and down every time the form opened or closed.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .size(54.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Brand),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("▶", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+            }
+            Spacer(Modifier.weight(1f))
+            LanguageSwitcher()
         }
-
-        LanguageSwitcher()
 
         Text(
             stringResource(R.string.start_title),
@@ -145,6 +162,18 @@ fun StartScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Tip(stringResource(R.string.start_own_tip))
+
+                    OutlinedButton(
+                        onClick = onScanQr,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(46.dp),
+                        shape = RoundedCornerShape(13.dp),
+                    ) {
+                        Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.qr_button), style = MaterialTheme.typography.titleSmall)
+                    }
 
                     KeyField(
                         label = stringResource(R.string.field_access_key),
@@ -263,24 +292,40 @@ private fun KeyField(
 }
 
 /**
- * The language switch. **English by default**, and it does not follow the device.
+ * The language switch — compact, top right. **English by default**, and it does not
+ * follow the device. The note that says so is in the tooltip on the globe icon, so
+ * the header stays one row (same as the Flutter and iOS demos).
  *
  * Resources are resolved when the Activity is created, so changing it calls
  * [Activity.recreate] to rebuild the screen.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LanguageSwitcher() {
     val context = LocalContext.current
     val current = LocaleSetting.current
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
 
-    Column {
-        Text(
-            stringResource(R.string.language_label),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(4.dp))
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            tooltip = {
+                PlainTooltip {
+                    Text("${stringResource(R.string.language_label)} — ${stringResource(R.string.language_note)}")
+                }
+            },
+            state = tooltipState,
+        ) {
+            IconButton(onClick = { scope.launch { tooltipState.show() } }) {
+                Icon(
+                    Icons.Default.Language,
+                    contentDescription = stringResource(R.string.language_label),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        SingleChoiceSegmentedButtonRow {
             LocaleSetting.supported.forEachIndexed { index, language ->
                 SegmentedButton(
                     selected = language == current,
@@ -294,16 +339,11 @@ private fun LanguageSwitcher() {
                         index = index,
                         count = LocaleSetting.supported.size,
                     ),
+                    icon = {},
                 ) {
                     Text(language.label, style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
-        Spacer(Modifier.height(4.dp))
-        Text(
-            stringResource(R.string.language_note),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }

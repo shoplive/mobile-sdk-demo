@@ -30,11 +30,33 @@ Both platforms implement the same five surfaces. The prototype codenames (S1, S2
 | Mode | What it does |
 |---|---|
 | **Take a tour** | Uses the demo keys baked into the build. No typing. Enabled only when those keys are present. |
-| **Use my account** | You type your own `accessKey` + `campaignKey` (and optionally a stream token). |
+| **Use my account** | You type — or scan from a QR code — your own `accessKey` + `campaignKey` (and optionally a stream token and a User JWT). |
 
 On relaunch the app skips S1 and re-enters the last mode used, so you don't retype keys every run.
 
-Android's start screen also carries the **English / 한국어 / 日本語** language selector — see [§2.6](#26-localization).
+The start screen's header carries the **English / 한국어 / 日本語** language selector on all three apps. It sits above the collapsible form so it never moves when the form opens — see [§2.6](#26-localization).
+
+### QR code input
+
+"Use my account" → **Scan a QR code** fills the form from the QR codes the native SDK test apps already use. The QR holds
+a URL; only its query is read, and the rules are identical on iOS, Android and Flutter:
+
+```
+https://<any host>/<any path>?ak=<accessKey>&ck=<campaignKey>&title=<label>&st=<streamToken>&userjwt=<JWT>
+```
+
+| Key | Fills | Taken from |
+|---|---|---|
+| `ak` + `ck` | accessKey + campaignKey — **only as a pair** | test apps: Android `CampaignListActivity`, iOS `SLQRReaderViewController` |
+| `title` | the confirmation message only | same |
+| `userjwt` | User JWT (Mission 3) | iOS PlayerDemo2 |
+| `st` | Stream token (Mission 8) | **new in these demos** — no test app reads a stream token from QR; add it to your QR generator |
+
+Nothing is saved or initialized until "Validate and start". A QR without usable values keeps the camera open and says
+why. Parsers: [`QrCredentials.swift`](../iOS/ShopliveOnboardingDemo/Support/QrCredentials.swift) ·
+[`QrCredentials.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/data/QrCredentials.kt) ·
+[`qr_credentials.dart`](../Flutter/lib/demo/data/qr_credentials.dart), each with the same 7 test cases. QR input is a
+tester convenience, so it lives in the demo harness, never in the copy-paste layer.
 
 ---
 
@@ -115,11 +137,11 @@ Both apps ship **English (default) · 한국어 · 日本語**.
 
 | | iOS | Android |
 |---|---|---|
-| Files | `Resources/{en,ko,ja}.lproj/Localizable.strings` (107 keys each) | `values/`, `values-ko/`, `values-ja/` (159 keys each) |
+| Files | `Resources/{en,ko,ja}.lproj/Localizable.strings` (120 keys each) | `values/`, `values-ko/`, `values-ja/` (167 keys each) |
 | Lookup | `L("key")` — [`DemoStrings.swift`](../iOS/ShopliveOnboardingDemo/Support/DemoStrings.swift) | `stringResource(R.string.…)` |
-| Language selection | Follows the device (ko/ja recognized, everything else falls back to en) | **Does not follow the device** — an in-app segmented control, persisted; see [`LocaleSetting.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/data/LocaleSetting.kt) |
+| Language selection | **Does not follow the device** — an in-app segmented control, persisted; see [`DemoStrings.swift`](../iOS/ShopliveOnboardingDemo/Support/DemoStrings.swift) | **Does not follow the device** — an in-app segmented control, persisted; see [`LocaleSetting.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/data/LocaleSetting.kt) |
 
-Android deliberately ignores the device language so that one build can be demoed in all three languages from a single device. It uses its own setting plus `attachBaseContext` rather than Android 13+ per-app languages, so behavior is identical down to minSdk 24.
+Both apps (and the Flutter demo) deliberately ignore the device language so that one build can be demoed in all three languages from a single device. On Android it uses its own setting plus `attachBaseContext` rather than Android 13+ per-app languages, so behavior is identical down to minSdk 24.
 
 **Two things localization does not reach:**
 

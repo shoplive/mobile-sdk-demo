@@ -193,4 +193,12 @@
     <string name="language_note">English is the default. This is an app-level setting and does not follow the device language.</string>
     <string name="err_playback_failed">Playback keeps failing (code %1$s). The campaign may not be on air, or it has no playable stream. The SDK retries every few seconds — the screen stays black until a stream is available.</string>
     <string name="err_playback_failed_short">Playback failed (code %1$s) — campaign may not be on air</string>
+
+    <!-- ── QR input (start screen) ─────────────────────────────────────── -->
+    <string name="qr_button">Scan a QR code</string>
+    <string name="qr_title">Scan credentials QR</string>
+    <string name="qr_hint">Point the camera at a test-app QR code. It reads ak (accessKey), ck (campaignKey), st (stream token) and userjwt.</string>
+    <string name="qr_rejected">This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.</string>
+    <string name="qr_camera_error">The camera is not available (%1$s). Allow camera access in Settings, or type the keys instead.</string>
+    <string name="qr_applied">QR “%1$s” — filled %2$s. Check the values, then tap “Validate and start”.</string>
 </resources>

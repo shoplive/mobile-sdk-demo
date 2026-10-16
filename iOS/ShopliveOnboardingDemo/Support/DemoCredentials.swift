@@ -46,6 +46,7 @@ final class DemoCredentials {
         static let accessKey = "demo.accessKey"
         static let campaignKey = "demo.campaignKey"
         static let streamToken = "demo.streamToken"
+        static let userJwt = "demo.userJwt"
     }
 
     private let defaults = UserDefaults.standard
@@ -77,6 +78,13 @@ final class DemoCredentials {
         set { Keychain.write(Key.streamToken, newValue) }
     }
 
+    /// A server-issued user JWT for Mission 3's token method. Signed, so it goes in the Keychain.
+    /// Used in both modes — tour mode has no built-in JWT.
+    var userJwt: String {
+        get { Keychain.read(Key.userJwt) ?? "" }
+        set { Keychain.write(Key.userJwt, newValue) }
+    }
+
     /// The stream token the user typed in — used to restore the S1 form.
     var enteredStreamToken: String { Keychain.read(Key.streamToken) ?? "" }
 
@@ -99,6 +107,7 @@ final class DemoCredentials {
     func reset() {
         [Key.accessKey, Key.campaignKey, Key.mode].forEach { defaults.removeObject(forKey: $0) }
         Keychain.delete(Key.streamToken)
+        Keychain.delete(Key.userJwt)
     }
 }
 

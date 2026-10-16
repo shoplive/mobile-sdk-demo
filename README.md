@@ -1,6 +1,6 @@
 # ShopLive SDK v3 — Mobile Onboarding Demo
 
-Two demo apps — **iOS (UIKit)** and **Android (Jetpack Compose)** — that walk you through integrating the ShopLive SDK v3, one feature at a time. Each app shows 8 missions; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
+Demo apps — **iOS (UIKit)**, **Android (Jetpack Compose)** and **Flutter** — that walk you through integrating the ShopLive SDK v3, one feature at a time. Each app shows 8 missions; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
 
 > **📘 Official integration guide: <https://sdk.shoplive.cloud/>**
 >
@@ -106,6 +106,9 @@ mobile-sdk-demo/
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
 │   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.2
 │   └── scripts/                   boundary scanner
+├── Flutter/                     same 8 missions on the Flutter SDK 3.0.2 → Flutter/README.md
+│   ├── lib/shoplive_integration/ ★ COPY THIS — SDK calls only, boundary enforced by flutter test
+│   └── lib/demo/                  demo harness (screens · developer sheet · strings)
 └── Android/
     └── app/src/main/java/cloud/shoplive/onboarding/
         ├── sdk/                 ★ COPY THIS — SDK calls, with KDoc on the "why"
@@ -321,13 +324,14 @@ Full field-level platform differences: [Platform Differences](docs/platform-diff
 
 ## Versions covered
 
-The two platforms are on **different SDK versions**, and the version a project is configured with is not the version
+The platforms are on **different SDK versions**, and the version a project is configured with is not the version
 its behavior was measured on:
 
 | | Configured in this repo | Delivery | Behavior measured on |
 |---|---|---|---|
 | iOS | `3.0.2` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.2 | `3.0.0` |
 | Android | `3.0.1` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.1` from `sdk.shoplive.cloud` | `3.0.0` |
+| Flutter | `3.0.2` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.2 (wraps Android 3.0.2 / iOS 3.0.2) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15) — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
 
 A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
