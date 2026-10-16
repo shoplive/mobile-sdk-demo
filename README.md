@@ -104,7 +104,7 @@ mobile-sdk-demo/
 ├── iOS/
 │   ├── ShopliveIntegration/     ★ COPY THIS — SDK calls only, zero harness deps
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
-│   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.2
+│   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.3
 │   └── scripts/                   boundary scanner
 ├── Flutter/                     same 8 missions on the Flutter SDK 3.0.2 → Flutter/README.md
 │   ├── lib/shoplive_integration/ ★ COPY THIS — SDK calls only, boundary enforced by flutter test
@@ -146,7 +146,7 @@ and no artifact to commit into your project.
 |---|---|---|
 | **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 `cloud.shoplive` AARs with POM metadata (2 declared + 6 transitive) |
 | **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — release notes and AAR/POM release assets, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.2`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.2), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.1`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1) |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.3`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.3), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.1`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
@@ -329,7 +329,7 @@ its behavior was measured on:
 
 | | Configured in this repo | Delivery | Behavior measured on |
 |---|---|---|---|
-| iOS | `3.0.2` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.2 | `3.0.0` |
+| iOS | `3.0.3` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.3 | `3.0.0` |
 | Android | `3.0.1` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.1` from `sdk.shoplive.cloud` | `3.0.0` |
 | Flutter | `3.0.2` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.2 (wraps Android 3.0.2 / iOS 3.0.2) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15) — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
 
