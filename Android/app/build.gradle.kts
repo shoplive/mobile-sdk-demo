@@ -91,11 +91,12 @@ dependencies {
 
     // ── Shoplive SDK v3 ─────────────────────────────────────────────────────
     // Watching only: keep the first line. Broadcasting only: the second. Both: both.
-    // core / core-player / media3 / webrtc / android-webrtc / rtmp arrive as POM
-    // transitives — you do not declare them — and the overlap between the two entry
-    // points is de-duplicated by version.
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")
+    // core / android-webrtc / rootencoder arrive as POM transitives — you do not
+    // declare them — and the overlap between the two entry points is de-duplicated
+    // by version. HLS is AndroidX Media3, a direct player-POM dependency, not a
+    // separate cloud.shoplive artifact.
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.3")
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.3")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -10,9 +10,13 @@ both demo apps compiled against 3.0.0:
 - **iOS** — `3.0.0`, packaged from `dev` commit `5f0ee781` as local xcframeworks
 - **Android** — `3.0.0`, from `cloud.shoplive:shoplive-{player,streamer}-sdk`
 
-The demos now build against newer versions (iOS `3.0.3`, Android `3.0.1`) and this table has not been re-checked
-against them. The Android 3.0.1 additions (in-app PIP options, OS PIP error codes 9510–9514) are in the
-[3.0.1 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1).
+The demos now build against newer versions (iOS `3.0.3`, Android `3.0.3`) and this table has not been re-checked
+against them. Later Android notes: [3.0.1](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1)
+(in-app PIP options, OS PIP error codes 9510–9514),
+[3.0.2](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.2)
+(`ShopliveStreamer.intent()` removed),
+[3.0.3](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3)
+(`ShopliveError` moved to core, `WebCommandReceived`, separate media3/ExoPlayer artifacts removed).
 
 Where the two disagree, the difference is called out here and explained in [Platform Differences](platform-differences.md).
 

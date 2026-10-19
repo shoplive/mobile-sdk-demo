@@ -144,9 +144,9 @@ and no artifact to commit into your project.
 
 | | iOS | Android |
 |---|---|---|
-| **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 8 `cloud.shoplive` AARs with POM metadata (2 declared + 6 transitive) |
+| **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 5 `cloud.shoplive` AARs with POM metadata (2 declared + 3 transitive) |
 | **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — release notes and AAR/POM release assets, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.3`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.3), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.1`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1) |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.3`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.3), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.3`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
@@ -208,25 +208,22 @@ Your app module:
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.3")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.3")   // broadcasting
 }
 ```
 
-Those two lines resolve eight `cloud.shoplive` artifacts, plus AndroidX / Kotlin / Media3 libraries from Google and Central. Note the `shoplive-` prefix — the coordinates without it do not exist.
+Those two lines resolve five `cloud.shoplive` artifacts, plus AndroidX / Kotlin / Media3 libraries from Google and Central. Note the `shoplive-` prefix — the coordinates without it do not exist.
 
 | Artifact | Download (AAR) | You declare it |
 |---|---|---|
-| `shoplive-player-sdk:3.0.1` | 444 KB | ✅ watching |
-| `shoplive-streamer-sdk:3.0.1` | 67 KB | ✅ broadcasting |
-| `shoplive-core:3.0.1` | 1.1 MB | no — transitive from both |
-| `shoplive-core-player:3.0.1` | 294 KB | no — transitive |
-| `shoplive-media3:1.10.1.1` | 72 KB | no — transitive (own version line; pulls AndroidX Media3 1.10.1) |
-| `shoplive-webrtc:3.0.1` | 1.1 MB | no — transitive |
-| `shoplive-android-webrtc:3.0.1` | 21.5 MB | no — transitive, and what forces API 23 |
-| `shoplive-rtmp:3.0.1` | 6.6 MB | no — transitive (RTMP ingest) |
+| `shoplive-player-sdk:3.0.3` | 1.8 MB | ✅ watching |
+| `shoplive-streamer-sdk:3.0.3` | 1003 KB | ✅ broadcasting |
+| `shoplive-core:3.0.3` | 1.3 MB | no — transitive from both |
+| `shoplive-android-webrtc:3.0.3` | 21.5 MB | no — transitive from both, and what forces API 23 |
+| `shoplive-rootencoder:3.0.3` | 1.3 MB | no — transitive from streamer-sdk (RTMP/SRT ingest) |
 
-Sizes measured 2026-10-01 from `sdk.shoplive.cloud`. As of 3.0.1 the player's HLS engine is AndroidX Media3 1.10.1, which requires **compileSdk 36**; to stay on ExoPlayer 2, exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11` instead (never both).
+Sizes measured 2026-10-19 from `sdk.shoplive.cloud` Content-Length. As of 3.0.3 the player POM depends on AndroidX Media3 (`[1.6.0, 1.12)`) directly, which still requires **compileSdk 36**. The separate `shoplive-media3`, `shoplive-exoplayer`, `shoplive-webrtc`, `shoplive-rtmp`, and `shoplive-core-player` artifacts are no longer published, and ExoPlayer 2 is not supported.
 
 **These are download sizes, not what your app grows by.** Both platforms strip and split at packaging time — for the
 numbers that matter to your users, see the next section. This demo's own wiring:
@@ -324,18 +321,18 @@ Full field-level platform differences: [Platform Differences](docs/platform-diff
 
 ## Versions covered
 
-The platforms are on **different SDK versions**, and the version a project is configured with is not the version
+iOS and Android demos are configured for SDK `3.0.3`. Flutter stays on `3.0.2`. The version a project is configured with is not the version
 its behavior was measured on:
 
 | | Configured in this repo | Delivery | Behavior measured on |
 |---|---|---|---|
 | iOS | `3.0.3` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.3 | `3.0.0` |
-| Android | `3.0.1` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.1` from `sdk.shoplive.cloud` | `3.0.0` |
+| Android | `3.0.3` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.3` from `sdk.shoplive.cloud` | `3.0.0` |
 | Flutter | `3.0.2` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.2 (wraps Android 3.0.2 / iOS 3.0.2) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15) — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
 
 A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
-Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 against SDK 3.0.0 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. The Android move to 3.0.1 has been verified to **build** (2026-10-01), not re-run on a device. Where something is unverified, it says so.
+Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 against SDK 3.0.0 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. The Android move to 3.0.3 has not been re-run on a device. Where something is unverified, it says so.
 
 ---
 

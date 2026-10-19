@@ -17,8 +17,9 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         google()
-        // Before mavenCentral(): repositories are searched in order, and some
-        // cloud.shoplive artifacts (e.g. shoplive-media3) also exist on Central.
+        // Before mavenCentral(): repositories are searched in order. As of SDK 3.0.3
+        // the player depends on AndroidX Media3 from Google/Central, not on a
+        // cloud.shoplive media3 artifact.
         maven {
             url = uri("https://sdk.shoplive.cloud/maven-repo")
             // Only cloud.shoplive lives here. Without this, every dependency that

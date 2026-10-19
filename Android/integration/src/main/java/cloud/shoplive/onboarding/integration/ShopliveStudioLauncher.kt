@@ -29,8 +29,8 @@ import cloud.shoplive.streamer.ShopliveStreamerEvent
  *
  * ## The context must be an Activity
  * `start()` **requests the camera and microphone runtime permissions for you**, and
- * that request uses the Activity's lifecycleScope. `intent()` does not request
- * anything — take the permissions yourself if you use it.
+ * that request uses the Activity's lifecycleScope. `intent()` was removed in SDK
+ * 3.0.2; to own the transition, call `prepareIntent` and start the Intent it delivers.
  *
  * Your manifest must still declare `RECORD_AUDIO`: it is not in the AAR manifest.
  *

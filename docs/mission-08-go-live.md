@@ -96,7 +96,7 @@ Both are already present in the demo's Info.plist.
 
 `CAMERA` is declared in the AAR and merges in automatically. **`RECORD_AUDIO` is not** — you must declare it yourself. This is the easiest thing to forget, and the symptom is a broadcast with no audio.
 
-> **Runtime prompts are handled for you — but only via `start()`.** `ShopliveStreamer.start()` requests camera and microphone permissions on your behalf, using the Activity's `lifecycleScope`. If you build the Intent yourself with `intent()`, **it does not** — you request them.
+> **Runtime prompts are handled for you via `start()`.** `ShopliveStreamer.start()` requests camera and microphone permissions on your behalf, using the Activity's `lifecycleScope`. `ShopliveStreamer.intent()` was removed in 3.0.2; to own the transition, call `prepareIntent` and start the Intent it delivers. Whether that path requests the runtime permissions itself is unverified here.
 >
 > This is also why **the context must be an Activity**: the permission request needs a lifecycle scope. Same rule as the player ([Mission 1](mission-01-open-the-player.md)).
 

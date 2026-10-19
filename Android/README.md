@@ -95,16 +95,16 @@ error — the repository belongs in `settings.gradle.kts` only.
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.3")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.3")   // broadcasting
 }
 ```
 
 - **Watching only** → just `shoplive-player-sdk`
 - **Broadcasting only** → just `shoplive-streamer-sdk`
 - Both → declare both. Overlapping transitives are de-duplicated by version, so you do not pay for them twice.
-- **You do not declare anything else** — `shoplive-core`, `shoplive-core-player`, `shoplive-media3`,
-  `shoplive-webrtc`, `shoplive-android-webrtc` and `shoplive-rtmp` arrive as POM transitives.
+- **You do not declare anything else** — `shoplive-core`, `shoplive-android-webrtc` and `shoplive-rootencoder`
+  arrive as POM transitives.
 - **`shoplive-core` included.** `Shoplive`, `ShopliveUser`, `ShopliveConfiguration` and `ShopliveError`
   (= `cloud.shoplive.core.publicsurface`) live in that artifact, and the released POMs list it at **compile scope**, so
   it *is* on your compile classpath without a declaration. This project's `:integration` module declares only the two
@@ -117,28 +117,25 @@ dependencies {
 This project declares them the same way, as plain coordinates — see
 [`integration/build.gradle.kts`](integration/build.gradle.kts) and [`app/build.gradle.kts`](app/build.gradle.kts).
 
-> **Media3 is the default HLS engine as of 3.0.1.** `shoplive-player-sdk` pulls `shoplive-media3`, which depends on
-> AndroidX Media3 1.10.1 — and Media3 1.10.1 requires **compileSdk 36** (AGP 8.10+). To stay on ExoPlayer 2 instead,
-> exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11`; never depend on both
-> ([3.0.1 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1)).
+> **Media3 is the HLS engine, and as of 3.0.3 it is not a separate Shoplive artifact.** The player POM depends on
+> AndroidX Media3 (`[1.6.0, 1.12)`), which still requires **compileSdk 36** (AGP 8.10+). `shoplive-media3` and
+> `shoplive-exoplayer` are no longer published, and ExoPlayer 2 is not supported
+> ([3.0.3 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3)).
 
 ### What the two lines actually pull in
 
-Resolved for 3.0.1 on the published channel — the two declared entry points plus six `cloud.shoplive` transitives
+Resolved for 3.0.3 on the published channel — the two declared entry points plus three `cloud.shoplive` transitives
 (AndroidX/Kotlin/Media3 libraries come on top, from Google/Central). Sizes are the AAR download sizes from
-`sdk.shoplive.cloud` (measured 2026-10-01), not what
+`sdk.shoplive.cloud` Content-Length (measured 2026-10-19), not what
 they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
 
 | Artifact | AAR | You declare it | Comes from |
 |---|---|---|---|
-| `shoplive-player-sdk:3.0.1` | 444 KB | ✅ watching | — |
-| `shoplive-streamer-sdk:3.0.1` | 67 KB | ✅ broadcasting | — |
-| `shoplive-core:3.0.1` | 1.1 MB | no | both entry points |
-| `shoplive-core-player:3.0.1` | 294 KB | no | player-sdk |
-| `shoplive-media3:1.10.1.1` | 72 KB | no | player-sdk (own version line; pulls AndroidX Media3 1.10.1) |
-| `shoplive-webrtc:3.0.1` | 1.1 MB | no | both entry points |
-| `shoplive-android-webrtc:3.0.1` | 21.5 MB | no | webrtc — **this is what forces minSdk 23** |
-| `shoplive-rtmp:3.0.1` | 6.6 MB | no | streamer-sdk (RTMP ingest) |
+| `shoplive-player-sdk:3.0.3` | 1.8 MB | ✅ watching | — |
+| `shoplive-streamer-sdk:3.0.3` | 1003 KB | ✅ broadcasting | — |
+| `shoplive-core:3.0.3` | 1.3 MB | no | both entry points |
+| `shoplive-android-webrtc:3.0.3` | 21.5 MB | no | both entry points — **this is what forces minSdk 23** |
+| `shoplive-rootencoder:3.0.3` | 1.3 MB | no | streamer-sdk (RTMP/SRT ingest) |
 
 Checking what resolution actually picked, and from where:
 
@@ -164,14 +161,14 @@ Checking what resolution actually picked, and from where:
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 ```
 
-`ShopliveStreamer.start()` requests the runtime permissions for you (`intent()` does not).
+`ShopliveStreamer.start()` requests the runtime permissions for you. `intent()` was removed in 3.0.2; to own the transition, use `prepareIntent`.
 
 ---
 
 ## Composition
 
 - **Jetpack Compose + Material 3**, single Activity + Navigation Compose, ViewModel + StateFlow
-- compileSdk 36 (required by SDK 3.0.1's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
+- compileSdk 36 (required by SDK 3.0.3; the player POM depends on AndroidX Media3) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
 - Two modules — `:app` (the demo harness) and `:integration` (**the integration code you copy verbatim**, see below)
 - applicationId `cloud.shoplive.onboarding` — it can be installed alongside the SDK's internal demo app
   (`cloud.shoplive.demo`) on one device.

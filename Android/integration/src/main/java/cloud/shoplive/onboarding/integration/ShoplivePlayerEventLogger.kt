@@ -2,7 +2,7 @@ package cloud.shoplive.onboarding.integration
 
 import cloud.shoplive.player.ShopliveCouponResult
 import cloud.shoplive.player.ShopliveCustomActionResult
-import cloud.shoplive.player.ShopliveError
+import cloud.shoplive.core.publicsurface.ShopliveError
 import cloud.shoplive.player.ShoplivePlaybackEvent
 import cloud.shoplive.player.ShoplivePlayerControlling
 import cloud.shoplive.player.ShoplivePlayerDelegate
@@ -130,6 +130,11 @@ open class ShoplivePlayerEventLogger(
                 )
 
             is ShoplivePlayerEvent.Error -> onError(event.error)
+
+            // One-way notice from the web overlay (for example LOGIN_REQUIRED).
+            // The app decides what to do; the SDK does not wait for a response.
+            is ShoplivePlayerEvent.WebCommandReceived ->
+                logEvent("webCommandReceived(name: \"${event.name}\", payload: ${event.payload})")
         }
     }
 
