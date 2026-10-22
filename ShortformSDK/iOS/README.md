@@ -130,5 +130,9 @@ reload, brand color, reset layout defaults, SDK event log, reset demo.
 
 ## Verification status
 
-See the CI workflow `.github/workflows/shortform-ci.yml` (job **iOS demo**): it builds the app for the iOS Simulator
-and runs the unit tests on a simulator. Screens were not exercised by hand against a live account.
+| Check | Status |
+|---|---|
+| Build, iOS Simulator, Xcode 16 (`macos-15` runner) | passing in CI (`.github/workflows/shortform-ci.yml`, job **iOS demo**) |
+| Unit tests (50: catalog parsing and loading order, search order, matching fallback, option persistence, string keys) | passing in CI on an iPhone simulator |
+| Build warnings in app code | one expected: `play(requestData: ShopLiveShortformRelatedData)` is marked deprecated in 1.9.1 |
+| Screens against a live account (shortform loading, empty-result fallback timing, preview size, product routing) | not yet checked by hand |
