@@ -13,7 +13,7 @@ final class MatcherTests: XCTestCase {
         XCTAssertEqual(steps, [
             .product(ShortformQuery(productId: "P-1")),
             .verticalTags(["fall-look", "knitwear"]),
-            .fallbackTags(["picks"]),
+            .fallbackCollection("fallback-collection"),
         ])
         XCTAssertFalse(steps[0].isRelated)
         XCTAssertTrue(steps[1].isRelated)
@@ -35,7 +35,7 @@ final class MatcherTests: XCTestCase {
         XCTAssertTrue(ShortformSurface.preview.acceptsProductConditions)
         XCTAssertEqual(ShortformSurface.embedded.acceptsProductConditions, ShortformMatcher.listViewsAcceptProductConditions)
         XCTAssertTrue(ShortformSurface.embedded.acceptsCollectionId)
-        XCTAssertFalse(ShortformSurface.player.acceptsCollectionId)
+        XCTAssertTrue(ShortformSurface.player.acceptsCollectionId)
         XCTAssertFalse(ShortformSurface.preview.acceptsCollectionId)
     }
 
@@ -100,8 +100,8 @@ final class MatcherTests: XCTestCase {
         XCTAssertEqual(ShortformMatcher.step(embeddedOwn, on: .player, for: p, in: catalog), .product(ShortformQuery(productId: "P-1")))
         XCTAssertEqual(ShortformMatcher.step(.fallbackCollection("fallback-collection"), on: .preview, for: p, in: catalog),
                        .fallbackTags(["picks"]))
-        XCTAssertEqual(ShortformMatcher.step(.fallbackCollection("fallback-collection"), on: .player, for: p, in: catalog),
-                       .fallbackTags(["picks"]))
+        XCTAssertEqual(ShortformMatcher.step(.fallbackTags(["picks"]), on: .player, for: p, in: catalog),
+                       .fallbackCollection("fallback-collection"))
         XCTAssertEqual(ShortformMatcher.step(.verticalTags(["x"]), on: .player, for: p, in: catalog),
                        .verticalTags(["fall-look", "knitwear"]))
     }

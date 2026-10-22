@@ -30,8 +30,18 @@ final class ShortformBridge: NSObject {
 
     // MARK: - Full screen and preview
 
-    /// `ShopLiveShortform.play` with related data: productId → url → skus, or tags.
+    /// `ShopLiveShortform.play`: a collection with `ShopLiveShortformCollectionData`; product conditions
+    /// (productId → url → skus) or tags with `ShopLiveShortformRelatedData`.
     func play(_ query: ShortformQuery) {
+        defer { EventLog.shared.add("play", describe(query)) }
+        if let collectionId = query.collectionId {
+            ShopLiveShortform.play(requestData: ShopLiveShortformCollectionData(referrer: Self.referrer,
+                                                                                shortsCollectionId: collectionId,
+                                                                                delegate: self))
+            return
+        }
+        // The only full-screen entry point that takes productId / url. SDK 1.9.1 marks it deprecated without
+        // a replacement that accepts product conditions.
         let data = ShopLiveShortformRelatedData(productId: query.productId,
                                                 skus: query.skus,
                                                 url: query.url,
@@ -40,7 +50,6 @@ final class ShortformBridge: NSObject {
                                                 referrer: Self.referrer,
                                                 delegate: self)
         ShopLiveShortform.play(requestData: data)
-        EventLog.shared.add("play", describe(query))
     }
 
     struct PreviewStyle {

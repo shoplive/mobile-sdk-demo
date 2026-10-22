@@ -55,7 +55,8 @@ enum ShortformSurface: Equatable {
     /// `ShopLiveShortformHorizontalTypeView` / `CardTypeView` / `VerticalTypeView`: skus, tags, collection id
     /// (product conditions too once `listViewsAcceptProductConditions` is on).
     case embedded
-    /// `ShopLiveShortform.play` with `ShopLiveShortformRelatedData`: productId/url/skus/tags, no collection id.
+    /// `ShopLiveShortform.play` with `ShopLiveShortformRelatedData` (productId/url/skus/tags) or
+    /// `ShopLiveShortformCollectionData` (collection id).
     case player
     /// `ShopLiveShortform.showPreview` with `ShopLiveShortformPreviewData`: productId/url/skus/tags, no collection id.
     case preview
@@ -69,7 +70,7 @@ enum ShortformSurface: Equatable {
     }
 
     /// Whether a collection id can be sent on this surface.
-    var acceptsCollectionId: Bool { self == .embedded }
+    var acceptsCollectionId: Bool { self != .preview }
 }
 
 enum ShortformMatcher {

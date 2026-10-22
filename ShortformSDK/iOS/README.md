@@ -88,7 +88,7 @@ The bundled catalog is `../demo-config/catalog.sample.json`, referenced from the
 | `ShopLiveShortformCardTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Card grid* |
 | `ShopLiveShortformVerticalTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Vertical feed* |
 | `setSkus` · `setHashTags(…, .OR)` · `setShortsCollectionId` · `setCardViewType` · `setVisibleTitle/ViewCount/ProductCount` · `enable/disablePlayVideos` · `reloadItems` · `submit` | `Shortform/ShortformEmbedView.swift` | applying a match step and the card options in place |
-| `ShopLiveShortform.play(requestData: ShopLiveShortformRelatedData)` | `Shortform/ShortformBridge.swift` | detail *Button only* |
+| `ShopLiveShortform.play(requestData: ShopLiveShortformRelatedData / ShopLiveShortformCollectionData)` | `Shortform/ShortformBridge.swift` | detail *Button only* (the `RelatedData` overload is marked deprecated in 1.9.1 but is the only full-screen call that takes `productId` / `url`; it is the one expected build warning) |
 | `ShopLiveShortform.showPreview(requestData: ShopLiveShortformPreviewData)` | `Shortform/ShortformBridge.swift` | detail *Floating preview* (corner, size, max count) |
 | `ShopLiveShortform.close()` | `Shortform/ShortformBridge.swift` | before opening a product, leaving the page, switching layout |
 | `ShopLiveShortformDelegate` (`onProductClick`, `onEvent`, `onError`, `onDetailShown/Hidden`, `onShortsAttached/Detached`, `onBannerClick`) | `Shortform/ShortformBridge.swift` | product routing, SDK event log |
@@ -108,7 +108,7 @@ What each SDK entry point accepts decides the product step:
 | Layout | SDK surface | Product step | Fallback |
 |---|---|---|---|
 | Horizontal strip · Card grid · Vertical feed | embedded list views | `skus` (the list views take skus, tags or a collection) | tags → `fallback.collectionId` |
-| Button only | `play` + `ShopLiveShortformRelatedData` | `productId` → `url` → `skus` | tags → `fallback.tags` (related data has no collection id) |
+| Button only | `play` + `ShopLiveShortformRelatedData`; `ShopLiveShortformCollectionData` for the collection | `productId` → `url` → `skus` | tags → `fallback.collectionId` |
 | Floating preview | `showPreview` + `ShopLiveShortformPreviewData` | `productId` → `url` → `skus` | tags → `fallback.tags` (preview data has no collection id) |
 
 Which conditions each surface gets is decided in one place, `ShortformMatcher` (`Model/ShortformMatcher.swift`).
