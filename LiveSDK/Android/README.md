@@ -1,5 +1,7 @@
 # ShopLive onboarding demo app (Android)
 
+[◀ Live SDK demo](../README.md) · [iOS](../iOS/README.md) · [Flutter](../Flutter/README.md)
+
 An app for **checking the 8 features of the SDK v3 (Player · Streamer) with a single tap**.
 It is built so that an integrator's developer can see each behavior with their own eyes, then **open the file printed
 on the feature card and paste that code straight into their own app**.

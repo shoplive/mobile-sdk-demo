@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "catalog.schema.json",
+  "title": "Shortform demo catalog",
+  "type": "object",
+  "required": [
+    "version",
+    "products"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "home": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "collectionId": {
+          "type": "string"
+        }
+      }
+    },
+    "verticals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "$ref": "#/$defs/localized"
+          },
+          "productIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "featuredProductIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "collectionId": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "productId",
+          "name",
+          "currency",
+          "originalPrice"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "customerProductId": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "brand": {
+            "type": "string"
+          },
+          "imageUrls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "originalPrice": {
+            "type": "number",
+            "minimum": 0
+          },
+          "discountPrice": {
+            "type": "number",
+            "minimum": 0
+          },
+          "discountRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "localized": {
+      "type": "object",
+      "required": [
+        "en"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "en": {
+          "type": "string"
+        },
+        "ko": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

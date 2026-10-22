@@ -1,0 +1,24 @@
+name: Shortform SDK CI
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["ShortformSDK/**", ".github/workflows/shortform-ci.yml"]
+  pull_request:
+    paths: ["ShortformSDK/**", ".github/workflows/shortform-ci.yml"]
+
+jobs:
+  catalog:
+    name: Demo catalog schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the sample catalog
+        run: |
+          python3 -m pip install --quiet jsonschema
+          python3 - <<'PY'
+          import json, jsonschema
+          base = "ShortformSDK/demo-config/"
+          jsonschema.validate(json.load(open(base + "catalog.sample.json")), json.load(open(base + "catalog.schema.json")))
+          print("catalog.sample.json is valid")
+          PY

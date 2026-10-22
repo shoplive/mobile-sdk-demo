@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "verticals": [
+    { "id": "fashion", "title": { "en": "Fashion", "ko": "패션" }, "productIds": ["sample-1001", "sample-1002"], "keywords": ["knit", "cardigan", "니트"] },
+    { "id": "beauty", "title": { "en": "Beauty", "ko": "뷰티" }, "productIds": ["sample-2001"], "keywords": ["serum", "세럼"] },
+    { "id": "living", "title": { "en": "Living", "ko": "리빙" }, "productIds": ["sample-3001"], "keywords": ["mug", "머그"] }
+  ],
+  "featuredProductIds": ["sample-1001", "sample-2001"],
+  "products": [
+    { "productId": "sample-1001", "name": "Cashmere Knit", "brand": "Sample Brand", "description": "Placeholder product for the sample catalog.", "currency": "KRW", "originalPrice": 89000, "discountPrice": 79000, "discountRate": 11, "keywords": ["knit", "니트"] },
+    { "productId": "sample-1002", "name": "Round Knit Cardigan", "brand": "Sample Brand", "currency": "KRW", "originalPrice": 59000, "keywords": ["cardigan", "가디건"] },
+    { "productId": "sample-2001", "name": "Daily Serum 50ml", "brand": "Sample Beauty", "currency": "KRW", "originalPrice": 32000, "discountPrice": 28800, "discountRate": 10, "keywords": ["serum", "세럼"] },
+    { "productId": "sample-3001", "name": "Stoneware Mug", "brand": "Sample Living", "currency": "KRW", "originalPrice": 18000, "keywords": ["mug", "머그"] }
+  ]
+}

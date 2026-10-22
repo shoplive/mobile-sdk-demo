@@ -1,15 +1,15 @@
-name: Android CI
+name: Live SDK · Android CI
 
 on:
   push:
     branches: ["**"]
-    paths: ["Android/**", ".github/workflows/android-ci.yml"]
+    paths: ["LiveSDK/Android/**", ".github/workflows/live-android-ci.yml"]
   pull_request:
-    paths: ["Android/**", ".github/workflows/android-ci.yml"]
+    paths: ["LiveSDK/Android/**", ".github/workflows/live-android-ci.yml"]
 
 defaults:
   run:
-    working-directory: Android
+    working-directory: LiveSDK/Android
 
 jobs:
   boundary:
@@ -40,7 +40,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          build-root-directory: Android
+          build-root-directory: LiveSDK/Android
 
       # The proof that the files are copyable: this module is compiled with the SDK
       # and nothing else. It does not depend on :app, so a harness dependency in

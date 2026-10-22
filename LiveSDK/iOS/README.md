@@ -1,5 +1,7 @@
 # ShopLive SDK v3 — iOS onboarding demo app
 
+[◀ Live SDK demo](../README.md) · [Android](../Android/README.md) · [Flutter](../Flutter/README.md)
+
 A UIKit demo app built so that integrators can finish their integration by **following the missions and pasting the code from `Integration/` straight into their own app**.
 
 - Integration guide: <https://sdk.shoplive.cloud> (mission numbers 1–8 match the card numbers in this app)

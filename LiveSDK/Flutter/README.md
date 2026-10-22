@@ -1,5 +1,7 @@
 # ShopLive onboarding demo app (Flutter)
 
+[◀ Live SDK demo](../README.md) · [iOS](../iOS/README.md) · [Android](../Android/README.md)
+
 The Flutter version of the onboarding demo: **the same 8 missions, the same screens and the same verification rules as
 the [Android](../Android/README.md) and [iOS](../iOS/README.md) demos**, built on the ShopLive Flutter SDK
 **3.0.2** (`shoplive_player` / `shoplive_streamer` from pub.dev).
