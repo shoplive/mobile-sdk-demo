@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default brand (a neutral violet). Brand overlays in themes.xml replace these. -->
+    <color name="brand_primary">#6750A4</color>
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_primary_container">#EADDFF</color>
+    <color name="brand_on_primary_container">#21005D</color>
+    <color name="placeholder_tile">#ECE6F0</color>
+    <color name="badge_background">#CC000000</color>
+    <color name="badge_text">#FFFFFF</color>
+</resources>

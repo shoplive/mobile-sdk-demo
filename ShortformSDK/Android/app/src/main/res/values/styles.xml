@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Demo.SectionTitle" parent="">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    </style>
+
+    <style name="Demo.SettingsHeader" parent="">
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Demo.Body" parent="">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+    </style>
+
+    <style name="Demo.ImagePlaceholder" parent="">
+        <item name="android:background">@color/placeholder_tile</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="Demo.ShortformBadge" parent="">
+        <item name="android:background">@drawable/bg_badge</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:text">▶</item>
+        <item name="android:textColor">@color/badge_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:contentDescription">@string/detail_shortform_title</item>
+    </style>
+
+    <style name="Demo.PageIndicator" parent="">
+        <item name="android:background">@drawable/bg_badge</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textColor">@color/badge_text</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Demo.OptionChip" parent="Widget.Material3.Chip.Assist">
+        <item name="android:checkable">false</item>
+    </style>
+</resources>

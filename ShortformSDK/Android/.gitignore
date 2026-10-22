@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+# The root .gitignore excludes *.jar; the Gradle wrapper must stay committed.
+!gradle/wrapper/gradle-wrapper.jar

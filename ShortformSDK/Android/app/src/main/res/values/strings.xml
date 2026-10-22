@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shortform Shop</string>
+
+    <!-- Common -->
+    <string name="common_back">Back</string>
+    <string name="common_done">Done</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_cancel">Cancel</string>
+
+    <!-- Home -->
+    <string name="home_search_hint">Search products</string>
+    <string name="home_access_key_title">Add an access key</string>
+    <string name="home_access_key_body">Shortform needs your ShopLive access key. Products work without it.</string>
+    <string name="home_access_key_action">Open Settings</string>
+    <string name="home_todays_shortform">Today\'s shortform</string>
+    <string name="home_shortform_needs_key">Add an access key in Settings to see shortform.</string>
+    <string name="home_featured">Featured products</string>
+    <string name="home_catalog_remote">Catalog: catalog URL · %1$d products</string>
+    <string name="home_catalog_cache">Catalog: last saved copy (catalog URL unreachable) · %1$d products</string>
+    <string name="home_catalog_bundled">Catalog: bundled sample · %1$d products</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search by name, brand or keyword</string>
+    <string name="search_suggested">Suggested keywords</string>
+    <string name="search_demo_products">Demo products</string>
+    <string name="search_demo_products_none">No demo product matches · featured products</string>
+    <string name="search_other_results">Other results</string>
+    <string name="search_no_other_results">No other products match.</string>
+    <string name="search_for">Search for “%1$s”</string>
+
+    <!-- Results -->
+    <string name="results_shortform">Shortform for these products</string>
+    <string name="results_view">View</string>
+    <string name="results_view_current">View: %1$s ▾</string>
+    <string name="results_view_grid_2">2 columns</string>
+    <string name="results_view_grid_3">3 columns</string>
+    <string name="results_view_list">List</string>
+    <string name="results_empty">No products match. Try another keyword.</string>
+    <plurals name="results_count">
+        <item quantity="one">%1$d product</item>
+        <item quantity="other">%1$d products</item>
+    </plurals>
+
+    <!-- Product detail -->
+    <string name="detail_product_not_in_catalog">This product is not in the demo catalog.</string>
+    <string name="detail_discount_rate">%1$d%%</string>
+    <string name="detail_description">Description</string>
+    <string name="detail_no_description">No description.</string>
+    <string name="detail_image_position">%1$d / %2$d</string>
+    <string name="detail_toggle_options">Option bar</string>
+    <string name="detail_show_options">Show option bar</string>
+    <string name="detail_hide_options">Hide option bar</string>
+    <string name="detail_shortform_title">Shortform for this product</string>
+    <string name="detail_related_shortform">Related shortform</string>
+    <string name="detail_needs_key">Add an access key in Settings to see shortform.</string>
+    <string name="detail_open_settings">Open Settings</string>
+    <string name="detail_loading">Looking for shortform…</string>
+    <string name="detail_load_failed">Could not load shortform. Check the network and the access key.</string>
+    <string name="detail_no_shortform">No shortform for this product yet. Add a sku, vertical tags or a fallback collection to the catalog.</string>
+    <string name="detail_match_sku">Matched by the product\'s sku</string>
+    <string name="detail_match_product_id">Matched by the product\'s productId</string>
+    <string name="detail_match_tags">From the vertical\'s tags: %1$s</string>
+    <string name="detail_match_fallback">From the fallback collection</string>
+    <string name="detail_preview_showing">The floating preview is in the %1$s corner.</string>
+    <string name="detail_preview_show_again">Show preview again</string>
+    <string name="detail_watch_shortform">Watch shortform</string>
+
+    <!-- Option bar -->
+    <string name="option_chip">%1$s: %2$s ▾</string>
+    <string name="option_layout">Layout</string>
+    <string name="option_layout_horizontal">Horizontal strip</string>
+    <string name="option_layout_card_grid">Card grid</string>
+    <string name="option_layout_vertical_feed">Vertical feed</string>
+    <string name="option_layout_floating_preview">Floating preview</string>
+    <string name="option_layout_button_only">Button only</string>
+    <string name="option_position">Position</string>
+    <string name="option_position_above_images">Above images</string>
+    <string name="option_position_below_images">Below images</string>
+    <string name="option_position_below_price">Below price</string>
+    <string name="option_position_inside_description">Inside description</string>
+    <string name="option_position_bottom">Bottom</string>
+    <string name="option_card">Card</string>
+    <string name="option_card_type">Card type</string>
+    <string name="option_card_type_value">Type %1$d</string>
+    <string name="option_card_show_title">Title</string>
+    <string name="option_card_show_view_count">View count</string>
+    <string name="option_card_show_product_count">Product count</string>
+    <string name="option_card_autoplay">Autoplay</string>
+    <string name="option_card_columns">Columns</string>
+    <string name="option_preview">Preview</string>
+    <string name="option_preview_corner">Corner</string>
+    <string name="option_preview_corner_top_left">top left</string>
+    <string name="option_preview_corner_top_right">top right</string>
+    <string name="option_preview_corner_bottom_left">bottom left</string>
+    <string name="option_preview_corner_bottom_right">bottom right</string>
+    <string name="option_preview_size">Size</string>
+    <string name="option_preview_size_small">Small</string>
+    <string name="option_preview_size_medium">Medium</string>
+    <string name="option_preview_size_large">Large</string>
+    <string name="option_preview_max_count">Max count</string>
+    <string name="option_preview_max_unlimited">No limit</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_environment">Environment</string>
+    <string name="settings_access_key">Access key</string>
+    <string name="settings_value_from_settings">Saved on this device (overrides local.properties)</string>
+    <string name="settings_value_from_build">From local.properties (empty when not set)</string>
+    <string name="settings_catalog">Catalog</string>
+    <string name="settings_catalog_url">Catalog URL</string>
+    <string name="settings_catalog_url_help">From local.properties. Empty uses the bundled sample catalog.</string>
+    <string name="settings_catalog_loading">Loading the catalog…</string>
+    <string name="settings_catalog_status">Source: %1$s · %2$d products</string>
+    <string name="settings_catalog_source_remote">catalog URL</string>
+    <string name="settings_catalog_source_cache">last saved copy</string>
+    <string name="settings_catalog_source_bundled">bundled sample</string>
+    <string name="settings_catalog_error">Catalog URL failed: %1$s</string>
+    <string name="settings_save_reload">Save and reload catalog</string>
+    <string name="settings_saved">Saved</string>
+    <string name="settings_branding">Branding</string>
+    <string name="settings_brand_color">Brand color</string>
+    <string name="settings_brand_default">Default</string>
+    <string name="settings_brand_blue">Blue</string>
+    <string name="settings_brand_green">Green</string>
+    <string name="settings_brand_orange">Orange</string>
+    <string name="settings_brand_pink">Pink</string>
+    <string name="settings_layout">Layout</string>
+    <string name="settings_reset_layout">Reset layout defaults</string>
+    <string name="settings_reset_layout_done">Layout options are back to their defaults.</string>
+    <string name="settings_sdk">Shortform SDK</string>
+    <string name="settings_event_log">SDK event log</string>
+    <string name="settings_event_log_empty">No SDK events yet. Play a shortform and come back.</string>
+    <string name="settings_event_log_clear">Clear</string>
+    <string name="settings_event_log_entry">%1$s  %2$s</string>
+    <string name="settings_sdk_version">Shortform SDK %1$s</string>
+    <string name="settings_demo">Demo</string>
+    <string name="settings_demo_reset">Demo reset</string>
+    <string name="settings_demo_reset_message">Clears the saved access key, catalog URL, cached catalog, layout options, branding and the event log.</string>
+    <string name="settings_demo_reset_confirm">Reset</string>
+</resources>
