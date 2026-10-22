@@ -18,8 +18,10 @@ final class ShortformBridge: NSObject {
 
     func configure(accessKey: String?) {
         setAccessKey(accessKey)
-        ShopLiveShortform.setReferrer(referrer: "shortform-demo-ios")
     }
+
+    /// Sent with every request so the demo's traffic is easy to tell apart.
+    static let referrer = "shortform-demo-ios"
 
     func setAccessKey(_ key: String?) {
         ShopLiveCommon.setAccessKey(accessKey: key)
@@ -28,19 +30,16 @@ final class ShortformBridge: NSObject {
 
     // MARK: - Full screen and preview
 
-    /// `ShopLiveShortform.play` for a match step: related data (productId/url/skus/tags) or a collection.
+    /// `ShopLiveShortform.play` with related data: productId → url → skus, or tags.
     func play(_ query: ShortformQuery) {
-        if let collectionId = query.collectionId {
-            ShopLiveShortform.play(requestData: ShopLiveShortformCollectionData(shortsCollectionId: collectionId, delegate: self))
-        } else {
-            let data = ShopLiveShortformRelatedData(productId: query.productId,
-                                                    skus: query.skus,
-                                                    url: query.url,
-                                                    tags: query.tags,
-                                                    tagSearchOperator: query.tags == nil ? nil : .OR,
-                                                    delegate: self)
-            ShopLiveShortform.play(requestData: data)
-        }
+        let data = ShopLiveShortformRelatedData(productId: query.productId,
+                                                skus: query.skus,
+                                                url: query.url,
+                                                tags: query.tags,
+                                                tagSearchOperator: query.tags == nil ? nil : .OR,
+                                                referrer: Self.referrer,
+                                                delegate: self)
+        ShopLiveShortform.play(requestData: data)
         EventLog.shared.add("play", describe(query))
     }
 
@@ -67,6 +66,7 @@ final class ShortformBridge: NSObject {
                                                 url: query.url,
                                                 tags: query.tags,
                                                 tagSearchOperator: query.tags == nil ? nil : .OR,
+                                                referrer: Self.referrer,
                                                 isMuted: true,
                                                 previewPosition: position,
                                                 previewScale: scale,

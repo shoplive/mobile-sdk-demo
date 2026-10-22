@@ -146,10 +146,15 @@ final class ShortformEmbedView: UIView {
     private var tagOperator: ShopLiveTagSearchOperator? { query?.tags == nil ? nil : .OR }
 
     /// Pushes the query and style into the SDK view. Every field is set, so a previous query never leaks into the next.
+    ///
+    /// The list views are sent skus, tags and a collection id. `query.productId` / `query.url` are only produced for
+    /// list views when `ShortformMatcher.listViewsAcceptProductConditions` is on; they are then passed with the list
+    /// view's `setRelatedData(_:)` next to the calls below.
     private func apply() {
         let q = query ?? .all
         switch sdkView {
         case let v as ShopLiveShortformHorizontalTypeView:
+            v.setReferrer(ShortformBridge.referrer)
             v.setCardViewType(type: cardViewType)
             v.setSkus(skus: q.skus)
             v.setHashTags(tags: q.tags, tagSearchOperator: tagOperator)
@@ -159,6 +164,7 @@ final class ShortformEmbedView: UIView {
             v.setVisibleProductCount(isVisible: style.showProductCount)
             if style.autoplay { v.enablePlayVideos() } else { v.disablePlayVideos() }
         case let v as ShopLiveShortformCardTypeView:
+            v.setReferrer(ShortformBridge.referrer)
             v.setCardViewType(type: cardViewType)
             v.setSkus(skus: q.skus)
             v.setHashTags(tags: q.tags, tagSearchOperator: tagOperator)
@@ -168,6 +174,7 @@ final class ShortformEmbedView: UIView {
             v.setVisibleProductCount(isVisible: style.showProductCount)
             if style.autoplay { v.enablePlayVideos() } else { v.disablePlayVideos() }
         case let v as ShopLiveShortformVerticalTypeView:
+            v.setReferrer(ShortformBridge.referrer)
             v.setCardViewType(type: cardViewType)
             v.setSkus(skus: q.skus)
             v.setHashTags(tags: q.tags, tagSearchOperator: tagOperator)

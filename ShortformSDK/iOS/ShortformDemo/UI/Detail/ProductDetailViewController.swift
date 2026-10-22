@@ -289,7 +289,8 @@ final class ProductDetailViewController: UIViewController {
     private func playerStep(surface: ShortformSurface) -> MatchStep? {
         let catalog = env.catalog
         if let found = Self.resolved[product.productId],
-           !(found.isRelated && product.sku.nonEmpty == nil),
+           // A related step only counts when the embedded layout could try the product's own step first.
+           !(found.isRelated && ShortformMatcher.ownQuery(for: product, surface: .embedded) == nil),
            let step = ShortformMatcher.step(found, on: surface, for: product, in: catalog) {
             return step
         }

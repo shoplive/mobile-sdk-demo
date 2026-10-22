@@ -13,7 +13,7 @@ final class MatcherTests: XCTestCase {
         XCTAssertEqual(steps, [
             .product(ShortformQuery(productId: "P-1")),
             .verticalTags(["fall-look", "knitwear"]),
-            .fallbackCollection("fallback-collection"),
+            .fallbackTags(["picks"]),
         ])
         XCTAssertFalse(steps[0].isRelated)
         XCTAssertTrue(steps[1].isRelated)
@@ -22,10 +22,25 @@ final class MatcherTests: XCTestCase {
 
     func testEmbeddedUsesSkuForProductStep() {
         let steps = ShortformMatcher.steps(for: product("P-1"), in: catalog, surface: .embedded)
-        XCTAssertEqual(steps.first, .product(ShortformQuery(skus: ["SKU-1"])))
+        if ShortformMatcher.listViewsAcceptProductConditions {
+            XCTAssertEqual(steps.first, .product(ShortformQuery(productId: "P-1")))
+        } else {
+            XCTAssertEqual(steps.first, .product(ShortformQuery(skus: ["SKU-1"])))
+            XCTAssertEqual(steps.last, .fallbackCollection("fallback-collection"))
+        }
     }
 
-    func testEmbeddedWithoutSkuStartsWithTags() {
+    func testSurfaceCapabilities() {
+        XCTAssertTrue(ShortformSurface.player.acceptsProductConditions)
+        XCTAssertTrue(ShortformSurface.preview.acceptsProductConditions)
+        XCTAssertEqual(ShortformSurface.embedded.acceptsProductConditions, ShortformMatcher.listViewsAcceptProductConditions)
+        XCTAssertTrue(ShortformSurface.embedded.acceptsCollectionId)
+        XCTAssertFalse(ShortformSurface.player.acceptsCollectionId)
+        XCTAssertFalse(ShortformSurface.preview.acceptsCollectionId)
+    }
+
+    func testEmbeddedWithoutSkuStartsWithTags() throws {
+        try XCTSkipIf(ShortformMatcher.listViewsAcceptProductConditions)
         let steps = ShortformMatcher.steps(for: product("P-2"), in: catalog, surface: .embedded)
         XCTAssertEqual(steps, [.verticalTags(["fall-look", "knitwear"]), .fallbackCollection("fallback-collection")])
     }
@@ -52,7 +67,8 @@ final class MatcherTests: XCTestCase {
         }
     }
 
-    func testProductOutsideVerticalsGoesToFallback() {
+    func testProductOutsideVerticalsGoesToFallback() throws {
+        try XCTSkipIf(ShortformMatcher.listViewsAcceptProductConditions)
         let steps = ShortformMatcher.steps(for: product("P-5"), in: catalog, surface: .embedded)
         XCTAssertEqual(steps, [.fallbackCollection("fallback-collection")])
         XCTAssertTrue(steps[0].isRelated)
@@ -63,7 +79,8 @@ final class MatcherTests: XCTestCase {
         XCTAssertEqual(steps, [.product(ShortformQuery(productId: "P-5")), .fallbackTags(["picks"])])
     }
 
-    func testNoFallbackNoTagsNoSku() {
+    func testNoFallbackNoTagsNoSku() throws {
+        try XCTSkipIf(ShortformMatcher.listViewsAcceptProductConditions)
         var c = catalog
         c.fallback = nil
         XCTAssertEqual(ShortformMatcher.steps(for: product("P-5", in: c), in: c, surface: .embedded), [])
@@ -82,6 +99,8 @@ final class MatcherTests: XCTestCase {
         let embeddedOwn = MatchStep.product(ShortformQuery(skus: ["SKU-1"]))
         XCTAssertEqual(ShortformMatcher.step(embeddedOwn, on: .player, for: p, in: catalog), .product(ShortformQuery(productId: "P-1")))
         XCTAssertEqual(ShortformMatcher.step(.fallbackCollection("fallback-collection"), on: .preview, for: p, in: catalog),
+                       .fallbackTags(["picks"]))
+        XCTAssertEqual(ShortformMatcher.step(.fallbackCollection("fallback-collection"), on: .player, for: p, in: catalog),
                        .fallbackTags(["picks"]))
         XCTAssertEqual(ShortformMatcher.step(.verticalTags(["x"]), on: .player, for: p, in: catalog),
                        .verticalTags(["fall-look", "knitwear"]))

@@ -52,16 +52,35 @@ enum MatchStep: Equatable {
 
 /// Which request fields an SDK entry point accepts.
 enum ShortformSurface: Equatable {
-    /// `ShopLiveShortformHorizontalTypeView` / `CardTypeView` / `VerticalTypeView`: skus, tags, collection id.
+    /// `ShopLiveShortformHorizontalTypeView` / `CardTypeView` / `VerticalTypeView`: skus, tags, collection id
+    /// (product conditions too once `listViewsAcceptProductConditions` is on).
     case embedded
-    /// `ShopLiveShortform.play` with `ShopLiveShortformRelatedData` (productId/url/skus/tags) or
-    /// `ShopLiveShortformCollectionData` (collection id).
+    /// `ShopLiveShortform.play` with `ShopLiveShortformRelatedData`: productId/url/skus/tags, no collection id.
     case player
     /// `ShopLiveShortform.showPreview` with `ShopLiveShortformPreviewData`: productId/url/skus/tags, no collection id.
     case preview
+
+    /// Whether the product step can send `productId` / `url` (related conditions) on this surface.
+    var acceptsProductConditions: Bool {
+        switch self {
+        case .embedded: return ShortformMatcher.listViewsAcceptProductConditions
+        case .player, .preview: return true
+        }
+    }
+
+    /// Whether a collection id can be sent on this surface.
+    var acceptsCollectionId: Bool { self == .embedded }
 }
 
 enum ShortformMatcher {
+    /// The single switch for what the embedded list views are sent for a product.
+    ///
+    /// `false`: the list views of the SDK build this app compiles against take only skus, tags and a collection id,
+    /// so the product step sends the product's `sku`. When the list views accept `ShopLiveShortformRelatedData`
+    /// (`setRelatedData(_:)`), set this to `true`: the product step then sends `productId` → `url` → `skus` like the
+    /// player and preview, and `ShortformEmbedView.apply()` forwards those conditions to the list view.
+    static let listViewsAcceptProductConditions = false
+
     /// The ordered steps to try for a product. `name` is never used.
     static func steps(for product: Product, in catalog: Catalog, surface: ShortformSurface) -> [MatchStep] {
         var steps: [MatchStep] = []
@@ -73,7 +92,7 @@ enum ShortformMatcher {
             steps.append(.verticalTags(tags))
         }
         if let fallback = catalog.fallback {
-            if let id = fallback.collectionId.nonEmpty, surface != .preview {
+            if let id = fallback.collectionId.nonEmpty, surface.acceptsCollectionId {
                 steps.append(.fallbackCollection(id))
             } else if !fallback.tags.isEmpty {
                 steps.append(.fallbackTags(unique(fallback.tags)))
@@ -83,17 +102,13 @@ enum ShortformMatcher {
     }
 
     /// The product's own query on a surface: `productId`, else `url`, else `skus`.
-    /// Embedded list views take skus only, so there the product step needs a `sku`.
+    /// Where product conditions cannot be sent (see `listViewsAcceptProductConditions`) the step needs a `sku`.
     static func ownQuery(for product: Product, surface: ShortformSurface) -> ShortformQuery? {
-        let sku = product.sku.nonEmpty
-        switch surface {
-        case .embedded:
-            return sku.map { ShortformQuery(skus: [$0]) }
-        case .player, .preview:
-            if let id = product.productId.nonEmpty { return ShortformQuery(productId: id) }
-            if let url = product.url.nonEmpty { return ShortformQuery(url: url) }
-            return sku.map { ShortformQuery(skus: [$0]) }
-        }
+        let sku = product.sku.nonEmpty.map { ShortformQuery(skus: [$0]) }
+        guard surface.acceptsProductConditions else { return sku }
+        if let id = product.productId.nonEmpty { return ShortformQuery(productId: id) }
+        if let url = product.url.nonEmpty { return ShortformQuery(url: url) }
+        return sku
     }
 
     /// Translates a step found on one surface to another surface, so a layout switch keeps the same kind of match.
