@@ -32,6 +32,10 @@ final class RemoteImageView: UIImageView {
     private var currentURL: String?
     private let placeholder = UIImageView(image: UIImage(systemName: "photo"))
 
+    convenience init() {
+        self.init(frame: .zero)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentMode = .scaleAspectFill
