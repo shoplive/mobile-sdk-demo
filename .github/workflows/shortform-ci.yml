@@ -22,3 +22,71 @@ jobs:
           jsonschema.validate(json.load(open(base + "catalog.sample.json")), json.load(open(base + "catalog.schema.json")))
           print("catalog.sample.json is valid")
           PY
+
+  ios:
+    name: iOS demo (build + unit tests)
+    runs-on: macos-15
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: ShortformSDK/iOS
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE"; fi
+          xcodebuild -version
+      - name: Build (generic iOS Simulator, no signing)
+        run: |
+          set -o pipefail
+          xcodebuild -project ShortformDemo.xcodeproj -scheme ShortformDemo \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/dd" -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
+            build CODE_SIGNING_ALLOWED=NO 2>&1 | tee "$RUNNER_TEMP/build.log"
+      - name: Unit tests (simulator)
+        run: |
+          set -o pipefail
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          for runtime in sorted(devices, reverse=True):
+              if "iOS" not in runtime:
+                  continue
+              for d in devices[runtime]:
+                  if d["name"].startswith("iPhone"):
+                      print(d["udid"]); sys.exit(0)
+          ')
+          echo "Simulator: $UDID"
+          xcodebuild -project ShortformDemo.xcodeproj -scheme ShortformDemo \
+            -destination "id=$UDID" \
+            -derivedDataPath "$RUNNER_TEMP/dd" -clonedSourcePackagesDirPath "$RUNNER_TEMP/spm" \
+            test CODE_SIGNING_ALLOWED=NO 2>&1 | tee "$RUNNER_TEMP/test.log"
+      - name: Report the first errors as annotations
+        if: failure()
+        run: |
+          cat "$RUNNER_TEMP"/build.log "$RUNNER_TEMP"/test.log 2>/dev/null | python3 -c '
+          import re, sys
+          seen, n = set(), 0
+          for line in sys.stdin:
+              line = line.rstrip()
+              m = re.match(r"^(/[^:]+):(\d+):(?:\d+:)? (?:fatal )?error: (.*)$", line)
+              if m:
+                  key = (m.group(1), m.group(2), m.group(3))
+                  if key in seen:
+                      continue
+                  seen.add(key)
+                  path = m.group(1).split("/ShortformSDK/", 1)
+                  rel = "ShortformSDK/" + path[1] if len(path) == 2 else m.group(1)
+                  print(f"::error file={rel},line={m.group(2)}::{m.group(3)}")
+                  n += 1
+              elif "error:" in line or "Test Case" in line and "failed" in line:
+                  msg = line.strip()[:400]
+                  if msg in seen:
+                      continue
+                  seen.add(msg)
+                  print(f"::error::{msg}")
+                  n += 1
+              if n >= 15:
+                  break
+          '

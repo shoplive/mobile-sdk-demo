@@ -1,0 +1,117 @@
+/* Shortform demo — English (base). Keys are shared with the Android app; keep ko.lproj in sync. */
+
+/* Home */
+"home_title" = "Shortform Demo";
+"home_search_placeholder" = "Search products";
+"home_today_shortform" = "Today's shortform";
+"home_featured" = "Featured products";
+"home_has_shortform" = "Has shortform";
+"home_catalog_bundled" = "Using the bundled sample catalog.";
+"home_catalog_cached" = "Catalog URL unavailable — using the last saved catalog.";
+"home_access_key_missing" = "Add an access key in Settings to load shortform.";
+
+/* Search */
+"search_title" = "Search";
+"search_suggested" = "Suggested keywords";
+"search_demo_products" = "Demo products";
+"search_demo_placeholder" = "No demo product matches. Showing featured products.";
+"search_no_demo_products" = "No demo products in this catalog.";
+"search_other_results" = "Other results";
+"search_no_results" = "No other products match.";
+
+/* Results */
+"results_title_format" = "“%@”";
+"results_count_format" = "%d products";
+"results_layout_grid2" = "2 columns";
+"results_layout_grid3" = "3 columns";
+"results_layout_list" = "List";
+"results_shortform_strip" = "Shortform";
+"results_empty" = "No products match.";
+
+/* Product detail */
+"detail_shortform_title" = "Shortform for this product";
+"detail_related_title" = "Related shortform";
+"detail_matched_by_format" = "Matched by %@";
+"detail_no_shortform" = "No shortform found for this product.";
+"detail_play_button" = "Watch shortform";
+"detail_preview_again" = "Show preview";
+"detail_preview_note" = "The preview floats in a corner of the screen. Tap it to open full screen.";
+"detail_description" = "Description";
+"detail_not_in_catalog" = "This product is not in the demo catalog.";
+
+/* Option bar */
+"option_layout" = "Layout";
+"option_layout_horizontal" = "Horizontal strip";
+"option_layout_card" = "Card grid";
+"option_layout_vertical" = "Vertical feed";
+"option_layout_preview" = "Floating preview";
+"option_layout_button" = "Button only";
+"option_position" = "Position";
+"option_position_above_images" = "Above images";
+"option_position_below_images" = "Below images";
+"option_position_below_price" = "Below price";
+"option_position_inside_description" = "Inside description";
+"option_position_bottom" = "Bottom";
+"option_card" = "Card";
+"option_card_type" = "Card type";
+"option_card_type_format" = "Type %d";
+"option_card_title" = "Title";
+"option_card_view_count" = "View count";
+"option_card_product_count" = "Product count";
+"option_card_columns" = "Columns";
+"option_card_columns_note" = "On iOS the SDK picks the column count for the screen width.";
+"option_card_autoplay" = "Autoplay";
+"option_preview" = "Preview";
+"option_preview_corner" = "Corner";
+"option_preview_corner_top_left" = "Top left";
+"option_preview_corner_top_right" = "Top right";
+"option_preview_corner_bottom_left" = "Bottom left";
+"option_preview_corner_bottom_right" = "Bottom right";
+"option_preview_size" = "Size";
+"option_preview_size_small" = "Small";
+"option_preview_size_medium" = "Medium";
+"option_preview_size_large" = "Large";
+"option_preview_max_count" = "Max count";
+"option_collapse" = "Hide options";
+"option_expand" = "Options";
+
+/* Settings */
+"settings_title" = "Settings";
+"settings_section_sdk" = "SDK";
+"settings_access_key" = "Access key";
+"settings_access_key_message" = "Paste the access key for your ShopLive account. It is stored on this device only.";
+"settings_access_key_placeholder" = "Access key";
+"settings_access_key_footer" = "Without an access key the app shows products but no shortform.";
+"settings_sdk_version" = "Shortform SDK";
+"settings_section_catalog" = "Catalog";
+"settings_catalog_url" = "Catalog URL";
+"settings_catalog_url_message" = "A JSON document in the demo catalog format.";
+"settings_catalog_url_invalid" = "Enter an http or https URL.";
+"settings_catalog_source" = "In use";
+"settings_catalog_source_remote" = "Catalog URL";
+"settings_catalog_source_cache" = "Saved copy";
+"settings_catalog_source_bundled" = "Bundled sample";
+"settings_catalog_status_format" = "%@ · %d products";
+"settings_catalog_reload" = "Reload catalog";
+"settings_catalog_reloading" = "Reloading…";
+"settings_catalog_failed" = "The catalog URL could not be loaded.";
+"settings_section_branding" = "Branding";
+"settings_brand_color" = "Brand color";
+"settings_brand_reset" = "Reset brand color";
+"settings_section_layout" = "Layout";
+"settings_layout_reset" = "Reset layout defaults";
+"settings_layout_reset_done" = "Layout options are back to their defaults.";
+"settings_section_diagnostics" = "Diagnostics";
+"settings_event_log" = "SDK event log";
+"settings_event_log_clear" = "Clear";
+"settings_event_log_empty" = "No events yet.";
+"settings_demo_reset" = "Reset demo";
+"settings_demo_reset_message" = "Clear the access key and catalog URL set here, layout choices, brand color and the saved catalog?";
+"settings_demo_reset_confirm" = "Reset";
+"settings_value_from_settings" = "Set here";
+"settings_value_from_local_config" = "From local config";
+"settings_value_not_set" = "Not set";
+"settings_use_local_config" = "Use local config";
+"settings_save" = "Save";
+"settings_cancel" = "Cancel";
+"settings_ok" = "OK";

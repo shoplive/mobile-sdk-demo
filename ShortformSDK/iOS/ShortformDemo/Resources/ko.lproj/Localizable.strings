@@ -1,0 +1,117 @@
+/* 숏폼 데모 — 한국어. 키는 en.lproj 및 Android 앱과 같다. */
+
+/* Home */
+"home_title" = "숏폼 데모";
+"home_search_placeholder" = "상품 검색";
+"home_today_shortform" = "오늘의 숏폼";
+"home_featured" = "추천 상품";
+"home_has_shortform" = "숏폼 있음";
+"home_catalog_bundled" = "앱에 포함된 샘플 카탈로그를 사용 중입니다.";
+"home_catalog_cached" = "카탈로그 URL을 불러오지 못해 마지막으로 저장한 카탈로그를 사용합니다.";
+"home_access_key_missing" = "숏폼을 불러오려면 설정에서 액세스 키를 입력하세요.";
+
+/* Search */
+"search_title" = "검색";
+"search_suggested" = "추천 검색어";
+"search_demo_products" = "데모 상품";
+"search_demo_placeholder" = "일치하는 데모 상품이 없어 추천 상품을 보여줍니다.";
+"search_no_demo_products" = "이 카탈로그에는 데모 상품이 없습니다.";
+"search_other_results" = "기타 검색 결과";
+"search_no_results" = "일치하는 다른 상품이 없습니다.";
+
+/* Results */
+"results_title_format" = "“%@”";
+"results_count_format" = "상품 %d개";
+"results_layout_grid2" = "2열";
+"results_layout_grid3" = "3열";
+"results_layout_list" = "목록";
+"results_shortform_strip" = "숏폼";
+"results_empty" = "일치하는 상품이 없습니다.";
+
+/* Product detail */
+"detail_shortform_title" = "이 상품의 숏폼";
+"detail_related_title" = "관련 숏폼";
+"detail_matched_by_format" = "%@ 기준으로 연결됨";
+"detail_no_shortform" = "이 상품의 숏폼을 찾지 못했습니다.";
+"detail_play_button" = "숏폼 보기";
+"detail_preview_again" = "미리보기 표시";
+"detail_preview_note" = "미리보기가 화면 모서리에 떠 있습니다. 누르면 전체 화면으로 열립니다.";
+"detail_description" = "상품 설명";
+"detail_not_in_catalog" = "데모 카탈로그에 없는 상품입니다.";
+
+/* Option bar */
+"option_layout" = "레이아웃";
+"option_layout_horizontal" = "가로 스트립";
+"option_layout_card" = "카드 그리드";
+"option_layout_vertical" = "세로 피드";
+"option_layout_preview" = "플로팅 미리보기";
+"option_layout_button" = "버튼만";
+"option_position" = "위치";
+"option_position_above_images" = "이미지 위";
+"option_position_below_images" = "이미지 아래";
+"option_position_below_price" = "가격 아래";
+"option_position_inside_description" = "설명 중간";
+"option_position_bottom" = "맨 아래";
+"option_card" = "카드";
+"option_card_type" = "카드 타입";
+"option_card_type_format" = "타입 %d";
+"option_card_title" = "제목";
+"option_card_view_count" = "조회수";
+"option_card_product_count" = "상품 수";
+"option_card_columns" = "열 수";
+"option_card_columns_note" = "iOS에서는 SDK가 화면 너비에 맞춰 열 수를 정합니다.";
+"option_card_autoplay" = "자동 재생";
+"option_preview" = "미리보기";
+"option_preview_corner" = "모서리";
+"option_preview_corner_top_left" = "왼쪽 위";
+"option_preview_corner_top_right" = "오른쪽 위";
+"option_preview_corner_bottom_left" = "왼쪽 아래";
+"option_preview_corner_bottom_right" = "오른쪽 아래";
+"option_preview_size" = "크기";
+"option_preview_size_small" = "작게";
+"option_preview_size_medium" = "보통";
+"option_preview_size_large" = "크게";
+"option_preview_max_count" = "최대 개수";
+"option_collapse" = "옵션 숨기기";
+"option_expand" = "옵션";
+
+/* Settings */
+"settings_title" = "설정";
+"settings_section_sdk" = "SDK";
+"settings_access_key" = "액세스 키";
+"settings_access_key_message" = "ShopLive 계정의 액세스 키를 붙여넣으세요. 이 기기에만 저장됩니다.";
+"settings_access_key_placeholder" = "액세스 키";
+"settings_access_key_footer" = "액세스 키가 없으면 상품만 보이고 숏폼은 보이지 않습니다.";
+"settings_sdk_version" = "숏폼 SDK";
+"settings_section_catalog" = "카탈로그";
+"settings_catalog_url" = "카탈로그 URL";
+"settings_catalog_url_message" = "데모 카탈로그 형식의 JSON 문서입니다.";
+"settings_catalog_url_invalid" = "http 또는 https URL을 입력하세요.";
+"settings_catalog_source" = "사용 중";
+"settings_catalog_source_remote" = "카탈로그 URL";
+"settings_catalog_source_cache" = "저장된 사본";
+"settings_catalog_source_bundled" = "포함된 샘플";
+"settings_catalog_status_format" = "%@ · 상품 %d개";
+"settings_catalog_reload" = "카탈로그 다시 불러오기";
+"settings_catalog_reloading" = "불러오는 중…";
+"settings_catalog_failed" = "카탈로그 URL을 불러오지 못했습니다.";
+"settings_section_branding" = "브랜딩";
+"settings_brand_color" = "브랜드 색상";
+"settings_brand_reset" = "브랜드 색상 초기화";
+"settings_section_layout" = "레이아웃";
+"settings_layout_reset" = "레이아웃 기본값으로 되돌리기";
+"settings_layout_reset_done" = "레이아웃 옵션을 기본값으로 되돌렸습니다.";
+"settings_section_diagnostics" = "진단";
+"settings_event_log" = "SDK 이벤트 로그";
+"settings_event_log_clear" = "지우기";
+"settings_event_log_empty" = "아직 이벤트가 없습니다.";
+"settings_demo_reset" = "데모 초기화";
+"settings_demo_reset_message" = "여기서 입력한 액세스 키와 카탈로그 URL, 레이아웃 선택, 브랜드 색상, 저장된 카탈로그를 지울까요?";
+"settings_demo_reset_confirm" = "초기화";
+"settings_value_from_settings" = "여기서 설정함";
+"settings_value_from_local_config" = "로컬 설정 값";
+"settings_value_not_set" = "설정 안 됨";
+"settings_use_local_config" = "로컬 설정 사용";
+"settings_save" = "저장";
+"settings_cancel" = "취소";
+"settings_ok" = "확인";

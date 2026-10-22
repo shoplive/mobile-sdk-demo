@@ -1,0 +1,10 @@
+// Shared build settings for the ShortformDemo app target.
+//
+// Local values live in Config/Local.xcconfig, which is not committed (copy Local.xcconfig.sample).
+// The project builds without it: both values are then empty, the app starts with the bundled sample catalog
+// and asks for an access key in Settings.
+
+SHORTFORM_DEMO_ACCESS_KEY =
+SHORTFORM_DEMO_CATALOG_URL =
+
+#include? "Local.xcconfig"

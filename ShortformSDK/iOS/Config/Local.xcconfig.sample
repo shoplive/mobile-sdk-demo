@@ -1,0 +1,6 @@
+// Copy to Config/Local.xcconfig (ignored by git) and fill in your values.
+//
+// In .xcconfig files "//" starts a comment, so write URLs as https:/$()/host/path — Xcode expands $() to nothing.
+
+SHORTFORM_DEMO_ACCESS_KEY = your-access-key
+SHORTFORM_DEMO_CATALOG_URL = https:/$()/example.com/shortform-demo/catalog.json

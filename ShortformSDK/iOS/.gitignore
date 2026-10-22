@@ -1,0 +1,6 @@
+# Local values (access key, catalog URL) — never committed
+Config/Local.xcconfig
+
+xcuserdata/
+DerivedData/
+build/
