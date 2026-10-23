@@ -28,14 +28,14 @@ Home ──▶ Search ──▶ Results ──▶ Product detail ──▶ Full-
 | **Home** | Search bar, vertical chips, "Today's shortform" strip, featured products | `ShopLiveShortformHorizontalTypeView` + `ShopLiveShortformCollectionData` |
 | **Search** | Suggested keywords; while typing, **demo products that have shortform are listed first**, then regular results | — |
 | **Results** | Product grid (2 · 3 columns or list), optional shortform strip on top | `HorizontalTypeView` with the results' `skus` |
-| **Product detail** ★ | Images, price, description, and **"Shortform for this product"** rendered in the layout chosen in the option bar | `HorizontalTypeView` · `CardTypeView` · `VerticalTypeView` + `ShopLiveShortformRelatedData`, or `ShopLiveShortform.showPreview` |
+| **Product detail** ★ | Images, price, description, and **"Shortform for this product"** rendered in the layout chosen in the option bar | `HorizontalTypeView` · `CardTypeView` · `VerticalTypeView` with `setRelatedData(ShopLiveShortformRelatedData)`, or `ShopLiveShortform.showPreview` |
 | **Full screen** | The SDK player; a product tap inside the video opens the app's own product page | `ShopLiveShortform.play`, `onProductClick` |
 
 ### The option bar (product detail)
 
 | Option | Choices |
 |---|---|
-| Layout | Horizontal strip · Card grid · Vertical feed · Floating preview · Button only |
+| Layout | Horizontal strip (`HorizontalTypeView`) · Large cards (`CardTypeView`, one card per row) · Grid (`VerticalTypeView`, 2–3 columns) · Floating preview (`showPreview`) · Button only (`play`) |
 | Position | Above images · Below images · Below price · Inside description · Bottom |
 | Card | `cardType` 0 · 1 · 2, title / view count / product count, columns, autoplay |
 | Preview | Corner, size, max count |
