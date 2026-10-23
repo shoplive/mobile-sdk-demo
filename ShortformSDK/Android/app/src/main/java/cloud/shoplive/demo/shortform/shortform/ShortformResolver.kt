@@ -31,8 +31,8 @@ fun resolveShortform(context: Context, steps: List<MatchStep>, done: (Resolution
 }
 
 /**
- * Remembers which products have their own shortform (matching step 1), for the ▶ badge on
- * product cards. Only products with a sku can be checked this way (see [ShortformMatcher]).
+ * Remembers which products have their own shortform (matching step 1: productId, else url, else
+ * skus, through `ShopLiveShortform.get(context, relatedData, …)`), for the ▶ badge on product cards.
  */
 object ShortformAvailability {
     private val known = HashMap<String, Boolean>()
@@ -41,10 +41,10 @@ object ShortformAvailability {
     fun has(product: Product): Boolean = known[product.productId] == true
 
     fun check(context: Context, products: List<Product>, changed: () -> Unit) {
-        products.forEach { product ->
-            val sku = product.sku?.takeIf { it.isNotBlank() } ?: return@forEach
-            if (product.productId in known || !pending.add(product.productId)) return@forEach
-            ShortformSdk.hasShortform(context, ShortformCondition(skus = listOf(sku))) { has ->
+        for (product in products) {
+            val step = ShortformMatcher.productStep(product) ?: continue
+            if (product.productId in known || !pending.add(product.productId)) continue
+            ShortformSdk.hasShortform(context, step.condition) { has ->
                 pending.remove(product.productId)
                 if (has != null) {
                     known[product.productId] = has

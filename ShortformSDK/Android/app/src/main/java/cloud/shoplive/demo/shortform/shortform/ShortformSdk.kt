@@ -27,6 +27,7 @@ import cloud.shoplive.sdk.shorts.ShopLiveShortformIdentifier
 import cloud.shoplive.sdk.shorts.ShopLiveShortformListener
 import cloud.shoplive.sdk.shorts.ShopLiveShortformMessageListener
 import cloud.shoplive.sdk.shorts.ShopLiveShortformPreviewData
+import cloud.shoplive.sdk.shorts.ShopLiveShortformRelatedData
 import cloud.shoplive.sdk.shorts.ShopLiveShortformShareData
 import cloud.shoplive.sdk.shorts.ShopLiveShortformVerticalTypeView
 
@@ -55,12 +56,32 @@ object ShortformSdk {
         data.listener = DemoListener
     }
 
-    /** Points a list view at a condition. Call [ShopLiveShortformBaseTypeView.submit] after. */
+    /** A product condition (matching step 1): productId, url or skus of one product. */
+    private fun ShortformCondition.toRelatedData() = ShopLiveShortformRelatedData().also { data ->
+        data.productId = productId
+        data.url = url
+        data.skus = skus.ifEmpty { null }
+        data.listener = DemoListener
+    }
+
+    /**
+     * Points a list view at a condition. A product condition uses `setRelatedData`, which takes
+     * precedence over the collection setters; anything else clears it and uses the setters.
+     * Call [ShopLiveShortformBaseTypeView.submit] after.
+     */
     private fun ShopLiveShortformBaseTypeView.applyCondition(condition: ShortformCondition) {
         listener = DemoListener
-        setShortsCollectionId(condition.collectionId)
-        setHashTags(condition.tags.ifEmpty { null }, ShopLiveShortformTagSearchOperator.OR)
-        setSkus(condition.skus.ifEmpty { null })
+        if (condition.isProduct) {
+            setRelatedData(condition.toRelatedData())
+            setShortsCollectionId(null)
+            setHashTags(null, null)
+            setSkus(null)
+        } else {
+            setRelatedData(null)
+            setShortsCollectionId(condition.collectionId)
+            setHashTags(condition.tags.ifEmpty { null }, ShopLiveShortformTagSearchOperator.OR)
+            setSkus(condition.skus.ifEmpty { null })
+        }
         setBrands(null)
     }
 
@@ -68,14 +89,15 @@ object ShortformSdk {
 
     /**
      * Asks the SDK whether a condition returns any shortform: true / false, or null when the
-     * request failed. Uses [ShopLiveShortform.get], which takes the same condition as the views.
+     * request failed. Uses [ShopLiveShortform.get] with the same condition the views get:
+     * `get(context, relatedData, …)` for a product, `get(context, collectionData, …)` otherwise.
      */
     fun hasShortform(owner: Context, condition: ShortformCondition, result: (Boolean?) -> Unit) {
         if (owner !is LifecycleOwner || !hasAccessKey()) {
             result(null)
             return
         }
-        ShopLiveShortform.get(owner, condition.toCollectionData(), object : ShopLiveShortformCollectionListener {
+        val callback = object : ShopLiveShortformCollectionListener {
             override fun onData(data: ShopLiveShortformCollectionResponse) {
                 result(!data.shortsList.isNullOrEmpty())
             }
@@ -84,7 +106,12 @@ object ShortformSdk {
                 EventLog.add("get.onError", e.message.orEmpty())
                 result(null)
             }
-        })
+        }
+        if (condition.isProduct) {
+            ShopLiveShortform.get(owner, condition.toRelatedData(), callback)
+        } else {
+            ShopLiveShortform.get(owner, condition.toCollectionData(), callback)
+        }
     }
 
     // ── List views ─────────────────────────────────────────────────────────────
@@ -127,17 +154,18 @@ object ShortformSdk {
             if (style.autoplay) enablePlayVideos() else disablePlayVideos()
         }
 
-    fun cardGrid(context: Context, condition: ShortformCondition, style: CardStyle) =
+    /** "Large cards": `CardTypeView` keeps its own column count (one card per row on phones). */
+    fun largeCards(context: Context, condition: ShortformCondition, style: CardStyle) =
         ShopLiveShortformCardTypeView(context).apply {
             applyCondition(condition)
             setViewType(cardViewType(style.cardType))
-            setSpanCount(style.columns.coerceAtLeast(1))
             applyStyle(style)
             submit()
             if (style.autoplay) enablePlayVideos() else disablePlayVideos()
         }
 
-    fun verticalFeed(context: Context, condition: ShortformCondition, style: CardStyle) =
+    /** "Grid": `VerticalTypeView` with the chosen number of columns. */
+    fun grid(context: Context, condition: ShortformCondition, style: CardStyle) =
         ShopLiveShortformVerticalTypeView(context).apply {
             applyCondition(condition)
             setViewType(cardViewType(style.cardType))
@@ -155,7 +183,11 @@ object ShortformSdk {
     // ── Full screen ────────────────────────────────────────────────────────────
 
     fun play(context: Context, condition: ShortformCondition) {
-        ShopLiveShortform.play(context, condition.toCollectionData())
+        if (condition.isProduct) {
+            ShopLiveShortform.play(context, condition.toRelatedData())
+        } else {
+            ShopLiveShortform.play(context, condition.toCollectionData())
+        }
     }
 
     // ── Floating preview ───────────────────────────────────────────────────────
@@ -173,7 +205,7 @@ object ShortformSdk {
             skus = condition.skus.ifEmpty { null }
             tags = condition.tags.ifEmpty { null }
             tagSearchOperator = if (condition.tags.isEmpty()) null else ShopLiveShortformTagSearchOperator.OR
-            // A collection condition has no preview field; it is never used for the preview.
+            // The preview has no collection id field: ShortformMatcher.steps(forPreview = true) never yields one.
             setPosition(
                 when (options.previewCorner) {
                     PreviewCorner.TOP_LEFT -> ShopLivePreviewPositionConfig.TOP_LEFT

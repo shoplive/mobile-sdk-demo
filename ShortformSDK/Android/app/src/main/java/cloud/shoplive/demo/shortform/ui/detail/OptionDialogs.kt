@@ -22,11 +22,11 @@ import com.google.android.material.materialswitch.MaterialSwitch
 object OptionLabels {
     @StringRes
     fun layout(l: ShortformLayout) = when (l) {
-        ShortformLayout.HORIZONTAL -> R.string.option_layout_horizontal
-        ShortformLayout.CARD_GRID -> R.string.option_layout_card_grid
-        ShortformLayout.VERTICAL_FEED -> R.string.option_layout_vertical_feed
-        ShortformLayout.FLOATING_PREVIEW -> R.string.option_layout_floating_preview
-        ShortformLayout.BUTTON_ONLY -> R.string.option_layout_button_only
+        ShortformLayout.STRIP -> R.string.option_layout_strip
+        ShortformLayout.LARGE_CARDS -> R.string.option_layout_large_cards
+        ShortformLayout.GRID -> R.string.option_layout_grid
+        ShortformLayout.PREVIEW -> R.string.option_layout_preview
+        ShortformLayout.BUTTON -> R.string.option_layout_button
     }
 
     @StringRes

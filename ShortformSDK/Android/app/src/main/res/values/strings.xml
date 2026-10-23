@@ -57,9 +57,10 @@
     <string name="detail_open_settings">Open Settings</string>
     <string name="detail_loading">Looking for shortform…</string>
     <string name="detail_load_failed">Could not load shortform. Check the network and the access key.</string>
-    <string name="detail_no_shortform">No shortform for this product yet. Add a sku, vertical tags or a fallback collection to the catalog.</string>
+    <string name="detail_no_shortform">No shortform for this product yet. Add vertical tags or a fallback collection to the catalog for related shortform.</string>
     <string name="detail_match_sku">Matched by the product\'s sku</string>
     <string name="detail_match_product_id">Matched by the product\'s productId</string>
+    <string name="detail_match_url">Matched by the product\'s url</string>
     <string name="detail_match_tags">From the vertical\'s tags: %1$s</string>
     <string name="detail_match_fallback">From the fallback collection</string>
     <string name="detail_preview_showing">The floating preview is in the %1$s corner.</string>
@@ -69,11 +70,11 @@
     <!-- Option bar -->
     <string name="option_chip">%1$s: %2$s ▾</string>
     <string name="option_layout">Layout</string>
-    <string name="option_layout_horizontal">Horizontal strip</string>
-    <string name="option_layout_card_grid">Card grid</string>
-    <string name="option_layout_vertical_feed">Vertical feed</string>
-    <string name="option_layout_floating_preview">Floating preview</string>
-    <string name="option_layout_button_only">Button only</string>
+    <string name="option_layout_strip">Horizontal strip</string>
+    <string name="option_layout_large_cards">Large cards</string>
+    <string name="option_layout_grid">Grid</string>
+    <string name="option_layout_preview">Floating preview</string>
+    <string name="option_layout_button">Button only</string>
     <string name="option_position">Position</string>
     <string name="option_position_above_images">Above images</string>
     <string name="option_position_below_images">Below images</string>

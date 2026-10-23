@@ -1,7 +1,28 @@
 package cloud.shoplive.demo.shortform.data
 
-/** Layout of "Shortform for this product" on Product detail (option bar → Layout). */
-enum class ShortformLayout { HORIZONTAL, CARD_GRID, VERTICAL_FEED, FLOATING_PREVIEW, BUTTON_ONLY }
+/**
+ * Layout of "Shortform for this product" on Product detail (option bar → Layout), named after
+ * what the SDK view looks like:
+ * - [STRIP] — `HorizontalTypeView`, a horizontal strip
+ * - [LARGE_CARDS] — `CardTypeView`, one large card per row (two on tablets)
+ * - [GRID] — `VerticalTypeView`, a 2–3 column grid
+ * - [PREVIEW] — `ShopLiveShortform.showPreview`, a floating preview
+ * - [BUTTON] — a button that opens the full-screen player (`ShopLiveShortform.play`)
+ */
+enum class ShortformLayout {
+    STRIP, LARGE_CARDS, GRID, PREVIEW, BUTTON;
+
+    companion object {
+        /** Names stored by earlier builds of the app, mapped to the layout that used the same view. */
+        val LEGACY_NAMES = mapOf(
+            "HORIZONTAL" to STRIP,
+            "CARD_GRID" to LARGE_CARDS,
+            "VERTICAL_FEED" to GRID,
+            "FLOATING_PREVIEW" to PREVIEW,
+            "BUTTON_ONLY" to BUTTON,
+        )
+    }
+}
 
 /** Where the section sits on Product detail (option bar → Position). */
 enum class SectionPosition { ABOVE_IMAGES, BELOW_IMAGES, BELOW_PRICE, INSIDE_DESCRIPTION, BOTTOM }
@@ -16,14 +37,14 @@ enum class ResultsViewMode(val columns: Int) { GRID_2(2), GRID_3(3), LIST(1) }
 
 /** Everything the option bar controls. Defaults are what a first launch shows. */
 data class DetailOptions(
-    val layout: ShortformLayout = ShortformLayout.HORIZONTAL,
+    val layout: ShortformLayout = ShortformLayout.STRIP,
     val position: SectionPosition = SectionPosition.BELOW_PRICE,
     /** SDK card type 0, 1 or 2. */
     val cardType: Int = 0,
     val showTitle: Boolean = true,
     val showViewCount: Boolean = true,
     val showProductCount: Boolean = true,
-    /** Columns for Card grid and Vertical feed. */
+    /** Columns for Grid. Large cards keep the SDK's own column count. */
     val columns: Int = 2,
     val autoplay: Boolean = true,
     val previewCorner: PreviewCorner = PreviewCorner.BOTTOM_RIGHT,
@@ -35,7 +56,7 @@ data class DetailOptions(
 ) {
     companion object {
         val CARD_TYPES = listOf(0, 1, 2)
-        val COLUMN_CHOICES = listOf(1, 2, 3)
+        val COLUMN_CHOICES = listOf(2, 3)
         val PREVIEW_MAX_COUNTS = listOf(0, 1, 3, 5, 10)
     }
 }
@@ -49,7 +70,7 @@ class OptionStore(private val store: KeyValueStore) {
     fun load(): DetailOptions {
         val d = DetailOptions()
         return DetailOptions(
-            layout = enumOr(K_LAYOUT, d.layout),
+            layout = layout(d.layout),
             position = enumOr(K_POSITION, d.position),
             cardType = intIn(K_CARD_TYPE, DetailOptions.CARD_TYPES, d.cardType),
             showTitle = bool(K_TITLE, d.showTitle),
@@ -85,6 +106,13 @@ class OptionStore(private val store: KeyValueStore) {
 
     /** Settings → Reset layout defaults. */
     fun reset() = store.remove(ALL_KEYS)
+
+    private fun layout(default: ShortformLayout): ShortformLayout {
+        val stored = store.getString(K_LAYOUT) ?: return default
+        return ShortformLayout.values().firstOrNull { it.name == stored }
+            ?: ShortformLayout.LEGACY_NAMES[stored]
+            ?: default
+    }
 
     private inline fun <reified E : Enum<E>> enumOr(key: String, default: E): E =
         store.getString(key)?.let { v -> enumValues<E>().firstOrNull { it.name == v } } ?: default

@@ -25,7 +25,7 @@ class OptionStoreTest {
     fun `last choice is persisted`() {
         val mem = MemoryStore()
         val chosen = DetailOptions(
-            layout = ShortformLayout.FLOATING_PREVIEW,
+            layout = ShortformLayout.PREVIEW,
             position = SectionPosition.INSIDE_DESCRIPTION,
             cardType = 2,
             showTitle = false,
@@ -54,10 +54,26 @@ class OptionStoreTest {
     }
 
     @Test
+    fun `layout names saved by earlier builds still map`() {
+        val expected = mapOf(
+            "HORIZONTAL" to ShortformLayout.STRIP,
+            "CARD_GRID" to ShortformLayout.LARGE_CARDS,
+            "VERTICAL_FEED" to ShortformLayout.GRID,
+            "FLOATING_PREVIEW" to ShortformLayout.PREVIEW,
+            "BUTTON_ONLY" to ShortformLayout.BUTTON,
+        )
+        expected.forEach { (old, layout) ->
+            val mem = MemoryStore()
+            mem.map[OptionStore.K_LAYOUT] = old
+            assertEquals(old, layout, OptionStore(mem).load().layout)
+        }
+    }
+
+    @Test
     fun `reset clears options and results view only`() {
         val mem = MemoryStore()
         val store = OptionStore(mem)
-        store.save(DetailOptions(layout = ShortformLayout.CARD_GRID))
+        store.save(DetailOptions(layout = ShortformLayout.LARGE_CARDS))
         store.saveResultsViewMode(ResultsViewMode.LIST)
         mem.map[DemoSettings.K_ACCESS_KEY] = "kept"
         store.reset()

@@ -52,9 +52,12 @@ class ProductDetailActivity : BaseActivity() {
     private var catalog: Catalog? = null
     private var product: Product? = null
 
-    /** Result of the list-view matching steps; null while unknown. */
-    private var resolution: Resolution? = null
-    private var resolving = false
+    /**
+     * Result of the matching steps, per step list (the preview cannot take a collection id, so it
+     * has its own list). Missing while unknown.
+     */
+    private val resolutions = HashMap<Boolean, Resolution>()
+    private val resolving = HashSet<Boolean>()
     private var typeView: ShopLiveShortformBaseTypeView? = null
     private var started = false
     private var renderedKey: String? = null
@@ -102,20 +105,20 @@ class ProductDetailActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         started = true
-        if (options.layout == ShortformLayout.FLOATING_PREVIEW && product != null) showPreview()
+        if (options.layout == ShortformLayout.PREVIEW && product != null) showPreview()
     }
 
     override fun onStop() {
         super.onStop()
         started = false
-        if (options.layout == ShortformLayout.FLOATING_PREVIEW) ShortformSdk.hidePreview()
+        if (options.layout == ShortformLayout.PREVIEW) ShortformSdk.hidePreview()
     }
 
     override fun onResume() {
         super.onResume()
         if (product != null && renderedKey != null && renderedKey != graph.settings.accessKey) {
             // The access key changed in Settings: match again with the new account.
-            resolution = null
+            resolutions.clear()
             render()
         }
         typeView?.let { ShortformSdk.setPlaying(it, options.autoplay) }
@@ -127,7 +130,7 @@ class ProductDetailActivity : BaseActivity() {
     }
 
     private fun update(newOptions: DetailOptions) {
-        val leftPreview = options.layout == ShortformLayout.FLOATING_PREVIEW && newOptions.layout != ShortformLayout.FLOATING_PREVIEW
+        val leftPreview = options.layout == ShortformLayout.PREVIEW && newOptions.layout != ShortformLayout.PREVIEW
         options = newOptions
         graph.options.save(newOptions)
         if (leftPreview) ShortformSdk.hidePreview()
@@ -190,9 +193,9 @@ class ProductDetailActivity : BaseActivity() {
         binding.optionPreview.text = chip(R.string.option_preview, getString(OptionLabels.corner(options.previewCorner)))
 
         // Options that do not apply to the current layout stay tappable but dimmed.
-        val inPage = options.layout in setOf(ShortformLayout.HORIZONTAL, ShortformLayout.CARD_GRID, ShortformLayout.VERTICAL_FEED)
+        val inPage = options.layout in setOf(ShortformLayout.STRIP, ShortformLayout.LARGE_CARDS, ShortformLayout.GRID)
         binding.optionCard.alpha = if (inPage) 1f else DIMMED
-        binding.optionPreview.alpha = if (options.layout == ShortformLayout.FLOATING_PREVIEW) 1f else DIMMED
+        binding.optionPreview.alpha = if (options.layout == ShortformLayout.PREVIEW) 1f else DIMMED
     }
 
     private fun chip(label: Int, value: String) = getString(R.string.option_chip, getString(label), value)
@@ -223,24 +226,14 @@ class ProductDetailActivity : BaseActivity() {
             return
         }
 
-        if (options.layout == ShortformLayout.FLOATING_PREVIEW) {
-            // The preview takes productId / url / skus itself (matching step 1).
-            subtitle(getString(R.string.detail_match_product_id))
-            message(
-                getString(R.string.detail_preview_showing, getString(OptionLabels.corner(options.previewCorner))),
-                getString(R.string.detail_preview_show_again),
-            ) { showPreview() }
-            if (started) showPreview()
-            return
-        }
-
-        when (val r = resolution) {
+        val forPreview = options.layout == ShortformLayout.PREVIEW
+        when (val r = resolutions[forPreview]) {
             null -> {
                 message(getString(R.string.detail_loading), progress = true)
-                startResolving(p, c)
+                startResolving(p, c, forPreview)
             }
             Resolution.Failed -> message(getString(R.string.detail_load_failed), getString(R.string.common_retry)) {
-                resolution = null
+                resolutions.remove(forPreview)
                 render()
             }
             Resolution.NoneFound -> message(getString(R.string.detail_no_shortform))
@@ -248,12 +241,11 @@ class ProductDetailActivity : BaseActivity() {
         }
     }
 
-    private fun startResolving(p: Product, c: Catalog) {
-        if (resolving) return
-        resolving = true
-        resolveShortform(this, ShortformMatcher.forListViews(p, c)) { result ->
-            resolving = false
-            resolution = result
+    private fun startResolving(p: Product, c: Catalog, forPreview: Boolean) {
+        if (!resolving.add(forPreview)) return
+        resolveShortform(this, ShortformMatcher.steps(p, c, forPreview)) { result ->
+            resolving.remove(forPreview)
+            resolutions[forPreview] = result
             if (!isDestroyed) render()
         }
     }
@@ -262,7 +254,13 @@ class ProductDetailActivity : BaseActivity() {
         section.sectionTitle.setText(if (step.isRelated) R.string.detail_related_shortform else R.string.detail_shortform_title)
         subtitle(
             when (step.kind) {
-                MatchStep.Kind.PRODUCT -> getString(R.string.detail_match_sku)
+                MatchStep.Kind.PRODUCT -> getString(
+                    when {
+                        step.condition.productId != null -> R.string.detail_match_product_id
+                        step.condition.url != null -> R.string.detail_match_url
+                        else -> R.string.detail_match_sku
+                    },
+                )
                 MatchStep.Kind.VERTICAL_TAGS -> getString(R.string.detail_match_tags, step.condition.tags.joinToString(", "))
                 MatchStep.Kind.FALLBACK -> getString(R.string.detail_match_fallback)
             },
@@ -270,26 +268,34 @@ class ProductDetailActivity : BaseActivity() {
         val style = ShortformSdk.CardStyle.from(options)
         val density = resources.displayMetrics.density
         when (options.layout) {
-            ShortformLayout.HORIZONTAL -> addTypeView(
+            ShortformLayout.STRIP -> addTypeView(
                 ShortformSdk.horizontal(this, step.condition, style),
                 resources.getDimensionPixelSize(R.dimen.shortform_strip_height),
             )
-            ShortformLayout.CARD_GRID -> {
+            // Large cards scroll inside a fixed-height area: one card is about a screen tall.
+            ShortformLayout.LARGE_CARDS -> addTypeView(
+                ShortformSdk.largeCards(this, step.condition, style),
+                resources.getDimensionPixelSize(R.dimen.shortform_feed_height),
+            )
+            // The grid shows two rows in the page.
+            ShortformLayout.GRID -> {
                 val rows = 2
                 val cellWidth = (resources.displayMetrics.widthPixels - 16 * density) / options.columns
                 val height = (rows * (cellWidth * 16 / 9 + 72 * density)).toInt()
-                addTypeView(ShortformSdk.cardGrid(this, step.condition, style.copy(maxCount = rows * options.columns)), height)
+                addTypeView(ShortformSdk.grid(this, step.condition, style.copy(maxCount = rows * options.columns)), height)
             }
-            ShortformLayout.VERTICAL_FEED -> addTypeView(
-                ShortformSdk.verticalFeed(this, step.condition, style),
-                resources.getDimensionPixelSize(R.dimen.shortform_feed_height),
-            )
-            ShortformLayout.BUTTON_ONLY -> {
+            ShortformLayout.BUTTON -> {
                 val button = LayoutInflater.from(this).inflate(R.layout.view_play_button, section.sectionBody, false) as MaterialButton
                 button.setOnClickListener { ShortformSdk.play(this, step.condition) }
                 section.sectionBody.addView(button)
             }
-            ShortformLayout.FLOATING_PREVIEW -> Unit
+            ShortformLayout.PREVIEW -> {
+                message(
+                    getString(R.string.detail_preview_showing, getString(OptionLabels.corner(options.previewCorner))),
+                    getString(R.string.detail_preview_show_again),
+                ) { showPreview() }
+                showPreview()
+            }
         }
     }
 
@@ -305,9 +311,7 @@ class ProductDetailActivity : BaseActivity() {
     }
 
     private fun showPreviewNow() {
-        val p = product ?: return
-        val c = catalog ?: return
-        val step = ShortformMatcher.forPreview(p, c).firstOrNull() ?: return
+        val step = (resolutions[true] as? Resolution.Found)?.step ?: return
         val bars = ViewCompat.getRootWindowInsets(binding.root)
             ?.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
         ShortformSdk.showPreview(

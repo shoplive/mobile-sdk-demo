@@ -56,9 +56,10 @@
     <string name="detail_open_settings">설정 열기</string>
     <string name="detail_loading">숏폼을 찾는 중…</string>
     <string name="detail_load_failed">숏폼을 불러오지 못했습니다. 네트워크와 액세스 키를 확인하세요.</string>
-    <string name="detail_no_shortform">이 상품의 숏폼이 아직 없습니다. 카탈로그에 sku, 버티컬 태그 또는 대체 컬렉션을 추가하세요.</string>
+    <string name="detail_no_shortform">이 상품의 숏폼이 아직 없습니다. 관련 숏폼을 보여 주려면 카탈로그에 버티컬 태그나 대체 컬렉션을 추가하세요.</string>
     <string name="detail_match_sku">상품의 sku로 찾음</string>
     <string name="detail_match_product_id">상품의 productId로 찾음</string>
+    <string name="detail_match_url">상품의 url로 찾음</string>
     <string name="detail_match_tags">버티컬 태그로 찾음: %1$s</string>
     <string name="detail_match_fallback">대체 컬렉션에서 찾음</string>
     <string name="detail_preview_showing">플로팅 미리보기가 %1$s에 있습니다.</string>
@@ -68,11 +69,11 @@
     <!-- Option bar -->
     <string name="option_chip">%1$s: %2$s ▾</string>
     <string name="option_layout">레이아웃</string>
-    <string name="option_layout_horizontal">가로 스트립</string>
-    <string name="option_layout_card_grid">카드 그리드</string>
-    <string name="option_layout_vertical_feed">세로 피드</string>
-    <string name="option_layout_floating_preview">플로팅 미리보기</string>
-    <string name="option_layout_button_only">버튼만</string>
+    <string name="option_layout_strip">가로 띠</string>
+    <string name="option_layout_large_cards">큰 카드</string>
+    <string name="option_layout_grid">그리드</string>
+    <string name="option_layout_preview">떠 있는 프리뷰</string>
+    <string name="option_layout_button">버튼만</string>
     <string name="option_position">위치</string>
     <string name="option_position_above_images">이미지 위</string>
     <string name="option_position_below_images">이미지 아래</string>

@@ -4,8 +4,12 @@ import cloud.shoplive.demo.shortform.catalog.Catalog
 import cloud.shoplive.demo.shortform.catalog.Product
 
 /**
- * What the app asks the Shortform SDK for. Exactly one kind of condition is set.
- * Pure data, so matching can be unit-tested without the SDK.
+ * What the app asks the Shortform SDK for. Pure data, so matching can be unit-tested without the SDK.
+ *
+ * A product condition ([isProduct]: productId, url or skus of one product) goes through the related
+ * API: `ShopLiveShortformRelatedData` with `setRelatedData` / `get(relatedData)` / `play(relatedData)`.
+ * Everything else (tags, a collection id, the skus of several products) goes through
+ * `ShopLiveShortformCollectionData` and the collection setters.
  */
 data class ShortformCondition(
     val productId: String? = null,
@@ -13,10 +17,14 @@ data class ShortformCondition(
     val skus: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
     val collectionId: String? = null,
+    val isProduct: Boolean = false,
 ) {
     companion object {
         /** No condition: the SDK returns the default shortform list of the account. */
         val NONE = ShortformCondition()
+
+        fun product(productId: String? = null, url: String? = null, skus: List<String> = emptyList()) =
+            ShortformCondition(productId = productId, url = url, skus = skus, isProduct = true)
     }
 }
 
@@ -29,52 +37,43 @@ data class MatchStep(val kind: Kind, val condition: ShortformCondition) {
 }
 
 /**
- * Builds the matching steps for a product. The product name is never used.
+ * Builds the matching steps for a product (demo-config/README.md#matching). The name is never used.
  *
- * Step 1 depends on what the SDK call accepts:
- * - [forPreview] — `ShopLiveShortformPreviewData` takes productId, url and skus, so step 1 is
- *   productId, else url, else skus.
- * - [forListViews] — the list views (`HorizontalTypeView` / `CardTypeView` / `VerticalTypeView`),
- *   `ShopLiveShortform.get` and `ShopLiveShortform.play` take skus (plus tags, brands and a
- *   collection id) in SDK 1.9.1, so step 1 is the product's sku; without a sku it is skipped.
+ * 1. The product: productId, else url, else skus — the same for every layout.
+ * 2. The tags of the verticals that list the product (OR).
+ * 3. The fallback collection, or without one the fallback tags.
  *
- * Step 2 is the tags of the verticals that list the product (OR). Step 3 is the fallback
- * collection (or, without one, the fallback tags).
+ * [forPreview] leaves out a collection id, which `ShopLiveShortformPreviewData` cannot take; the
+ * fallback tags are used instead when the catalog has them.
  */
 object ShortformMatcher {
 
-    fun forListViews(product: Product, catalog: Catalog): List<MatchStep> =
-        listOfNotNull(skuStep(product)) + relatedSteps(product, catalog)
+    fun steps(product: Product, catalog: Catalog, forPreview: Boolean = false): List<MatchStep> =
+        listOfNotNull(productStep(product)) + relatedSteps(product, catalog, forPreview)
 
-    fun forPreview(product: Product, catalog: Catalog): List<MatchStep> =
-        listOfNotNull(previewProductStep(product)) + relatedSteps(product, catalog)
-
-    private fun skuStep(product: Product): MatchStep? =
-        product.sku?.takeIf { it.isNotBlank() }?.let {
-            MatchStep(MatchStep.Kind.PRODUCT, ShortformCondition(skus = listOf(it)))
-        }
-
-    private fun previewProductStep(product: Product): MatchStep? {
+    /** Step 1 alone: the product's own shortform. */
+    fun productStep(product: Product): MatchStep? {
         val condition = when {
-            product.productId.isNotBlank() -> ShortformCondition(productId = product.productId)
-            !product.url.isNullOrBlank() -> ShortformCondition(url = product.url)
-            !product.sku.isNullOrBlank() -> ShortformCondition(skus = listOf(product.sku))
+            product.productId.isNotBlank() -> ShortformCondition.product(productId = product.productId)
+            !product.url.isNullOrBlank() -> ShortformCondition.product(url = product.url)
+            !product.sku.isNullOrBlank() -> ShortformCondition.product(skus = listOf(product.sku))
             else -> return null
         }
         return MatchStep(MatchStep.Kind.PRODUCT, condition)
     }
 
-    private fun relatedSteps(product: Product, catalog: Catalog): List<MatchStep> {
+    private fun relatedSteps(product: Product, catalog: Catalog, forPreview: Boolean): List<MatchStep> {
         val steps = mutableListOf<MatchStep>()
         val tags = catalog.verticalsOf(product).flatMap { it.tags }.filter { it.isNotBlank() }.distinct()
         if (tags.isNotEmpty()) steps += MatchStep(MatchStep.Kind.VERTICAL_TAGS, ShortformCondition(tags = tags))
 
-        val fallback = catalog.fallback
+        val collectionId = catalog.fallback?.collectionId?.takeIf { it.isNotBlank() && !forPreview }
+        val fallbackTags = catalog.fallback?.tags.orEmpty().filter { it.isNotBlank() }
         when {
-            !fallback?.collectionId.isNullOrBlank() ->
-                steps += MatchStep(MatchStep.Kind.FALLBACK, ShortformCondition(collectionId = fallback!!.collectionId))
-            !fallback?.tags.isNullOrEmpty() ->
-                steps += MatchStep(MatchStep.Kind.FALLBACK, ShortformCondition(tags = fallback!!.tags))
+            collectionId != null ->
+                steps += MatchStep(MatchStep.Kind.FALLBACK, ShortformCondition(collectionId = collectionId))
+            fallbackTags.isNotEmpty() ->
+                steps += MatchStep(MatchStep.Kind.FALLBACK, ShortformCondition(tags = fallbackTags))
         }
         return steps
     }

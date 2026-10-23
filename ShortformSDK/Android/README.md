@@ -84,39 +84,40 @@ All in `shortform/ShortformSdk.kt`:
 | What | SDK API | Used by |
 |---|---|---|
 | Access key | `ShopLiveCommon.setAccessKey` | `DemoApp`, Settings |
-| "Today's shortform", Results strip, Horizontal strip | `ShopLiveShortformHorizontalTypeView` (`setShortsCollectionId` / `setHashTags` / `setSkus`, `setViewType`, `submit`) | Home, Results, Product detail |
-| Card grid | `ShopLiveShortformCardTypeView` (`setSpanCount`, `setViewType`, visibility toggles) | Product detail |
-| Vertical feed | `ShopLiveShortformVerticalTypeView` | Product detail |
-| Autoplay / pause with the screen | `enablePlayVideos` / `disablePlayVideos` | all list views |
-| Matching probe, ▶ badge | `ShopLiveShortform.get` + `ShopLiveShortformCollectionData` | Product detail, product cards |
-| Button only | `ShopLiveShortform.play(context, ShopLiveShortformCollectionData)` | Product detail |
-| Floating preview | `ShopLiveShortform.showPreview` + `ShopLiveShortformPreviewData` (position, size, margins, `maxCount`), `hidePreview` | Product detail |
+| Horizontal strip ("Today's shortform", Results, Product detail) | `ShopLiveShortformHorizontalTypeView` | Home, Results, Product detail |
+| Large cards — one large card per row (two on tablets) | `ShopLiveShortformCardTypeView` | Product detail |
+| Grid — 2 or 3 columns | `ShopLiveShortformVerticalTypeView.setSpanCount` | Product detail |
+| Product condition on a list view | `setRelatedData(ShopLiveShortformRelatedData)` + `submit` | Product detail |
+| Other conditions on a list view | `setShortsCollectionId` / `setHashTags` / `setSkus` + `submit` (`setRelatedData(null)`) | Home, Results, Product detail |
+| Card options | `setViewType`, `setVisibleTitle` / `ViewCount` / `ProductCount`, `enablePlayVideos` / `disablePlayVideos` | all list views |
+| Matching probe, ▶ badge | `ShopLiveShortform.get(context, relatedData, …)` / `get(context, collectionData, …)` | Product detail, product cards |
+| Button only | `ShopLiveShortform.play(context, relatedData)` / `play(context, collectionData)` | Product detail |
+| Floating preview | `ShopLiveShortform.showPreview` + `ShopLiveShortformPreviewData`, `hidePreview` | Product detail |
 | Product tap in a video | `ShopLiveShortformListener.onProductClick` → `ShopLiveShortform.close()` → app's Product detail | `ShortformSdk.DemoListener` |
 | Event log | `onEvent`, `onError`, `onShortsAttached` / `onShortsDetached`, `onDetailShown` / `onDetailHidden` | `ShortformSdk.DemoListener` |
 
 The listener is passed to each view and request (`listener = DemoListener`); the deprecated global
 `ShopLiveShortform.setHandler` is not used.
 
-## Matching on Android
+## Matching
 
-The order is the one in [demo-config](../demo-config/README.md#matching), with one platform detail: in SDK 1.9.1 the
-list views, `ShopLiveShortform.get` and `ShopLiveShortform.play` take `skus`, tags, brands and a collection id, but not
-`productId` or `url`. Only `ShopLiveShortformPreviewData` takes `productId` and `url`. So:
+The order in [demo-config](../demo-config/README.md#matching), the same for every layout (`ShortformMatcher.steps`):
 
-| Layout | Step 1 | Step 2 | Step 3 |
-|---|---|---|---|
-| Horizontal strip · Card grid · Vertical feed · Button only | `skus` (skipped when the product has no sku) | vertical `tags` (OR) | `fallback.collectionId`, else `fallback.tags` |
-| Floating preview | `productId`, else `url`, else `skus` | — | — |
+| Step | Condition | SDK |
+|---|---|---|
+| 1 | `productId`, else `url`, else `skus` | `ShopLiveShortformRelatedData` (`setRelatedData`, `get`, `play`, preview fields) |
+| 2 | the vertical's `tags` (OR) | collection setters / `ShopLiveShortformCollectionData` |
+| 3 | `fallback.collectionId` (the floating preview, which has no collection field, uses `fallback.tags`) | same |
 
-The app checks each step with `ShopLiveShortform.get` and shows the first that returns shortform; steps 2 and 3 are
-labelled **Related shortform**. The product name is never used. A product tapped inside a video is mapped back by
-`productId`, `customerProductId`, `sku`, then `url`.
+The app asks `ShopLiveShortform.get` for each step in turn and shows the first that returns shortform; steps 2 and 3 are
+labelled **Related shortform**. The ▶ badge on product cards is step 1 alone. The product name is never used. A
+product tapped inside a video is mapped back by `productId`, `customerProductId`, `sku`, then `url`.
 
 ## Verification status
 
 | Check | Status |
 |---|---|
 | `./gradlew :app:assembleDebug test` | Passes locally, offline, with `-PuseMavenLocal=true` (Shortform 1.9.1 from Maven Local) |
-| Unit tests (catalog parsing, search order, matching fallback, option persistence, formatting) | 29 tests, all passing |
+| Unit tests (catalog parsing, search order, matching fallback, option persistence and migration, formatting) | 30 tests, all passing |
 | CI (`.github/workflows/shortform-ci.yml`, job `android`) | Resolves the SDK from the public repository; needs 1.9.1 to be published there |
 | On a device / emulator | Not run yet: layouts, insets, preview placement and full-screen product taps still need a manual pass |
