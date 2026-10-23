@@ -41,9 +41,9 @@
 
 /* Option bar */
 "option_layout" = "Layout";
-"option_layout_horizontal" = "Horizontal strip";
-"option_layout_card" = "Card grid";
-"option_layout_vertical" = "Vertical feed";
+"option_layout_strip" = "Horizontal strip";
+"option_layout_large_cards" = "Large cards";
+"option_layout_grid" = "Grid";
 "option_layout_preview" = "Floating preview";
 "option_layout_button" = "Button only";
 "option_position" = "Position";

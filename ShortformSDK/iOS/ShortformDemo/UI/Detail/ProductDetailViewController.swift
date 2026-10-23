@@ -227,7 +227,7 @@ final class ProductDetailViewController: UIViewController {
         }
 
         switch options.layout {
-        case .horizontal, .cardGrid, .verticalFeed:
+        case .strip, .largeCards, .grid:
             let newSteps = ShortformMatcher.steps(for: product, in: catalog, surface: .embedded)
             if restartMatching || newSteps != steps {
                 steps = newSteps
@@ -250,8 +250,8 @@ final class ProductDetailViewController: UIViewController {
 
     private var embedKind: ShortformEmbedView.Kind {
         switch options.layout {
-        case .cardGrid: return .card
-        case .verticalFeed: return .vertical
+        case .largeCards: return .card
+        case .grid: return .vertical
         default: return .horizontal
         }
     }

@@ -41,10 +41,10 @@
 
 /* Option bar */
 "option_layout" = "레이아웃";
-"option_layout_horizontal" = "가로 스트립";
-"option_layout_card" = "카드 그리드";
-"option_layout_vertical" = "세로 피드";
-"option_layout_preview" = "플로팅 미리보기";
+"option_layout_strip" = "가로 띠";
+"option_layout_large_cards" = "큰 카드";
+"option_layout_grid" = "그리드";
+"option_layout_preview" = "떠 있는 프리뷰";
 "option_layout_button" = "버튼만";
 "option_position" = "위치";
 "option_position_above_images" = "이미지 위";

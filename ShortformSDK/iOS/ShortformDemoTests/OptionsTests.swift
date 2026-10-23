@@ -23,7 +23,7 @@ final class OptionsTests: XCTestCase {
     func testRoundTrip() {
         let store = OptionsStore(defaults: defaults)
         var options = DetailOptions()
-        options.layout = .verticalFeed
+        options.layout = .grid
         options.position = .insideDescription
         options.cardType = 2
         options.showTitle = false
@@ -54,15 +54,54 @@ final class OptionsTests: XCTestCase {
     }
 
     func testPartialAndUnknownValuesKeepDefaults() throws {
-        let json = #"{ "layout": "cardGrid", "position": "sideways", "cardType": 7, "columns": 0, "previewMaxCount": -1 }"#
+        let json = #"{ "layout": "largeCards", "position": "sideways", "cardType": 7, "columns": 0, "previewMaxCount": -1 }"#
         defaults.set(Data(json.utf8), forKey: OptionsStore.key)
         let options = OptionsStore(defaults: defaults).load()
-        XCTAssertEqual(options.layout, .cardGrid)
+        XCTAssertEqual(options.layout, .largeCards)
         XCTAssertEqual(options.position, DetailOptions.default.position)
         XCTAssertEqual(options.cardType, DetailOptions.default.cardType)
         XCTAssertEqual(options.columns, DetailOptions.default.columns)
         XCTAssertEqual(options.previewMaxCount, DetailOptions.default.previewMaxCount)
         XCTAssertEqual(options.showTitle, true)
+    }
+
+    func testLegacyLayoutValuesMigrate() {
+        let cases: [(String, DetailOptions.Layout)] = [
+            ("horizontal", .strip), ("cardGrid", .largeCards), ("verticalFeed", .grid),
+            ("floatingPreview", .floatingPreview), ("buttonOnly", .buttonOnly),
+        ]
+        for (stored, expected) in cases {
+            let json = #"{ "layout": "\#(stored)", "position": "bottom", "cardType": 2 }"#
+            defaults.set(Data(json.utf8), forKey: OptionsStore.key)
+            let options = OptionsStore(defaults: defaults).load()
+            XCTAssertEqual(options.layout, expected, stored)
+            // The other stored choices survive the migration.
+            XCTAssertEqual(options.position, .bottom, stored)
+            XCTAssertEqual(options.cardType, 2, stored)
+        }
+    }
+
+    func testMigratedLayoutIsSavedWithTheNewValue() throws {
+        defaults.set(Data(#"{ "layout": "cardGrid" }"#.utf8), forKey: OptionsStore.key)
+        let store = OptionsStore(defaults: defaults)
+        store.save(store.load())
+        let data = try XCTUnwrap(defaults.data(forKey: OptionsStore.key))
+        let dict = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(dict["layout"] as? String, "largeCards")
+    }
+
+    func testUnknownLayoutKeepsDefault() {
+        defaults.set(Data(#"{ "layout": "carousel", "position": "bottom" }"#.utf8), forKey: OptionsStore.key)
+        let options = OptionsStore(defaults: defaults).load()
+        XCTAssertEqual(options.layout, DetailOptions.default.layout)
+        XCTAssertEqual(options.position, .bottom)
+    }
+
+    func testLayoutTitleKeys() {
+        XCTAssertEqual(DetailOptions.Layout.allCases.map(\.titleKey), [
+            "option_layout_strip", "option_layout_large_cards", "option_layout_grid",
+            "option_layout_preview", "option_layout_button",
+        ])
     }
 
     func testStoredRawValuesAreStable() throws {
@@ -72,14 +111,16 @@ final class OptionsTests: XCTestCase {
         let data = try JSONEncoder().encode(options)
         let dict = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         XCTAssertEqual(dict["layout"] as? String, "floatingPreview")
+        XCTAssertEqual(DetailOptions.Layout.allCases.map(\.rawValue),
+                       ["strip", "largeCards", "grid", "floatingPreview", "buttonOnly"])
         XCTAssertEqual(dict["position"] as? String, "belowImages")
         XCTAssertEqual(dict["previewCorner"] as? String, "bottomRight")
     }
 
     func testLayoutSurfaces() {
-        XCTAssertEqual(DetailOptions.Layout.horizontal.surface, .embedded)
-        XCTAssertEqual(DetailOptions.Layout.cardGrid.surface, .embedded)
-        XCTAssertEqual(DetailOptions.Layout.verticalFeed.surface, .embedded)
+        XCTAssertEqual(DetailOptions.Layout.strip.surface, .embedded)
+        XCTAssertEqual(DetailOptions.Layout.largeCards.surface, .embedded)
+        XCTAssertEqual(DetailOptions.Layout.grid.surface, .embedded)
         XCTAssertEqual(DetailOptions.Layout.floatingPreview.surface, .preview)
         XCTAssertEqual(DetailOptions.Layout.buttonOnly.surface, .player)
     }

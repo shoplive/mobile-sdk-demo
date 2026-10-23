@@ -2,18 +2,45 @@ import Foundation
 
 /// The product-detail option bar. Raw values are stable: they are stored on the device and shared with the Android app.
 struct DetailOptions: Codable, Equatable {
+    /// Named after what each layout looks like on screen.
     enum Layout: String, Codable, CaseIterable {
-        case horizontal
-        case cardGrid
-        case verticalFeed
+        /// `ShopLiveShortformHorizontalTypeView`
+        case strip
+        /// `ShopLiveShortformCardTypeView` — one large card per row on phones
+        case largeCards
+        /// `ShopLiveShortformVerticalTypeView` — a 2–3 column grid
+        case grid
+        /// `ShopLiveShortform.showPreview`
         case floatingPreview
+        /// `ShopLiveShortform.play`
         case buttonOnly
+
+        /// Values stored by earlier builds, mapped to the layout that shows the same SDK view.
+        static let legacyRawValues: [String: Layout] = [
+            "horizontal": .strip,
+            "cardGrid": .largeCards,
+            "verticalFeed": .grid,
+        ]
+
+        /// A current or legacy stored value.
+        init?(stored: String) {
+            guard let layout = Layout(rawValue: stored) ?? Layout.legacyRawValues[stored] else { return nil }
+            self = layout
+        }
+
+        init(from decoder: Decoder) throws {
+            let raw = try decoder.singleValueContainer().decode(String.self)
+            guard let layout = Layout(stored: raw) else {
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "unknown layout \(raw)"))
+            }
+            self = layout
+        }
 
         var titleKey: String {
             switch self {
-            case .horizontal: return "option_layout_horizontal"
-            case .cardGrid: return "option_layout_card"
-            case .verticalFeed: return "option_layout_vertical"
+            case .strip: return "option_layout_strip"
+            case .largeCards: return "option_layout_large_cards"
+            case .grid: return "option_layout_grid"
             case .floatingPreview: return "option_layout_preview"
             case .buttonOnly: return "option_layout_button"
             }
@@ -21,7 +48,7 @@ struct DetailOptions: Codable, Equatable {
 
         var surface: ShortformSurface {
             switch self {
-            case .horizontal, .cardGrid, .verticalFeed: return .embedded
+            case .strip, .largeCards, .grid: return .embedded
             case .floatingPreview: return .preview
             case .buttonOnly: return .player
             }
@@ -83,7 +110,7 @@ struct DetailOptions: Codable, Equatable {
     static let columnChoices = [1, 2, 3]
     static let maxCountChoices = [1, 3, 5, 10]
 
-    var layout: Layout = .horizontal
+    var layout: Layout = .strip
     var position: Position = .belowPrice
     var cardType: Int = 1
     var showTitle: Bool = true

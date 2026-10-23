@@ -85,8 +85,8 @@ The bundled catalog is `../demo-config/catalog.sample.json`, referenced from the
 |---|---|---|
 | `ShopLiveCommon.setAccessKey(accessKey:)` | `Shortform/ShortformBridge.swift` | launch, Settings change, demo reset |
 | `ShopLiveShortformHorizontalTypeView` | `Shortform/ShortformEmbedView.swift` | Home "Today's shortform", Results strip, detail *Horizontal strip* |
-| `ShopLiveShortformCardTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Card grid* |
-| `ShopLiveShortformVerticalTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Vertical feed* |
+| `ShopLiveShortformCardTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Large cards* (one large card per row on phones, two on iPad / landscape) |
+| `ShopLiveShortformVerticalTypeView` | `Shortform/ShortformEmbedView.swift` | detail *Grid* (2 columns on phones, 3 on iPad / landscape) |
 | `setSkus` · `setHashTags(…, .OR)` · `setShortsCollectionId` · `setCardViewType` · `setVisibleTitle/ViewCount/ProductCount` · `enable/disablePlayVideos` · `reloadItems` · `submit` | `Shortform/ShortformEmbedView.swift` | applying a match step and the card options in place |
 | `ShopLiveShortform.play(requestData: ShopLiveShortformRelatedData / ShopLiveShortformCollectionData)` | `Shortform/ShortformBridge.swift` | detail *Button only* (the `RelatedData` overload is marked deprecated in 1.9.1 but is the only full-screen call that takes `productId` / `url`; it is the one expected build warning) |
 | `ShopLiveShortform.showPreview(requestData: ShopLiveShortformPreviewData)` | `Shortform/ShortformBridge.swift` | detail *Floating preview* (corner, size, max count) |
@@ -107,7 +107,7 @@ What each SDK entry point accepts decides the product step:
 
 | Layout | SDK surface | Product step | Fallback |
 |---|---|---|---|
-| Horizontal strip · Card grid · Vertical feed | embedded list views | `skus` (the list views take skus, tags or a collection) | tags → `fallback.collectionId` |
+| Horizontal strip · Large cards · Grid | embedded list views | `skus` (the list views take skus, tags or a collection) | tags → `fallback.collectionId` |
 | Button only | `play` + `ShopLiveShortformRelatedData`; `ShopLiveShortformCollectionData` for the collection | `productId` → `url` → `skus` | tags → `fallback.collectionId` |
 | Floating preview | `showPreview` + `ShopLiveShortformPreviewData` | `productId` → `url` → `skus` | tags → `fallback.tags` (preview data has no collection id) |
 
@@ -119,6 +119,21 @@ SDK 1.9.1 does not report how many items an embedded view loaded. The app reads 
 collection view (public UIKit API): items appear → that step is used; still none after a few seconds → next step.
 The step found in an embedded layout is reused when you switch to *Floating preview* or *Button only*.
 The same check, run invisibly on Home for featured products with a `sku`, drives the ▶ badge.
+
+### Layout names
+
+The layouts are named after what they look like, with the same keys on Android:
+
+| Option | String key | SDK view |
+|---|---|---|
+| Horizontal strip | `option_layout_strip` | `ShopLiveShortformHorizontalTypeView` |
+| Large cards | `option_layout_large_cards` | `ShopLiveShortformCardTypeView` |
+| Grid | `option_layout_grid` | `ShopLiveShortformVerticalTypeView` |
+| Floating preview | `option_layout_preview` | `ShopLiveShortform.showPreview` |
+| Button only | `option_layout_button` | `ShopLiveShortform.play` |
+
+Choices saved by earlier builds (`horizontal`, `cardGrid`, `verticalFeed`) are read as Horizontal strip, Large cards
+and Grid, and saved under the new values the next time an option changes.
 
 The option bar's **Columns** choice is stored (shared with Android) but disabled on iOS: the iOS list views pick
 their column count from the screen width.
@@ -134,5 +149,6 @@ reload, brand color, reset layout defaults, SDK event log, reset demo.
 |---|---|
 | Build, iOS Simulator, Xcode 16 (`macos-15` runner) | passing in CI (`.github/workflows/shortform-ci.yml`, job **iOS demo**) |
 | Unit tests (50: catalog parsing and loading order, search order, matching fallback, option persistence, string keys) | passing in CI on an iPhone simulator |
-| Build warnings in app code | one expected: `play(requestData: ShopLiveShortformRelatedData)` is marked deprecated in 1.9.1 |
+| Build warnings in app code | one expected: `play(requestData: ShopLiveShortformRelatedData)` is marked deprecated in the current 1.9.1 pre-release binaries. The deprecation is being removed in the SDK; the app keeps this call, and the warning goes away once the new binaries are published |
+| List views matching by `productId` / `url` | not yet: the published pre-release binaries have no list-view `setRelatedData(_:)`, so `ShortformMatcher.listViewsAcceptProductConditions` stays `false` |
 | Screens against a live account (shortform loading, empty-result fallback timing, preview size, product routing) | not yet checked by hand |

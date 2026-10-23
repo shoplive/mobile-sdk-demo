@@ -40,8 +40,8 @@ final class ShortformBridge: NSObject {
                                                                                 delegate: self))
             return
         }
-        // The only full-screen entry point that takes productId / url. SDK 1.9.1 marks it deprecated without
-        // a replacement that accepts product conditions.
+        // The full-screen entry point that takes productId / url. The current 1.9.1 pre-release binaries mark it
+        // deprecated; that mark is being removed in the SDK, so the app keeps using it.
         let data = ShopLiveShortformRelatedData(productId: query.productId,
                                                 skus: query.skus,
                                                 url: query.url,
