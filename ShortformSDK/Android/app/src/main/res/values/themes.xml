@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Demo" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/brand_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/brand_on_primary_container</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Settings → Branding. Applied on top of Theme.Demo before a screen is created. -->
+    <style name="ThemeOverlay.Demo.Brand.Default" parent="" />
+
+    <style name="ThemeOverlay.Demo.Brand.Blue" parent="">
+        <item name="colorPrimary">#1E63D6</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#D8E2FF</item>
+        <item name="colorOnPrimaryContainer">#001A43</item>
+        <item name="colorSecondaryContainer">#D8E2FF</item>
+        <item name="colorOnSecondaryContainer">#001A43</item>
+    </style>
+
+    <style name="ThemeOverlay.Demo.Brand.Green" parent="">
+        <item name="colorPrimary">#1B7F4B</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#A3F5C2</item>
+        <item name="colorOnPrimaryContainer">#002111</item>
+        <item name="colorSecondaryContainer">#A3F5C2</item>
+        <item name="colorOnSecondaryContainer">#002111</item>
+    </style>
+
+    <style name="ThemeOverlay.Demo.Brand.Orange" parent="">
+        <item name="colorPrimary">#C2410C</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFDBCC</item>
+        <item name="colorOnPrimaryContainer">#370E00</item>
+        <item name="colorSecondaryContainer">#FFDBCC</item>
+        <item name="colorOnSecondaryContainer">#370E00</item>
+    </style>
+
+    <style name="ThemeOverlay.Demo.Brand.Pink" parent="">
+        <item name="colorPrimary">#C2185B</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFD9E2</item>
+        <item name="colorOnPrimaryContainer">#3E001D</item>
+        <item name="colorSecondaryContainer">#FFD9E2</item>
+        <item name="colorOnSecondaryContainer">#3E001D</item>
+    </style>
+</resources>

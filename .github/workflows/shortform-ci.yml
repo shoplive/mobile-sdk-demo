@@ -96,3 +96,26 @@ jobs:
               if n >= 15:
                   break
           '
+
+  android:
+    name: Android demo app
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ShortformSDK/Android
+    # The Shortform SDK comes from the public Maven repository (https://sdk.shoplive.cloud/maven-repo):
+    # no secrets, so this runs on every push and on forks. The app builds without an access key.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: ShortformSDK/Android
+
+      - name: Build the demo app and run unit tests
+        run: ./gradlew :app:assembleDebug test

@@ -1,0 +1,39 @@
+[versions]
+agp = "8.7.3"
+kotlin = "1.8.22"
+shortform = "1.9.1"
+# Shared modules Shortform 1.9.1 is built against.
+shopliveCommon = "1.9.0"
+shopliveMedia3 = "1.10.1.3"
+coreKtx = "1.12.0"
+appcompat = "1.6.1"
+activityKtx = "1.7.2"
+material = "1.9.0"
+constraintlayout = "2.2.1"
+recyclerview = "1.3.0"
+viewpager2 = "1.0.0"
+lifecycle = "2.5.1"
+coroutines = "1.7.3"
+gson = "2.8.9"
+glide = "4.14.2"
+junit = "4.13.2"
+
+[libraries]
+shoplive-shortform = { group = "cloud.shoplive", name = "shoplive-short-form", version.ref = "shortform" }
+shoplive-common = { group = "cloud.shoplive", name = "shoplive-common", version.ref = "shopliveCommon" }
+shoplive-network = { group = "cloud.shoplive", name = "shoplive-network", version.ref = "shopliveCommon" }
+shoplive-media3 = { group = "cloud.shoplive", name = "shoplive-media3", version.ref = "shopliveMedia3" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }

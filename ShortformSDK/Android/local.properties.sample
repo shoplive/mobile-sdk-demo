@@ -1,0 +1,12 @@
+# Copy to local.properties (git-ignored) and fill in. Both values are optional:
+# left empty, the app starts with the bundled sample catalog and asks for an access key.
+# Both can also be changed at runtime in Settings (gear icon).
+
+# Android SDK location (Android Studio fills this in for you)
+#sdk.dir=/Users/<you>/Library/Android/sdk
+
+# Your ShopLive access key.
+shortform.demo.accessKey=
+
+# URL of your demo catalog JSON (format: ../demo-config/README.md).
+shortform.demo.catalogUrl=

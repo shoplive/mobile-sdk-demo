@@ -1,0 +1,13 @@
+// Root build file. Groovy on purpose: the Kotlin DSL pins the build classpath to the
+// Kotlin version embedded in Gradle, which this project does not need.
+// Plugins go on the build classpath here, so :app applies them by id without a version.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath libs.android.gradle.plugin
+        classpath libs.kotlin.gradle.plugin
+    }
+}
