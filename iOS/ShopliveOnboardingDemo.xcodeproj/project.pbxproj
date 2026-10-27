@@ -691,7 +691,7 @@
 			repositoryURL = "https://github.com/shoplive/shoplive-sdk-ios";
 			requirement = {
 				kind = exactVersion;
-				version = 3.0.3;
+				version = 3.0.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
