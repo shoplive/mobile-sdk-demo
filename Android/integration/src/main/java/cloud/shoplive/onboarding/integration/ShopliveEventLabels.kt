@@ -1,7 +1,7 @@
 package cloud.shoplive.onboarding.integration
 
-import cloud.shoplive.player.ShopliveError
-import cloud.shoplive.player.ShopliveErrorCode
+import cloud.shoplive.core.publicsurface.ShopliveError
+import cloud.shoplive.core.publicsurface.ShopliveErrorCode
 import cloud.shoplive.player.ShoplivePlaybackEvent
 
 /**

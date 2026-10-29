@@ -16,7 +16,7 @@ The comparison below was taken on these builds:
 | Android | `3.0.0` | Published artifacts | Public Maven |
 
 They reported the same version number but were **not the same build** — which is why the differences below exist at all.
-The demos now build against iOS `3.0.4` / Android `3.0.1` (public Maven at `sdk.shoplive.cloud`); this page has not been
+The demos now build against iOS `3.0.4` / Android `3.0.4` (public Maven at `sdk.shoplive.cloud`); this page has not been
 re-checked against those versions.
 
 Some of the differences below are **snapshot skew** (one platform is simply ahead) rather than deliberate design. Those are marked, since they may resolve on their own.
