@@ -1,8 +1,8 @@
 package cloud.shoplive.onboarding.integration
 
+import cloud.shoplive.core.publicsurface.ShopliveError
 import cloud.shoplive.player.ShopliveCouponResult
 import cloud.shoplive.player.ShopliveCustomActionResult
-import cloud.shoplive.player.ShopliveError
 import cloud.shoplive.player.ShoplivePlaybackEvent
 import cloud.shoplive.player.ShoplivePlayerControlling
 import cloud.shoplive.player.ShoplivePlayerDelegate
@@ -73,16 +73,16 @@ open class ShoplivePlayerEventLogger(
                 when (event.state) {
                     // A new session starts here. This delegate is reused across
                     // sessions, so the failure counters reset at this point.
-                    ShoplivePlayerState.LOADING -> {
+                    ShoplivePlayerState.Loading -> {
                         consecutiveFailures = 0
                         failureNotified = false
                     }
 
-                    ShoplivePlayerState.IN_APP_PIP -> onMilestone(ShopliveMilestone.IN_APP_PIP_ENTERED)
+                    ShoplivePlayerState.InAppPIP -> onMilestone(ShopliveMilestone.IN_APP_PIP_ENTERED)
 
                     // Session over — release the control handle so later commands
                     // do not hit a dead player.
-                    ShoplivePlayerState.CLOSED -> ShoplivePlayerSession.detach(player)
+                    is ShoplivePlayerState.Closed -> ShoplivePlayerSession.detach(player)
 
                     else -> Unit
                 }
@@ -128,6 +128,14 @@ open class ShoplivePlayerEventLogger(
                         ", isMuted: ${event.info.isMuted}" +
                         ", durationMs: ${event.info.durationMs})"
                 )
+
+            is ShoplivePlayerEvent.WebCommandReceived ->
+                logEvent("webCommandReceived(name: \"${event.name}\", payload: ${event.payload})")
+
+            // Only arrives with NavigationOptions.isCustomShareEnabled = true; this
+            // demo keeps the SDK share sheet, so there is nothing to show here.
+            is ShoplivePlayerEvent.ShareRequested ->
+                logEvent("shareRequested(url: ${event.info.url})")
 
             is ShoplivePlayerEvent.Error -> onError(event.error)
         }

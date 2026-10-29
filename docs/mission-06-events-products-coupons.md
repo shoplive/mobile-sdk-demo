@@ -90,10 +90,10 @@ func player(_ player: ShoplivePlayerControlling, didReceive event: ShoplivePlaye
 override fun onEvent(player: ShoplivePlayerControlling, event: ShoplivePlayerEvent) {
     when (event) {
         is ShoplivePlayerEvent.StateChanged -> when (event.state) {
-            ShoplivePlayerState.LOADING    -> { /* new session — reset your counters here */ }
-            ShoplivePlayerState.IN_APP_PIP -> progress.markPipEntered()
+            ShoplivePlayerState.Loading     -> { /* new session — reset your counters here */ }
+            ShoplivePlayerState.InAppPIP    -> progress.markPipEntered()
             // Session over — drop the control handle so you don't command a dead player.
-            ShoplivePlayerState.CLOSED     -> PlayerSession.detach(player)
+            is ShoplivePlayerState.Closed   -> PlayerSession.detach(player)
             else -> Unit
         }
 
@@ -110,6 +110,8 @@ override fun onEvent(player: ShoplivePlayerControlling, event: ShoplivePlayerEve
         is ShoplivePlayerEvent.ConnectionStateChanged -> { /* reconnecting banner */ }
         is ShoplivePlayerEvent.UserNameUpdateRequested -> { /* open profile */ }
         is ShoplivePlayerEvent.Analytics -> { /* forward to your analytics */ }
+        is ShoplivePlayerEvent.WebCommandReceived -> { /* event.name, event.payload (null without data) */ }
+        is ShoplivePlayerEvent.ShareRequested -> { /* only with NavigationOptions.isCustomShareEnabled */ }
 
         is ShoplivePlayerEvent.Error -> {
             if (!event.error.isRecoverable) onFatalError(describe(event.error))

@@ -32,12 +32,12 @@ Neither platform needs repository credentials: iOS pulls the SDK through SPM fro
 | Toolchain | Xcode 26+ (verified on 26.6) | AGP 8.10.1 · Kotlin 2.0.21 · Java 17 |
 | Minimum OS — **SDK requirement** | iOS 15.0 (WebRTC OS PIP uses iOS 15+ APIs) | **API 23** (transitive `shoplive-android-webrtc` declares `minSdk 23`) |
 | Minimum OS — *this demo's own setting* | iOS 15.0 | `minSdk 24` · `compileSdk 36` |
-| SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.4` | Public Maven (`sdk.shoplive.cloud`) — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.1` |
+| SDK delivery | Swift Package Manager — `github.com/shoplive/shoplive-sdk-ios` `3.0.4` | Public Maven (`sdk.shoplive.cloud`) — `cloud.shoplive:shoplive-player-sdk` / `-streamer-sdk` `3.0.4` |
 | UI framework in the demo | UIKit | Jetpack Compose + Material 3 |
 
 > **Android: don't trust the per-artifact floors.** Player documents 19 and Streamer 21, but `minSdk 21` fails at manifest merge (`minSdkVersion 21 cannot be smaller than version 23 declared in library [org.webrtc]`). **23 is the real floor.** App size, build-time and dependency-conflict details: [README § Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies).
 
-> ⚠️ **The two platforms are on different SDK versions** (iOS `3.0.4`, Android `3.0.1`), and the behavior described in these docs was measured on `3.0.0`. A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](platform-differences.md).
+> ⚠️ **Both platforms are on SDK `3.0.4`, but the behavior described in these docs was measured on `3.0.0`.** A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](platform-differences.md).
 
 ---
 
@@ -152,20 +152,20 @@ The older Groovy `allprojects { repositories { … } }` form in the root `build.
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.1")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.1")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.4")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.4")   // broadcasting
 }
 ```
 
 - Watching only → `shoplive-player-sdk`
 - Broadcasting only → `shoplive-streamer-sdk`
-- Both → declare both
+- Both → declare both, at the same version
 
-You never declare `core`, `core-player`, `media3`, `webrtc`, `android-webrtc`, or `rtmp` — all six are POM transitives, and overlaps between Player and Streamer are de-duplicated by version. Per-artifact sizes: [Android/README.md](../Android/README.md#what-the-two-lines-actually-pull-in).
+You never declare `core`, `android-webrtc`, or `rootencoder` — all three are POM transitives, and overlaps between Player and Streamer are de-duplicated by version. Per-artifact sizes: [Android/README.md](../Android/README.md#what-the-two-lines-actually-pull-in).
 
 This demo declares them the same way, as plain coordinates in [`Android/integration/build.gradle.kts`](../Android/integration/build.gradle.kts) and [`Android/app/build.gradle.kts`](../Android/app/build.gradle.kts).
 
-> **3.0.1 needs compileSdk 36.** The player's default HLS engine is now AndroidX Media3 1.10.1 (via `shoplive-media3`), which requires compileSdk 36 / AGP 8.10+. To stay on ExoPlayer 2, exclude `shoplive-media3` and depend on `cloud.shoplive:shoplive-exoplayer:2.19.1.11` instead — never both.
+> **3.0.4 needs compileSdk 36.** The player's HLS engine is AndroidX Media3 (resolves to 1.10.1), which requires compileSdk 36 / AGP 8.10+. ExoPlayer 2 is no longer supported since 3.0.3.
 
 **Manifest permissions.** `INTERNET`, `ACCESS_NETWORK_STATE`, `VIBRATE`, and `CAMERA` are already declared in the AAR and merge in automatically. **`RECORD_AUDIO` is not** — any app that broadcasts must declare it itself:
 
