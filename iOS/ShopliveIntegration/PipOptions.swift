@@ -1,6 +1,6 @@
 //
 //  PipOptions.swift
-//  ★ COPY THIS — mission 5 · enabling PIP
+//  ★ COPY THIS — mission 3 · keep watching in PIP
 //
 //  There are two kinds of PIP:
 //    · in-App PIP — a floating window the SDK puts above the host window. Controlled directly with
@@ -33,6 +33,37 @@ enum PipSetup {
         config.pip.scale = scale                    // ratio relative to the window width (0...1)
         config.pip.isOSPipEnabled = enableOSPip
         return config
+    }
+
+    // MARK: - Starting in the small window (3.0.4+)
+
+    /// Starts this playback in the in-App PIP window instead of full screen — for a viewer who came to
+    /// watch (a push, a deep link) but should keep the screen they are on (guide mission 3).
+    ///
+    /// With `pip.isInAppPipEnabled == false` iOS plays full screen instead, without an error — so that
+    /// combination is logged here rather than discovered later.
+    static func applyStartStyle(_ style: ShoplivePlayerPresentationStyle,
+                                to options: inout ShoplivePlayOptions,
+                                configuration: ShoplivePlayerConfiguration) {
+        options.presentationStyle = style
+        guard style == .pip else { return }
+        if configuration.pip.isInAppPipEnabled {
+            shopliveLog(.call, "ShoplivePlayOptions.presentationStyle = .pip — starts in the small window")
+        } else {
+            shopliveLog(.call, "presentationStyle = .pip · pip.isInAppPipEnabled = false → the SDK plays full screen")
+        }
+    }
+
+    // MARK: - PIP window buttons (3.0.4+)
+
+    /// Replaces the small window's close button image and/or hides its "back to full screen" button.
+    /// A nil image keeps the SDK's default button.
+    static func applyButtons(closeImage: UIImage?,
+                             hideRestoreButton: Bool,
+                             to configuration: inout ShoplivePlayerConfiguration) {
+        configuration.pip.closeButton = .init(image: closeImage)
+        configuration.pip.restoreButton = .init(isHidden: hideRestoreButton)
+        shopliveLog(.call, "pip.closeButton = .init(image: \(closeImage == nil ? "nil — default" : "custom")), pip.restoreButton = .init(isHidden: \(hideRestoreButton))")
     }
 
     // MARK: - Control

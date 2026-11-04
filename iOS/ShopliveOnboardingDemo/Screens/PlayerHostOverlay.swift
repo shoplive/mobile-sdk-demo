@@ -39,6 +39,58 @@ final class PlayerHostViewController: UIViewController {
         //   but .fullScreen detaches the presenter's view (the list) from the hierarchy once the
         //   presentation completes — so hiding the host would leave nothing behind it but black.
         modalPresentationStyle = .overFullScreen
+
+        // Only this host's player (`===`) — a late `.closed` from a previous session must not tear
+        // down a newer host (SMV-1922 S39).
+        milestoneObserver = DemoPlayerDelegate.observeMilestones(of: player) { [weak self] _, milestone in
+            self?.handle(milestone)
+        }
+    }
+
+    deinit {
+        if let milestoneObserver { NotificationCenter.default.removeObserver(milestoneObserver) }
+    }
+
+    private var milestoneObserver: NSObjectProtocol?
+
+    /// The PIP-exit safety net polls this often (existing behavior, moved here from the list screen).
+    private static let pipExitPollInterval: TimeInterval = 0.5
+
+    private func handle(_ milestone: PlayerMilestone) {
+        switch milestone {
+        case .pipStateChanged(let isActive):
+            // On PIP promotion, step out of the way (prevents the black-screen cover) and restore on
+            // return. As a safety net for a missed exit signal, also poll isInPictureInPicture briefly.
+            setPipPresentation(isActive)
+            if isActive { watchPipExit() }
+
+        case .closed:
+            // Session end — including when the user closes the PIP window, which is *not* a return to
+            // full screen. Latching it stops the poll from un-hiding the host over a dead player; the
+            // SDK dismisses the host on its own, and the list reloads in viewWillAppear.
+            markSessionClosed()
+            if DevSheetViewController.activePlayer === player { DevSheetViewController.activePlayer = nil }
+
+        case .playbackReached, .requestReceived, .campaignStatusChanged, .fatalError:
+            break
+        }
+    }
+
+    /// Safety net for when PIP return does not arrive via stateChanged.
+    /// Shows the host again once `isInPictureInPicture` goes back to false.
+    private func watchPipExit() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.pipExitPollInterval) { [weak self] in
+            guard let self, self.viewIfLoaded?.window != nil || self.isViewLoaded else { return }
+            // The session ended while in PIP (the PIP window was closed). Stop watching — restoring
+            // now is what produced the full-screen black flash.
+            if self.isSessionClosed || self.isBeingDismissed || self.player.state == .closed { return }
+
+            if self.player.isInPictureInPicture {
+                self.watchPipExit()                 // still in PIP — keep watching
+            } else {
+                self.setPipPresentation(false)      // returned — restore the host
+            }
+        }
     }
 
     /// Set once the SDK reports the session ended. From then on the host must never make itself

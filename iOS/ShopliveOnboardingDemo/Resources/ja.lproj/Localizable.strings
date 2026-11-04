@@ -2,20 +2,20 @@
 
 /* MARK: - S1 スタート */
 "start.title" = "ShopLive SDK\n動作確認デモ";
-"start.subtitle" = "視聴（Player）と配信（Streamer）の8つの機能を、一覧からタップするだけで実行できます。説明を読む必要はありません。";
+"start.subtitle" = "視聴（Player）と配信（Streamer）の機能を、一覧からタップするだけで実行できます。説明を読む必要はありません。";
 "start.tour" = "ひとまず試す · すぐ開始";
 "start.tourNote.available" = "ShopLive のデモキャンペーンで、入力なしに確認できます。";
 "start.tourNote.missing" = "⚠️ 内蔵デモキーが空です — DemoDefaults（DemoCredentials.swift）を埋めるか、下から直接入力してください。";
 "start.own.collapsed" = "自分のアカウントで試す ▼";
 "start.own.expanded" = "自分のアカウントで試す ▲";
-"start.form.tip" = "必要なのは2つだけです。配信トークンはミッション8のときだけ必要です。";
+"start.form.tip" = "必要なのは2つだけです。配信トークンはミッション%dのときだけ必要です。";
 "start.field.accessKey" = "accessKey *";
 "start.field.accessKey.hint" = "Queenie コンソール、または担当者から発行";
 "start.field.accessKey.placeholder" = "発行された accessKey";
 "start.field.campaignKey" = "campaignKey *";
 "start.field.campaignKey.hint" = "ライブ / VOD どちらでも可";
 "start.field.campaignKey.placeholder" = "テストする campaignKey";
-"start.field.streamToken" = "配信トークン（ミッション8）";
+"start.field.streamToken" = "配信トークン（ミッション%d）";
 "start.field.streamToken.hint" = "視聴用のユーザー認証とは別経路です";
 "start.field.streamToken.placeholder" = "任意";
 "start.validate" = "検証して開始";
@@ -26,7 +26,7 @@
 "start.toast.tourMissing" = "内蔵デモキーが空です — DemoCredentials.swift の DemoDefaults を埋めるか、下の「自分のアカウントで試す」を使ってください";
 
 /* MARK: - S2 機能一覧 */
-"list.title" = "機能の確認 %d/8";
+"list.title" = "機能の確認 %d/%d";
 "list.tip.tapToRun" = "カードをタップするとすぐ実行されます。番号は連携ガイド（sdk.shoplive.cloud）のミッション番号と同じです。";
 "list.tip.openFiles" = "コードを見るには、カードの 📄 ファイルを Xcode で開いてください。Integration/ 配下はデモ UI に依存しないため、そのままコピーできます。";
 "list.mode.own" = "自分のアカウント · %@";
@@ -37,37 +37,40 @@
 "list.locked.hint" = "🔒 %@ — 右上の ⚙";
 "list.rescue.toast" = "再生に到達しなかったためプレーヤーを閉じました — ログを確認してください";
 
-/* MARK: - ミッション */
-"mission.1.title" = "プレーヤーを表示する";
-"mission.1.summary" = "タップするとフルスクリーンのライブがすぐ開きます。";
-"mission.1.check" = "2〜3秒で再生 · ライブならチャットと LIVE バッジ";
-"mission.2.title" = "ディープリンクで開く";
-"mission.2.summary" = "擬似プッシュのバナーを出します。タップするとリンクから直接再生します。";
-"mission.2.check" = "バナーをタップ → 再生 · ref が referrer として渡る";
-"mission.3.title" = "会員情報を連携する";
-"mission.3.summary" = "guest / profile / token から選んで再生します。";
-"mission.3.check" = "チャットのニックネームが会員名で表示";
-"mission.4.title" = "画面に埋め込む";
-"mission.4.summary" = "ホームフィードのカードの間に入ったプレーヤーを見ます。";
-"mission.4.check" = "スクロールしても再生継続 · フルスクリーンへ昇格";
-"mission.5.title" = "PIP で見続ける";
-"mission.5.summary" = "再生後に商品をタップすると小さいウィンドウで続きます。";
-"mission.5.check" = "小窓が維持される · タップで途切れず復帰";
-"mission.6.title" = "イベント · 商品 · クーポン";
-"mission.6.summary" = "商品やクーポンをタップし、ログに何が来るかを見ます。";
-"mission.6.check" = "navigation / coupon の受信と respond の呼び出し";
-"mission.7.title" = "UI をカスタマイズ";
-"mission.7.summary" = "オプションで色やオーバーレイを変えてすぐ確認します。";
-"mission.7.check" = "色が反映 · hidden でもイベントは届く";
-"mission.8.title" = "ライブ配信する";
-"mission.8.summary" = "スタジオを開いて配信を開始・終了します。";
-"mission.8.check" = "プレビュー → LIVE への遷移 · 自動復旧";
+/* MARK: - ミッションカード（順序・番号 = MissionCatalog · MissionID の宣言順） */
+"mission.player.title" = "プレーヤーを直接表示する";
+"mission.player.summary" = "タップすると全画面のライブがすぐに開きます。";
+"mission.player.check" = "2〜3秒以内に再生 · ライブならチャットと LIVE バッジ";
+"mission.nudge.title" = "ナッジ型プレビュー";
+"mission.nudge.summary" = "商品詳細の上に音のない小窓で配信を表示し、視聴を促します。タップすると全画面に広がります。";
+"mission.nudge.check" = "無音・オーバーレイなしの小窓 · タップで全画面";
+"mission.pip.title" = "PIP で視聴を続ける";
+"mission.pip.summary" = "再生後に商品をタップすると、小さなウィンドウで継続します。オプションで小窓から開始することもできます。";
+"mission.pip.check" = "小窓が維持される · タップで途切れず復帰";
+"mission.deeplink.title" = "ディープリンクで表示する";
+"mission.deeplink.summary" = "擬似プッシュのバナーを送ります。タップするとリンクから直接再生されます。";
+"mission.deeplink.check" = "バナーをタップ → 再生 · ref が referrer として渡る";
+"mission.user.title" = "ユーザー情報の連携";
+"mission.user.summary" = "guest / profile / token から選んで再生します。";
+"mission.user.check" = "チャットのニックネームが会員名で表示される";
+"mission.events.title" = "イベント · 商品 · クーポン";
+"mission.events.summary" = "商品やクーポンをタップし、ログに何が届くか見ます。";
+"mission.events.check" = "navigation・coupon リクエストの受信と respond の呼び出し";
+"mission.inline.title" = "リスト画面にインラインプレビューを入れる";
+"mission.inline.summary" = "ネイティブ(フィード内のプレイヤービュー)とハイブリッド(Web 一覧がアプリにキーを渡す)から選びます。";
+"mission.inline.check" = "スクロールしても再生が続く · Web カードのタップでアプリのプレイヤー";
+"mission.ui.title" = "UI カスタマイズ & 配置";
+"mission.ui.summary" = "オプションで色やオーバーレイを変えてすぐ確認します。";
+"mission.ui.check" = "色が反映される · hidden でもイベントは届く";
+"mission.studio.title" = "番組の配信";
+"mission.studio.summary" = "スタジオを開いて配信を開始・終了します。";
+"mission.studio.check" = "プレビュー → LIVE への遷移 · 自動復旧";
 
-/* MARK: - ミッション2 擬似プッシュ */
+/* MARK: - ディープリンク · 擬似プッシュ */
 "banner.app" = "MY SHOP · たった今";
 "banner.title" = "🔴 サマーセールのライブが開始！今すぐ入場";
 
-/* MARK: - ミッション3 認証の選択 */
+/* MARK: - ユーザー情報 · 認証の選択 */
 "auth.sheet.title" = "どの方式でユーザーを識別しますか？";
 "auth.sheet.message" = "1つのアプリ内で併用でき、次の再生から適用されます";
 "auth.guest" = "guest — 未ログインで視聴";
@@ -81,8 +84,8 @@
 "player.overlay.dev" = "⌗ 開発者";
 "player.overlay.badge" = "デモアプリ専用";
 
-/* MARK: - ミッション4 ホームフィード */
-"feed.title" = "ホームフィード · ミッション4";
+/* MARK: - インラインプレビュー（ネイティブ） · ホームフィード */
+"feed.title" = "ホームフィード · ミッション%d";
 "feed.tip.embed" = "下が ShoplivePlayerView です — レイアウトだけをアプリが持ち、コントロール・イベント・PIP はフルスクリーンと同一の API です。";
 "feed.warn.autoPip" = "この埋め込みビューは設計書 §3.4 のとおり映像専用です（overlayUI = .hidden）。画面離脱時の自動 PIP 昇格オプションは今回の SDK ビルドで公開表面から削除され、手動 enterPictureInPicture() のみ提供されます。";
 "feed.card1.title" = "今日のおすすめ";
@@ -101,9 +104,9 @@
 "dev.log.copy" = "📋 ログをコピー";
 "dev.log.clear" = "消去";
 "dev.toast.copied" = "📋 コピーしました";
-"dev.group.auth" = "認証 · ミッション3";
-"dev.group.pip" = "PIP · ミッション5";
-"dev.group.overlay" = "オーバーレイ · 外観 · ミッション7";
+"dev.group.auth" = "認証 · ミッション%d";
+"dev.group.pip" = "PIP · ミッション%d";
+"dev.group.overlay" = "オーバーレイ · 外観 · ミッション%d";
 "dev.group.control" = "コントロール（再生中に即反映）";
 "dev.group.advanced" = "詳細 — configuration の残り全項目";
 "dev.default" = "既定 %@";
@@ -132,8 +135,8 @@
 "common.back" = "戻る";
 "language.label" = "表示言語";
 "language.note" = "既定は English です。アプリ独自の設定で、端末の言語には従いません。";
-"start.field.userJwt" = "ユーザー JWT（ミッション3）";
-"start.field.userJwt.hint" = "任意 — ミッション3 の token 方式を確認するときに使います";
+"start.field.userJwt" = "ユーザー JWT（ミッション%d）";
+"start.field.userJwt.hint" = "任意 — ミッション%d の token 方式を確認するときに使います";
 "start.field.userJwt.placeholder" = "任意";
 "qr.button" = "QR コードで入力";
 "qr.title" = "認証情報 QR をスキャン";
@@ -141,3 +144,16 @@
 "qr.rejected" = "この QR には使える値がありません。URL クエリに ak と ck の両方、または st、または userjwt が必要です。";
 "qr.cameraError" = "カメラを使用できません(%@)。設定でカメラへのアクセスを許可するか、キーを直接入力してください。";
 "qr.applied" = "QR「%@」— %@ を入力しました。値を確認してから「検証して開始」を押してください。";
+
+/* ── SMV-1922 · nudge preview · inline preview (native/hybrid) ── */
+"dev.group.nudge" = "ナッジ型プレビュー · ミッション%d";
+"nudge.title" = "商品詳細 · ミッション%d";
+"nudge.tip" = "この画面の上に、ナッジ型プレビューが音のない小窓で表示されます。小窓をタップすると全画面に広がり、音が出ます。広げずにこの画面を離れると小窓も閉じます。";
+"inline.sheet.title" = "一覧は何で作っていますか?";
+"inline.sheet.message" = "ネイティブはフィード内にプレイヤービューを置き、ハイブリッドは Web 一覧が campaignKey をアプリへ渡してアプリのプレイヤーで開きます。";
+"inline.native" = "ネイティブ — アプリのフィード内の ShoplivePlayerView";
+"inline.hybrid" = "ハイブリッド — WebView の一覧 → アプリのプレイヤー";
+"common.cancel" = "キャンセル";
+"hybrid.title" = "Web 一覧（ハイブリッド） · ミッション%d";
+"hybrid.tip" = "下はアプリに同梱した Web ページです。カードをタップすると Web が ShopLiveAppInterface で campaignKey を1つ送り、アプリがネイティブプレイヤーを開きます。空の値・数値・オブジェクトは無視され、理由がログに残ります。";
+"hybrid.missingPage" = "Web ページ（hybrid/index.html）がアプリにありません — プロジェクトの Resources を確認してください。";

@@ -42,7 +42,7 @@ public func expandToFullScreen(from presenter: UIViewController, …) -> Shopliv
 
 **Design impact:** if your product treats "tap the inline preview to go full screen" as a core flow, budget for a visible reload on iOS, or raise it with your ShopLive contact — it's SDK-side work an app can't paper over.
 
-Details: [Mission 4](mission-04-embed-in-your-screen.md#promoting-to-full-screen).
+Details: [Mission 7](mission-07-embed-in-your-screen.md#promoting-to-full-screen).
 
 ---
 
@@ -55,7 +55,7 @@ Details: [Mission 4](mission-04-embed-in-your-screen.md#promoting-to-full-screen
 
 On the iOS build this demo targets, both `ShopliveAppearanceOptions` and the `appearance:` parameter on `Shoplive.present(...)` were **deleted**. There is currently **no public way to customize the studio's fonts or colors on iOS.** The demo's `StudioLauncher.swift` carries a `NOTE` comment where the helper used to be.
 
-Details: [Mission 8](mission-08-go-live.md#-studio-appearance-ios-and-android-diverge-here).
+Details: [Mission 9](mission-09-go-live.md#-studio-appearance-ios-and-android-diverge-here).
 
 ---
 
@@ -68,7 +68,7 @@ Details: [Mission 8](mission-08-go-live.md#-studio-appearance-ios-and-android-di
 
 The integration guide shows `.profile(..., custom: ["grade": "vip"])` for iOS. **That does not compile** on this build — iOS has `rank` only. If you need extra attributes on iOS today, encode them into a server-signed JWT (the token approach) instead.
 
-Details: [Mission 3](mission-03-user-identity.md#field-notes).
+Details: [Mission 5](mission-05-user-identity.md#field-notes).
 
 ---
 
@@ -146,7 +146,7 @@ Same intent, different mechanism. On iOS the preset bundles five display-policy 
 | `enterPictureInPicture()` / `exit` | ✅ | ✅ |
 | `isInPictureInPicture` | ✅ | ✅ |
 
-**On Android, to be certain an overlay mode is applied, replay with an `overlay.ui` configuration** rather than assigning the runtime property. Noted in [`PlayerSession.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerSession.kt).
+**On Android, to be certain an overlay mode is applied, replay with an `overlay.ui` configuration** rather than assigning the runtime property. Noted in [`ShoplivePlayerSession.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerSession.kt).
 
 ---
 
@@ -193,6 +193,22 @@ Same class of problem, different symptom. Both measured 2026-07-30 — full deta
 
 **The portable lesson:** judge "playback reached" from `playback(started/rendering)` on both platforms, and never treat "no error event" as "everything is fine". Both demos count failures themselves.
 
+### SDK 3.0.4 additions
+
+Checked against the 3.0.4 iOS `.swiftinterface` and Android AAR on 2026-11-04; rows marked *unverified* have not been run on a device.
+
+| | iOS | Android |
+|---|---|---|
+| Why the player closed | `stateChanged(.closed)` has **no associated value**; read `player.closeReason` (`ShopliveCloseReason?`) — the guide's `if case .closed(let reason)` does not compile | `ShoplivePlayerState.Closed(reason)` — as in the guide |
+| A second session while one is open | **Not closed for you.** The demo closes the current player and waits for it to go before presenting the next, going ahead once after 1.0 s if no signal arrives ("one session at a time" is documented for Android only). ⚠️ *Unverified:* the timeout path, whether `stop()` ends a session, and when a closed nudge's window is gone ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i4) | `start()` closes the open full-screen or PIP session |
+| Start in PIP with `pip.isInAppPipEnabled = false` | Plays full screen, silently (guide) | Undocumented — *unverified*. `intent()` always opens full screen |
+| PIP close-button image | `UIImage?` | drawable resource id `Int?` |
+| Expanding a nudge-style preview | Unmutes (3.0.4+, guide); also turns on OS PIP if enabled | The guide states unmuting for iOS only — *unverified* on Android |
+| `.preview` preset's in-App PIP value | Not visible in the interface — the demo logs it and sets `true` (*unverified*) | `true` |
+| Hybrid bridge callback | WebKit calls the message handler on the main thread; `body` keeps its JS type (`as? String`) | `@JavascriptInterface` runs on the **JavaBridge thread**; JS values arrive converted to `String?` — a number or object may arrive as text (*unverified*) |
+
+Details: [Mission 2](mission-02-nudge-preview.md), [Mission 3](mission-03-pip.md), [Mission 6](mission-06-events-products-coupons.md), [Mission 7](mission-07-embed-in-your-screen.md#approach-b--hybrid--the-list-is-a-web-page).
+
 ---
 
 ## 9. Localization behavior
@@ -219,6 +235,8 @@ Concrete things to decide once, before either platform starts coding:
 - [ ] **List embedding**: no lazy containers on either platform.
 - [ ] **`resizeMode` in embeds**: on iOS it currently renders like `.fit` — don't build a design that requires true `.fill` in a small box yet.
 - [ ] **Preset vs. explicit fields**: set fields explicitly if you need iOS and Android to behave identically.
+- [ ] **One session at a time**: on iOS, close the open player yourself before starting another (card, deep link, nudge, web list) — Android's `start()` does it for you.
+- [ ] **Close reason**: write the reason check twice — a property on iOS, the state's payload on Android.
 
 ---
 

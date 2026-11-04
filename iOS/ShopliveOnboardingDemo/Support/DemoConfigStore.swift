@@ -22,7 +22,7 @@ final class DemoConfigStore {
 
     private init() {}
 
-    // MARK: - Authentication (mission 3)
+    // MARK: - Authentication (user info mission)
 
     enum AuthMode: String, CaseIterable {
         case guest, profile, token
@@ -51,6 +51,11 @@ final class DemoConfigStore {
     var pipFloatingOffset: CGFloat = 0
     var pipFixedWidth: CGFloat? = nil
 
+    /// Card players start in the small window (`ShoplivePlayOptions.presentationStyle = .pip`, 3.0.4+).
+    var startInPip = false
+    /// pip.closeButton gets an SF Symbol image and pip.restoreButton is hidden (3.0.4+). Off = SDK defaults.
+    var customPipButtons = false
+
     // MARK: - SoundOptions
 
     var muteOnStart = false
@@ -66,6 +71,9 @@ final class DemoConfigStore {
 
     var actionOnNavigation: ShopliveNavigationAction = .pip
     var shareScheme: String? = nil
+    /// `true` → the share button sends shareRequested and the app shows its own sheet (3.0.4+). Same
+    /// default as the SDK.
+    var isCustomShareEnabled = false
 
     // MARK: - OverlayOptions
 
@@ -79,6 +87,12 @@ final class DemoConfigStore {
 
     var referrer: String? = nil
     var keepWindowStateOnPlayExecuted = false
+
+    // MARK: - Nudge preview (demo behavior, not an SDK field)
+
+    /// Close a nudge the viewer has not expanded when its campaign is not live (the guide's recommended
+    /// practice). Off by default so VOD and scheduled campaigns can still be demoed (S38).
+    var closeNudgeWhenNotLive = false
 
     // MARK: - Runtime controls (applied immediately via properties, not through config)
 

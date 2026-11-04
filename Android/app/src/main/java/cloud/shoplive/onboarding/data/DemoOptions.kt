@@ -40,6 +40,10 @@ data class DemoOptions(
     val pipAspectRatio: ShoplivePipRatio = ShoplivePipRatio.RATIO_9X16,
     /** The same value on all four sides. `ShopliveInsets` can set them separately. */
     val pipPaddingDp: Int = 0,
+    /** pip.closeButton (3.0.4+): the demo drawable instead of the SDK image. */
+    val pipCloseButtonImage: Boolean = false,
+    /** pip.restoreButton.isHidden (3.0.4+). */
+    val pipRestoreButtonHidden: Boolean = false,
 
     // ── sound ────────────────────────────────────────────────────────────────
     val muteOnStart: Boolean = false,
@@ -63,6 +67,8 @@ data class DemoOptions(
     val actionOnNavigation: ShopliveNavigationAction = ShopliveNavigationAction.PIP,
     val shareScheme: String = "",
     val closeWhenAppDestroyed: Boolean = true,
+    /** navigation.isCustomShareEnabled (3.0.4+). True: the app opens its own share sheet. */
+    val isCustomShareEnabled: Boolean = false,
 
     // ── overlay ──────────────────────────────────────────────────────────────
     val overlayUI: ShopliveOverlayUIMode = ShopliveOverlayUIMode.BUILT_IN,
@@ -73,11 +79,21 @@ data class DemoOptions(
     // ── PlayOptions (per playback) ───────────────────────────────────────────
     val referrer: String = "",
     val keepWindowStateOnPlayExecuted: Boolean = false,
+    /** PlayOptions.presentationStyle = PIP (3.0.4+): open in the in-App PIP window. */
+    val startInPip: Boolean = false,
+
+    // ── Nudge preview — demo policy, not SDK configuration ───────────────────
+    /**
+     * The guide recommends not showing a nudge while the campaign is not live. Off by
+     * default so VOD and upcoming campaigns can still be shown in the demo
+     * (SMV-1922, decided 2026-11-04).
+     */
+    val closeNudgeWhenNotLive: Boolean = false,
 
     // ── Runtime properties (control during playback, not configuration) ──────
     val resizeMode: ShopliveResizeMode = ShopliveResizeMode.FILL,
 ) {
-    /** Whether anything differs from the defaults — used by mission 7 and the UI. */
+    /** Whether anything differs from the defaults — used by the UI customization mission and the options tab. */
     val isModified: Boolean get() = this != DEFAULT
 
     companion object {

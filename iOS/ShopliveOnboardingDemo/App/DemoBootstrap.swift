@@ -14,14 +14,22 @@ enum DemoBootstrap {
 
     static func start() {
         wireLogging()
+        MissionProgress.shared.startObserving()     // first touch migrates the record; subscribes before any player starts
         wireDeepLinkRouter()
         initializeIfCredentialsAvailable()
     }
 
-    /// Plugs the demo's own configuration and delegate into the deep link router.
+    /// Plugs the demo's own configuration, delegate and session handling into the deep link router.
+    /// The providers stay side-effect free; closing the session on screen happens in `beforePresent`,
+    /// before the router picks its presenter (SMV-1922 N1).
     private static func wireDeepLinkRouter() {
-        DeepLinkRouter.shared.configurationProvider = { DemoConfigBuilder.makeConfiguration(.fullScreenLive) }
-        DeepLinkRouter.shared.delegateProvider = { DemoPlayerDelegate.shared }
+        let router = DeepLinkRouter.shared
+        router.configurationProvider = { DemoConfigBuilder.makeConfiguration(.fullScreenLive) }
+        router.delegateProvider = { DemoPlayerDelegate.shared }
+        router.beforePresent = { proceed in DevSheetViewController.replaceCurrentSession(then: proceed) }
+        router.onPresented = { player in
+            DevSheetViewController.recordSession(player, presentedAs: player, for: .deeplink)
+        }
     }
 
     /// ShopLiveIntegration/ knows nothing about the harness — the wiring happens here, once.

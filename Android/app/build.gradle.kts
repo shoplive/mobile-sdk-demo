@@ -41,7 +41,7 @@ android {
         buildConfigField("String", "DEMO_CAMPAIGN_KEY", "\"${demoKey("shoplive.demo.campaignKey", "SHOPLIVE_DEMO_CAMPAIGN_KEY")}\"")
         buildConfigField("String", "DEMO_STREAM_TOKEN", "\"${demoKey("shoplive.demo.streamToken", "SHOPLIVE_DEMO_STREAM_TOKEN")}\"")
 
-        // Mission 2 — the deep-link scheme. One value shared with the manifest's
+        // Deep-link mission — the scheme. One value shared with the manifest's
         // intent-filter, and passed into ShopliveDeepLinkRouter as a parameter.
         val scheme = "shoplivedemo"
         manifestPlaceholders["deepLinkScheme"] = scheme

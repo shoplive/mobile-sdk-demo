@@ -2,8 +2,8 @@
 
 A UIKit demo app built so that integrators can finish their integration by **following the missions and pasting the code from `Integration/` straight into their own app**.
 
-- Integration guide: <https://sdk.shoplive.cloud> (mission numbers 1–8 match the card numbers in this app)
-- Screen design rationale: `shoplive-onboarding-demo-prototype.html` (3 screens · 2 overlays · 8 features)
+- Integration guide: <https://sdk.shoplive.cloud> (the guide's mission map, 1–9, matches the card numbers and titles in this app)
+- Screen design rationale: `shoplive-onboarding-demo-prototype.html` (3 screens · 2 overlays · 8 features — written before the guide's 9-mission map; the card list now follows the guide)
 
 ---
 
@@ -19,8 +19,8 @@ revision it fetches is pinned by
 `ShopliveOnboardingDemo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
 
 It runs on both the simulator and a device. Built-in demo campaign keys are included, so you can walk through
-missions 1–7 with **no input at all** via "take a tour · start now".
-Mission 8 (broadcasting) needs a stream token, and **tokens are not kept in source**, so it stays locked until you
+missions 1–8 with **no input at all** via "take a tour · start now".
+Mission 9 (broadcasting) needs a stream token, and **tokens are not kept in source**, so it stays locked until you
 type one in on S1 (what you type is stored in the Keychain only).
 
 Add files and change build settings **directly in Xcode** — there is no regeneration step.
@@ -70,17 +70,22 @@ The demo wires all three in one place, `App/DemoBootstrap.swift` — a worked ex
 
 The 📄 path printed on each card in the app is this table.
 
-| Mission | What it covers | File |
-|---|---|---|
-| — | Initialization (once per app) | `Integration/ShopliveBootstrap.swift` |
-| 1 | Present the player | `Integration/PlayerLauncher.swift` |
-| 2 | Open from a deep link | `Integration/DeepLinkRouter.swift` + `App/SceneDelegate.swift` |
-| 3 | Connect member info | `Integration/UserSetup.swift` |
-| 4 | Embed in a screen | `Integration/EmbeddedPlayerView.swift` |
-| 5 | Apply PIP | `Integration/PipOptions.swift` |
-| 6 | Events · products · coupons | `Integration/DemoPlayerDelegate.swift` |
-| 7 | UI customization | `Integration/PlayerConfigurationFactory.swift` |
-| 8 | Broadcasting | `Integration/StudioLauncher.swift` |
+The order and titles are the integration guide's mission map. A card's number is its position in
+`Support/MissionCatalog.swift` (`MissionID` declaration order) and comes from nowhere else; branching and completion use
+`MissionID`, never the number.
+
+| Mission | What it covers | File | Docs |
+|---|---|---|---|
+| — | Initialization (once per app) | `Integration/ShopliveBootstrap.swift` | [Getting Started](../docs/01-getting-started.md) |
+| 1 | Launch the Player Directly | `Integration/PlayerLauncher.swift` | [mission-01](../docs/mission-01-open-the-player.md) |
+| 2 | Nudge-Style Preview | `Integration/NudgePreview.swift` (host screen: `Screens/NudgeProductViewController.swift`) | [mission-02](../docs/mission-02-nudge-preview.md) |
+| 3 | Keep Watching in PIP | `Integration/PipOptions.swift` | [mission-03](../docs/mission-03-pip.md) |
+| 4 | Launch via Deep Link | `Integration/DeepLinkRouter.swift` + `App/SceneDelegate.swift` | [mission-04](../docs/mission-04-deep-link.md) |
+| 5 | Connect User Information | `Integration/UserSetup.swift` | [mission-05](../docs/mission-05-user-identity.md) |
+| 6 | Events · Products · Coupons | `Integration/DemoPlayerDelegate.swift` | [mission-06](../docs/mission-06-events-products-coupons.md) |
+| 7 | Add Inline Previews to a List Screen | native `Integration/EmbeddedPlayerView.swift` · hybrid `Integration/WebBridge.swift` + `WebBridgeInput.swift` | [mission-07](../docs/mission-07-embed-in-your-screen.md) |
+| 8 | UI Customization & Placement | `Integration/PlayerConfigurationFactory.swift` | [mission-08](../docs/mission-08-ui-customization.md) |
+| 9 | Broadcasting | `Integration/StudioLauncher.swift` | [mission-09](../docs/mission-09-go-live.md) |
 | Shared | Log hook / enum labels | `Integration/ShopliveLog.swift` · `ShopliveLabels.swift` |
 
 ---
@@ -167,7 +172,7 @@ bash scripts/run-tuist.sh generate --no-open
 enum DemoDefaults {
     static let accessKey = "<demo accessKey>"
     static let campaignKey = "<demo campaignKey>"
-    static let streamToken = "<demo stream token>"     // mission 8 only
+    static let streamToken = "<demo stream token>"     // mission 9 only
 }
 ```
 
@@ -176,10 +181,10 @@ enum DemoDefaults {
 - When handing the project to a customer, **empty these three or replace them with the customer's keys**. Emptied, the app asks for input on S1.
 - What the user types stays on the device (accessKey/campaignKey → `UserDefaults`, stream token and User JWT → Keychain). Nothing is sent to a server.
 - **QR input**: "Use my own account" → "Scan a QR code" fills the form from a test-app QR (`ak`·`ck`·`title`·`userjwt`, plus `st` for the stream token). Format and rules: [Demo App Tour § QR code input](../docs/02-demo-app-tour.md#qr-code-input). Code: `Support/QrCredentials.swift`, `Screens/QRScanViewController.swift`.
-- **Mission 3 token method** uses the **User JWT** field. (Before 2026-10-15 it borrowed the stream token, which is a different credential.)
+- **Mission 5 token method** uses the **User JWT** field. (Before 2026-10-15 it borrowed the stream token, which is a different credential.)
 - Logs and on-screen display keep only the first 8 characters and mask the rest (`DemoCredentials.masked(_:)`).
 
-> **The defaults belong to a throwaway internal demo account** and are committed so that missions up to 8 run with no setup.
+> **The defaults belong to a throwaway internal demo account** and are committed so that all nine missions run with no setup.
 > **Do not copy this pattern in your own app** — a stream token grants **permission to start a broadcast** on that
 > campaign to anyone who can read it. Keep yours out of source: inject it at build time or collect it at runtime
 > (S1 input goes to the Keychain only).
@@ -338,16 +343,17 @@ What the demo does:
 **Symptom**: tapping close (X) on the PIP window covered the whole screen in black for a moment before dismissing.
 
 **Cause**: closing the PIP window does not deliver a PIP exit but **`stateChanged(.closed)` (session end)**.
-If the delegate folds state into a boolean and forwards `onPipStateChanged(state == .inAppPIP)`, `.closed` arrives as
+If the delegate folds every state into one boolean (`state == .inAppPIP`) and forwards that, `.closed` arrives as
 `false`, and the host that had stepped aside **becomes visible again over a player whose render surface is already
 gone**. At that moment the host's black background covers the screen, and the dismiss animation runs behind it.
 
 Measured values at the moment of closing: `inPip=false state=closed hostDismissing=true`
 — **the SDK dismisses the host itself**, so the host should simply have stayed out of the way.
 
-**Fix**: session end and PIP exit are now separate. `ShopliveIntegration/DemoPlayerDelegate.swift` sends `.closed`
-through a distinct `onSessionClosed` hook, and the host latches it so that an in-flight return request cannot make it
-visible again.
+**Fix**: session end and PIP exit are now separate. `ShopliveIntegration/DemoPlayerDelegate.swift` publishes `.closed`
+as its own milestone, `PlayerMilestone.closed(reason:)`, apart from `.pipStateChanged(isActive:)`, and the host latches it
+so that an in-flight return request cannot make it visible again. The host subscribes to its own player only
+(`DemoPlayerDelegate.observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot reach it.
 **`isHidden` is deliberately left alone** — closing from full screen must keep the existing slide-down animation, and
 in both paths the visibility state at that point is already correct.
 
@@ -383,7 +389,7 @@ Every switch in `Integration/` has one. `PlayerRequest` matters most, because it
 silently ignoring an unknown case can leave the overlay waiting forever.
 
 ### APIs that iOS does not have
-There is no equivalent of Android's `expandToFullScreen()` (handing an embedded session over to full screen). Mission 4
+There is no equivalent of Android's `expandToFullScreen()` (handing an embedded session over to full screen). Mission 7
 tears the embedded session down and presents a fresh full-screen VC, so there is one extra short reload.
 
 ---
@@ -461,6 +467,8 @@ written against the actual API.
 | **S1** start | `Screens/StartViewController.swift` |
 | **S2** mission list | `Screens/MissionListViewController.swift` |
 | **S3** playback screen | drawn by the SDK + `Screens/PlayerHostOverlay.swift` (demo controls) · `Screens/FeedDemoViewController.swift` (feed variant) |
+| Mission 2 host | `Screens/NudgeProductViewController.swift` — a product page the nudge floats over |
+| Mission 7 hybrid | `Screens/HybridListViewController.swift` — a bundled web list (`Resources/hybrid/index.html`) in a `WKWebView` |
 | **V1** developer sheet | `Screens/DevSheetViewController.swift` (log / options tabs) |
 | **V2** product detail | `Screens/ProductDetailViewController.swift` |
 
@@ -496,5 +504,5 @@ To run on a device, pick **your own team** in Signing & Capabilities. The bundle
 
 - Xcode 26 or later (verified on 26.6)
 - iOS 15.0 or later — WebRTC OS PIP uses iOS 15+ only APIs
-- Mission 8 (broadcasting) needs `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` (both are in Info.plist)
+- Mission 9 (broadcasting) needs `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` (both are in Info.plist)
 - Deep link scheme: `shopliveDemo://live?campaign=<KEY>&ref=<REFERRER>`

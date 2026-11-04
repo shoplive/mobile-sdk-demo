@@ -2,20 +2,20 @@
 
 /* MARK: - S1 Start */
 "start.title" = "ShopLive SDK\nIntegration Demo";
-"start.subtitle" = "Tap any of the 8 features to run it immediately — viewing (Player) and broadcasting (Streamer). No reading required.";
+"start.subtitle" = "Tap any feature to run it right away — viewing (Player) and broadcasting (Streamer). No reading required.";
 "start.tour" = "Take a tour · Start now";
 "start.tourNote.available" = "Runs against the ShopLive demo campaign — no input needed.";
 "start.tourNote.missing" = "⚠️ The bundled demo keys are empty — fill in DemoDefaults (DemoCredentials.swift) or enter your own below.";
 "start.own.collapsed" = "Use my own account ▼";
 "start.own.expanded" = "Use my own account ▲";
-"start.form.tip" = "You only need two. The stream token is required only for Mission 8.";
+"start.form.tip" = "You only need two. The stream token is required only for Mission %d.";
 "start.field.accessKey" = "accessKey *";
 "start.field.accessKey.hint" = "Issued from the Queenie console or by your contact";
 "start.field.accessKey.placeholder" = "Your accessKey";
 "start.field.campaignKey" = "campaignKey *";
 "start.field.campaignKey.hint" = "Live or VOD — either works";
 "start.field.campaignKey.placeholder" = "campaignKey to test";
-"start.field.streamToken" = "Stream token (Mission 8)";
+"start.field.streamToken" = "Stream token (Mission %d)";
 "start.field.streamToken.hint" = "A separate path from viewer authentication";
 "start.field.streamToken.placeholder" = "Optional";
 "start.validate" = "Validate and start";
@@ -26,7 +26,7 @@
 "start.toast.tourMissing" = "The bundled demo keys are empty — fill in DemoDefaults in DemoCredentials.swift, or use “Use my own account” below";
 
 /* MARK: - S2 Feature list */
-"list.title" = "Features verified %d/8";
+"list.title" = "Features verified %d/%d";
 "list.tip.tapToRun" = "Tapping a card runs it right away. Numbers match the mission numbers in the integration guide (sdk.shoplive.cloud).";
 "list.tip.openFiles" = "To read the code, open the 📄 file from a card in Xcode. Files under Integration/ have no demo-UI dependencies, so you can copy them as-is.";
 "list.mode.own" = "My account · %@";
@@ -37,37 +37,40 @@
 "list.locked.hint" = "🔒 %@ — see ⚙ at top right";
 "list.rescue.toast" = "Closed the player because playback was never reached — check the log";
 
-/* MARK: - Missions */
-"mission.1.title" = "Present the player";
-"mission.1.summary" = "Tap to open a full-screen live stream immediately.";
-"mission.1.check" = "Plays within 2–3s · chat and LIVE badge when live";
-"mission.2.title" = "Open via deep link";
-"mission.2.summary" = "Sends a mock push banner. Tapping it plays straight from the link.";
-"mission.2.check" = "Tap banner → playback · ref arrives as referrer";
-"mission.3.title" = "Connect user info";
-"mission.3.summary" = "Pick guest / profile / token, then play.";
-"mission.3.check" = "Chat nickname shows the member name";
-"mission.4.title" = "Embed in your screen";
-"mission.4.summary" = "See a player embedded between home-feed cards.";
-"mission.4.check" = "Playback survives scrolling · promotes to full screen";
-"mission.5.title" = "Keep watching in PIP";
-"mission.5.summary" = "After playback starts, tap a product to continue in a small window.";
-"mission.5.check" = "Small window persists · tap returns without interruption";
-"mission.6.title" = "Events · products · coupons";
-"mission.6.summary" = "Tap products and coupons, then watch what arrives in the log.";
-"mission.6.check" = "navigation/coupon requests received and respond called";
-"mission.7.title" = "Customize the UI";
-"mission.7.summary" = "Change colors and the overlay in Options and see it applied.";
-"mission.7.check" = "Color applied · events still arrive when hidden";
-"mission.8.title" = "Go live";
-"mission.8.summary" = "Open the studio and start or stop a broadcast.";
-"mission.8.check" = "preview → LIVE transition · automatic recovery";
+/* MARK: - Mission cards (order and number = MissionCatalog · MissionID declaration order) */
+"mission.player.title" = "Launch the Player Directly";
+"mission.player.summary" = "Tap to open a full-screen live stream right away.";
+"mission.player.check" = "Playback within 2–3s · chat and LIVE badge when live";
+"mission.nudge.title" = "Nudge-Style Preview";
+"mission.nudge.summary" = "A silent small window over a product page invites the viewer in. Tap it to go full screen.";
+"mission.nudge.check" = "Small silent window without overlay · tap expands to full screen";
+"mission.pip.title" = "Keep Watching in PIP";
+"mission.pip.summary" = "Tap a product during playback and it continues in a small window. Options can also start it in PIP.";
+"mission.pip.check" = "Small window persists · tap to return without interruption";
+"mission.deeplink.title" = "Launch via Deep Link";
+"mission.deeplink.summary" = "Sends a fake push banner. Tapping it plays straight from the link.";
+"mission.deeplink.check" = "Tap banner → playback · ref arrives as referrer";
+"mission.user.title" = "Connect User Information";
+"mission.user.summary" = "Pick guest / profile / token, then play.";
+"mission.user.check" = "Chat nickname shows the member name";
+"mission.events.title" = "Events · Products · Coupons";
+"mission.events.summary" = "Tap products and coupons, then watch what arrives in the log.";
+"mission.events.check" = "navigation/coupon requests received and respond called";
+"mission.inline.title" = "Add Inline Previews to a List Screen";
+"mission.inline.summary" = "Pick native (a player view inside the feed) or hybrid (a web list hands the key to the app).";
+"mission.inline.check" = "Playback survives scrolling · a web card tap opens the app player";
+"mission.ui.title" = "UI Customization & Placement";
+"mission.ui.summary" = "Change colors and the overlay in Options and see it applied.";
+"mission.ui.check" = "Color applied · events still arrive when hidden";
+"mission.studio.title" = "Broadcasting";
+"mission.studio.summary" = "Open the studio and start/stop a broadcast.";
+"mission.studio.check" = "preview → LIVE transition · automatic recovery";
 
-/* MARK: - Mission 2 mock push banner */
+/* MARK: - Deep link · mock push banner */
 "banner.app" = "MY SHOP · now";
 "banner.title" = "🔴 Summer sale live has started — join now!";
 
-/* MARK: - Mission 3 auth picker */
+/* MARK: - User info · auth picker */
 "auth.sheet.title" = "How should we identify the user?";
 "auth.sheet.message" = "You can mix these within one app; it applies from the next playback";
 "auth.guest" = "guest — watch without signing in";
@@ -81,8 +84,8 @@
 "player.overlay.dev" = "⌗ Developer";
 "player.overlay.badge" = "Demo app only";
 
-/* MARK: - Mission 4 home feed */
-"feed.title" = "Home feed · Mission 4";
+/* MARK: - Inline preview (native) · home feed */
+"feed.title" = "Home feed · Mission %d";
 "feed.tip.embed" = "Below is ShoplivePlayerView — your app owns only the layout; controls, events and PIP use the exact same API as full screen.";
 "feed.warn.autoPip" = "This embedded view is video-only per design doc §3.4 (overlayUI = .hidden). The automatic-PIP-on-leave option was removed from the public surface in this SDK build; only manual enterPictureInPicture() is available.";
 "feed.card1.title" = "Today's picks";
@@ -101,9 +104,9 @@
 "dev.log.copy" = "📋 Copy log";
 "dev.log.clear" = "Clear";
 "dev.toast.copied" = "📋 Copied";
-"dev.group.auth" = "Authentication · Mission 3";
-"dev.group.pip" = "PIP · Mission 5";
-"dev.group.overlay" = "Overlay · appearance · Mission 7";
+"dev.group.auth" = "Authentication · Mission %d";
+"dev.group.pip" = "PIP · Mission %d";
+"dev.group.overlay" = "Overlay · appearance · Mission %d";
 "dev.group.control" = "Controls (applied immediately during playback)";
 "dev.group.advanced" = "Advanced — every remaining configuration field";
 "dev.default" = "default %@";
@@ -132,8 +135,8 @@
 "common.back" = "Back";
 "language.label" = "Display language";
 "language.note" = "English is the default. This is an app-level setting and does not follow the device language.";
-"start.field.userJwt" = "User JWT (Mission 3)";
-"start.field.userJwt.hint" = "Optional — used to try the token method in Mission 3";
+"start.field.userJwt" = "User JWT (Mission %d)";
+"start.field.userJwt.hint" = "Optional — used to try the token method in Mission %d";
 "start.field.userJwt.placeholder" = "Optional";
 "qr.button" = "Scan a QR code";
 "qr.title" = "Scan credentials QR";
@@ -141,3 +144,16 @@
 "qr.rejected" = "This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.";
 "qr.cameraError" = "The camera is not available (%@). Allow camera access in Settings, or type the keys instead.";
 "qr.applied" = "QR “%@” — filled %@. Check the values, then tap “Validate and start”.";
+
+/* ── SMV-1922 · nudge preview · inline preview (native/hybrid) ── */
+"dev.group.nudge" = "Nudge-Style Preview · Mission %d";
+"nudge.title" = "Product detail · Mission %d";
+"nudge.tip" = "A nudge preview floats over this screen as a small, silent window. Tap it to go full screen with sound. Leave this screen without expanding it and the small window closes too.";
+"inline.sheet.title" = "Which list is yours?";
+"inline.sheet.message" = "Native puts a player view inside the feed; hybrid has a web list hand the campaignKey to the app, which opens its own player.";
+"inline.native" = "Native — ShoplivePlayerView in the app's feed";
+"inline.hybrid" = "Hybrid — web list → app player";
+"common.cancel" = "Cancel";
+"hybrid.title" = "Web list (hybrid) · Mission %d";
+"hybrid.tip" = "Below is a web page bundled with the app. Tapping a card sends one campaignKey through ShopLiveAppInterface and the app opens its native player. Empty values, numbers and objects are ignored, with the reason in the log.";
+"hybrid.missingPage" = "The web page (hybrid/index.html) is missing from the app — check the project's Resources.";

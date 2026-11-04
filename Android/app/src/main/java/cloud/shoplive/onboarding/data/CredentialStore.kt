@@ -52,7 +52,7 @@ class CredentialStore(context: Context) {
         get() = prefs.getString(KEY_STREAM_TOKEN, "").orEmpty()
         set(value) = prefs.edit().putString(KEY_STREAM_TOKEN, value.trim()).apply()
 
-    /** JWT for user authentication (Mission 3). Only used by the `token` method. */
+    /** JWT for user authentication (the user-info mission). Only used by the `token` method. */
     var userJwt: String
         get() = prefs.getString(KEY_USER_JWT, "").orEmpty()
         set(value) = prefs.edit().putString(KEY_USER_JWT, value.trim()).apply()

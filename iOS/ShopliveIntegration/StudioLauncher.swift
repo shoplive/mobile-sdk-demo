@@ -1,6 +1,6 @@
 //
 //  StudioLauncher.swift
-//  ★ COPY THIS — mission 8 · broadcasting
+//  ★ COPY THIS — mission 9 · broadcasting
 //
 //  The SDK provides the entire studio UI (camera preview, switching, zoom, chat, settings). There is
 //  nothing for the app to draw.

@@ -72,7 +72,7 @@ The design spec says `stateChanged(ShoplivePlayerState)` reports the playback li
 ```swift
 case .playback(let playback):
     if playback.event == .started || playback.event == .rendering {
-        onPlaybackReached?()
+        publish(.playbackReached, from: player)   // one milestone channel, always with the sender
     }
 ```
 
@@ -99,7 +99,7 @@ playback(ended) → stateChanged(IDLE) → stateChanged(CLOSED)
 2. **`campaignInfoReceived` and `campaignStatusChanged` also never fired**, so the app has no way to determine READY / LIVE / ENDED. (`analytics` does arrive, carrying the campaign key.)
 3. Overlay web view console: `Uncaught TypeError: window.__receiveAppEvent is not a function` × 3.
 
-**Workaround in the demo** — count `playback(failed)` yourself: `onRepeatedPlaybackFailure()` in [`DemoPlayerDelegate.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/DemoPlayerDelegate.kt). Two details matter:
+**Workaround in the demo** — count `playback(failed)` yourself: `onRepeatedPlaybackFailure()` in [`ShoplivePlayerEventLogger.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerEventLogger.kt). Two details matter:
 
 - **A one-shot latch per session**, reset on `stateChanged(LOADING)` — otherwise you nag the user every 5 seconds.
 - **A `Toast`, not a Snackbar** — the SDK's player Activity is in front, so Compose UI from your app is invisible.
@@ -158,7 +158,7 @@ Design spec §3.4 says the View approach is video-only with `overlayUI` pinned t
 
 `ShoplivePlayerView` releases resources on detach from the window. Lazy containers (`LazyColumn`, recycling collection views) dispose of off-screen items, so **scrolling alone interrupts playback.**
 
-The demo feed uses `Column + verticalScroll` instead. There is no "stay alive while detached" option. See [Mission 4](mission-04-embed-in-your-screen.md#-do-not-put-the-player-in-a-lazycolumn--uicollectionview-cell).
+The demo feed uses `Column + verticalScroll` instead. There is no "stay alive while detached" option. See [Mission 7](mission-07-embed-in-your-screen.md#-do-not-put-the-player-in-a-lazycolumn--uicollectionview-cell).
 
 ---
 
@@ -173,7 +173,7 @@ On promotion, the render surface moves to a floating container over the app wind
 **Mitigation, four parts:**
 
 1. Present the host `.overFullScreen`, **not** `.fullScreen` — `.fullScreen` detaches the presenter's view, so hiding your host reveals nothing.
-2. On `stateChanged(.inAppPIP)`, call `PlayerHostViewController.setPipPresentation(true)` to hide the host. Now the list screen shows behind the floating window.
+2. On `stateChanged(.inAppPIP)` — in the demo, the `.pipStateChanged(isActive: true)` milestone of **this host's own player** — call `PlayerHostViewController.setPipPresentation(true)` to hide the host. Now the list screen shows behind the floating window.
 3. **Do not treat every non-`.inAppPIP` state as "returned from PIP"** — see the next entry. `.closed` means the session ended, and restoring the host on it is a bug.
 4. **Poll `isInPictureInPicture` every 0.5 s as a safety net**, and have the poll bail out once the session is closed.
 
@@ -183,11 +183,11 @@ On promotion, the render surface moves to a floating container over the app wind
 
 **Symptom:** with the player in PIP, tapping the PIP window's close button covered the whole screen in black for a moment before it slid away.
 
-**Cause:** `stateChanged(.closed)` is what arrives when the PIP window is closed — the session ends, it is *not* a PIP-exit. A delegate that collapses the state into a boolean (`onPipStateChanged(state == .inAppPIP)`) reports `false`, the stepped-aside host un-hides itself over a player that no longer has a render surface, and the host's own black background covers the screen until the dismissal finishes.
+**Cause:** `stateChanged(.closed)` is what arrives when the PIP window is closed — the session ends, it is *not* a PIP-exit. A delegate that collapses every state into one boolean (`state == .inAppPIP`) reports `false`, the stepped-aside host un-hides itself over a player that no longer has a render surface, and the host's own black background covers the screen until the dismissal finishes.
 
 Measured at the moment of close: `inPip=false state=closed hostDismissing=true` — **the SDK dismisses the host itself**, so the host only needed to stay out of the way.
 
-**Fix:** route session end and PIP-exit apart. `ShopliveIntegration/DemoPlayerDelegate.swift` now sends `.closed` to a separate `onSessionClosed` hook, and the host latches it so no in-flight restore can un-hide it. Deliberately it does **not** change `isHidden` — closing from full screen must keep the normal slide-down animation, and in both paths the visibility is already correct.
+**Fix:** route session end and PIP-exit apart. `ShopliveIntegration/DemoPlayerDelegate.swift` publishes `.closed` as its own milestone, `PlayerMilestone.closed(reason:)`, separate from `.pipStateChanged(isActive:)` (which is never sent for `.closed`), and the host latches it so no in-flight restore can un-hide it. The host listens to its own player only (`observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot tear down a newer host. Deliberately it does **not** change `isHidden` — closing from full screen must keep the normal slide-down animation, and in both paths the visibility is already correct.
 
 Verified: closing from PIP produces **no un-hide at all**, while tapping the PIP window to return still restores the host.
 
@@ -225,7 +225,9 @@ These integration-guide examples **do not compile** against the current binaries
 | `ShopLiveAnalyticsInfo` / `ShopLivePlayerCampaign` | `ShopliveAnalyticsInfo` / `ShopliveCampaign` (lowercase `l`) |
 | `playerView.expandToFullScreen()` | **Does not exist on iOS** (Android only) |
 | `appearance.allowScreenCapture` default `false` | Implementation default is **`true`** — the guide is the item to correct |
-| Mission 8 locked only in own-account mode | **Locked whenever no stream token is present** — you can't broadcast without one |
+| `if case .closed(let reason) = state` — the 3.0.4 close reason (iOS) | In the **3.0.4 iOS binary** `.closed` has **no associated value**; the reason is `player.closeReason` (`ShopliveCloseReason?`). Android matches the guide: `ShoplivePlayerState.Closed(reason)`. See [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304) |
+| `postMessage(campaignKey: String)` in the hybrid bridge (Android) | Works, but takes no precautions: the demo declares `String?`, rejects blank values, and hands over to the main thread with the Activity held weakly ([Mission 7](mission-07-embed-in-your-screen.md#what-the-bridge-has-to-defend-against)) |
+| Broadcasting locked only in own-account mode (earlier guide revision; not in the 3.0.4 guide) | **Locked whenever no stream token is present** — you can't broadcast without one |
 
 Also removed from the iOS public surface (referencing them is a compile error): `PipOptions.keepWindowStyleOnReturnFromOSPip`, `PipOptions.autoEnterOnLeaveScreen`, `AppearanceOptions.isStatusBarVisible`, and the Streamer's `ShopliveAppearanceOptions`.
 
@@ -254,11 +256,36 @@ The demo's Options tab flags fields in this state inline, rather than presenting
 
 Honest gaps. Real-device verification is required before these can be called done.
 
+### Open `SDP-VERIFY` markers in the code
+
+Each row is one `TODO(SDP-VERIFY)` left in the source (SMV-1922, 2026-11-04) — iOS 9, Android 5. The docs that depend on it say **Unverified** and link here. A row goes away only together with its marker, after a device run.
+
+| # | Marker in | What is unverified | Docs that rely on it |
+|---|---|---|---|
+| i1 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `.stateChanged(.closed)` | Whether `closeReason` is already set when `stateChanged(.closed)` arrives (if not, the log says "no reason") | [Mission 6 § Why the player closed](mission-06-events-products-coupons.md#why-the-player-closed-304) |
+| i2 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `observeMilestones(of:)` | Whether the `player` handed to the delegate is the very object the app holds — the view controller itself, and for the feed the view `EmbeddedPlayerView.player` returns. Every `===` filter and the progress owner check rest on it | [Demo App Tour § done badge](02-demo-app-tour.md#the-done-badge-is-not-a-checkbox), [Mission 6](mission-06-events-products-coupons.md), [Mission 7](mission-07-embed-in-your-screen.md) |
+| i3 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `publish(_:from:)` | Whether the SDK always calls the delegate on the main thread — the 3.0.4 interface declares no `@MainActor`. The demo moves an off-main callback to the main thread and logs it | [Mission 6](mission-06-events-products-coupons.md), [API Reference § Delegate: events](api-reference.md#delegate-events) |
+| i4 | iOS `ShopliveOnboardingDemo/Screens/DevSheetViewController.swift` — `replaceCurrentSession` timeout | The fallback that goes ahead once after `sessionCloseTimeout` (1.0 s) when neither the dismissal nor `.closed` arrives; whether `stop()` ends a session; when a nudge's PIP window is gone after `close()` | [Platform Differences § 3.0.4](platform-differences.md#sdk-304-additions), [Mission 4](mission-04-deep-link.md) |
+| i5 | iOS `ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift` — not-live campaign | What the nudge window shows for a campaign that is not live (a waiting screen, or closing at once — with which reason) | [Mission 2](mission-02-nudge-preview.md#platform-notes) |
+| i6 | iOS `ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift` — `leave()` | Who keeps an **expanded** nudge's view controller after its product screen is released (does the SDK present it when expanding?). If nobody does, the viewing session ends with the screen | [Mission 2](mission-02-nudge-preview.md#when-to-show-it-and-when-to-take-it-away) |
+| i7 | iOS `ShopliveIntegration/WebBridge.swift` — message handler | That a non-blank string which is not a real campaign key ends in the SDK's error path, with nothing marked done | [Mission 7](mission-07-embed-in-your-screen.md#what-the-bridge-has-to-defend-against) |
+| i8 | iOS `ShopliveIntegration/PlayerConfigurationFactory.swift` — `embeddedPreview()` | The 3.0.4 `.preview` preset's `pip.isInAppPipEnabled` and `resizeMode` values — not in the SDK interface. The nudge logs the PIP value, then sets it to `true` | [Mission 7 § presets](mission-07-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot), [Mission 2](mission-02-nudge-preview.md), [Mission 8](mission-08-ui-customization.md), [API Reference § Presets](api-reference.md#presets) |
+| i9 | iOS `ShopliveIntegration/NudgePreview.swift` — `start` | Whether a `presentationStyle = .pip` player must also be `present`ed, or `play(campaignKey:options:)` alone shows the small window (the demo does the latter) | [Mission 2](mission-02-nudge-preview.md#platform-notes) |
+| a1 | Android `integration/…/ShoplivePlayerLauncher.kt` — `start` | `presentationStyle = PIP` with `pip.isInAppPipEnabled = false` — full screen, ignored, or an error; the demo only logs the combination | [Mission 3](mission-03-pip.md#starting-directly-in-pip-304), [Platform Differences § 3.0.4](platform-differences.md#sdk-304-additions) |
+| a2 | Android `integration/…/ShopliveWebBridge.kt` — `postMessage` | What the JS → Java conversion delivers for a non-string (a number, an object), and that such text ends in the SDK's error path with nothing marked done | [Mission 7](mission-07-embed-in-your-screen.md#what-the-bridge-has-to-defend-against) |
+| a3 | Android `integration/…/ShopliveNudgePreview.kt` — `Session.onCampaignStatus` | What the nudge window shows for a campaign that is not live (a waiting screen, or closing at once — with which reason) | [Mission 2](mission-02-nudge-preview.md#platform-notes) |
+| a4 | Android `app/…/data/MissionProgress.kt` — `creditFor` | Whether the `player` the delegate passes is the very object `ShoplivePlayerLauncher.start` / `startMission` returned — every `===` comparison rests on it (if not, playback is never credited) | [Demo App Tour § done badge](02-demo-app-tour.md#the-done-badge-is-not-a-checkbox), [Android/README](../Android/README.md#how-confirmation-happens-automatically) |
+| a5 | Android `app/…/ui/hybrid/HybridListScreen.kt` — repeated taps | That the lock taken right after a start request (while the player is still Idle) is released by Loading, Closed or an unrecoverable error — and, if the start is refused with no event at all, that the page stays locked only until it is opened again | [Mission 7](mission-07-embed-in-your-screen.md#what-the-bridge-has-to-defend-against) |
+
+### Measured only on a device (no marker in the code)
+
 **Both platforms**
 
-- Broadcast start (Mission 8) and the camera/microphone permission flow — emulator camera limitations block this
+- Broadcast start (Mission 9) and the camera/microphone permission flow — emulator camera limitations block this
+- Whether "the viewer expanded the nudge" is detected reliably — the demo leaves an expanded nudge playing when its screen goes away and closes one that was never expanded
 - `allowScreenCapture` actually blanking screenshots and mirroring
 - `isOSPipEnabled = false` actually skipping OS PIP registration
+- **"One session at a time" covers viewing (player) sessions only, not the studio.** On iOS the demo's "replace the current session" step closes the open player, but a broadcast is not a player session: a deep link that arrives while broadcasting presents the player **on top of the studio** (it is the top-most screen) — ⚠️ **Unverified**, follows from the code, not measured. Android: what `start()` does to a running studio is not documented — ⚠️ **Unverified**
 
 **Android (needs a campaign that plays)**
 
@@ -267,6 +294,7 @@ Honest gaps. Real-device verification is required before these can be called don
 - `navigation(url)` → product detail routing
 - Whether `sound.muteOnStart = true` reproduces the PIP bounce
 - Perceived reload cost when promoting embedded → full screen
+- That the bundled hybrid page reads its `?campaignKey=` query from a `file:///android_asset/` URL
 
 **iOS**
 
@@ -279,23 +307,24 @@ Honest gaps. Real-device verification is required before these can be called don
 | Symptom | Most likely cause |
 |---|---|
 | **Nothing happens on tap (Android)** | Context isn't an Activity. `ShoplivePlayer(context)` needs a `LifecycleOwner`; `applicationContext` is refused with only a logcat warning |
-| **`notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (9000)** | Playback called before `initialize`. Common on a deep-link cold start — move `initialize` into `AppDelegate` / `Application.onCreate()` ([Mission 2](mission-02-deep-link.md)) |
+| **`notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (9000)** | Playback called before `initialize`. Common on a deep-link cold start — move `initialize` into `AppDelegate` / `Application.onCreate()` ([Mission 4](mission-04-deep-link.md)) |
 | **No events arrive at all** | Nothing owns the delegate. It's weakly held (iOS) / instance-owned (Android). Hold it strongly ([Mission 1](mission-01-open-the-player.md)) |
 | **Black player, no error** | Very likely no stream. Verify the campaign is on air; count `playback(failed)` yourself ([above](#no-error-event-when-a-stream-doesnt-exist-android)) |
 | **"Verified"/playback-started never triggers (iOS)** | You're gating on `stateChanged`. Use `playback(started/rendering)` ([above](#statechanged-never-fires-ios)) |
-| **Playback stops when I scroll** | The player is in a lazy container. Use a non-recycling layout ([Mission 4](mission-04-embed-in-your-screen.md)) |
+| **Playback stops when I scroll** | The player is in a lazy container. Use a non-recycling layout ([Mission 7](mission-07-embed-in-your-screen.md)) |
 | **Screen goes black when PIP starts (iOS)** | The host is still visible. Present `.overFullScreen` and hide it on `.inAppPIP` ([above](#the-full-screen-host-must-step-aside-ios)) |
 | **Overlay popup won't close** | You didn't call `respond`. Every `coupon` / `customWebAction` requires it ([Mission 6](mission-06-events-products-coupons.md)) |
 | **Tapping a product does nothing** | The `navigation` request isn't handled — the one request that's genuinely mandatory |
 | **Coupon works but nothing shows on Android** | You used a Snackbar. The SDK's Activity is in front; use `Toast` |
-| **Configuration change has no effect** | Configuration is immutable after playback starts. Replay with a new one ([Mission 7](mission-07-ui-customization.md)) |
+| **Configuration change has no effect** | Configuration is immutable after playback starts. Replay with a new one ([Mission 8](mission-08-ui-customization.md)) |
 | **Overlay mode won't change on Android** | The runtime `overlayUI` setter isn't wired yet. Replay with an `overlay.ui` configuration |
-| **Broadcast starts with no audio** | Missing `RECORD_AUDIO`. It is **not** in the AAR — declare it yourself ([Mission 8](mission-08-go-live.md)) |
+| **Broadcast starts with no audio** | Missing `RECORD_AUDIO`. It is **not** in the AAR — declare it yourself ([Mission 9](mission-09-go-live.md)) |
 | **Studio fails to open** | Missing stream token. `setUser` does not grant broadcast permission — they're separate paths |
 | **Broadcast permission lost after logout** | `logout()` clears `streamToken` too. Call `setStreamToken` again |
 | **Swift 6 build error switching on an SDK enum** | Missing `@unknown default`. The SDK's enums are resilient ([Architecture §3.6](03-architecture.md)) |
 | **Compile error on an old type name** | Every public type gained a `Shoplive` prefix in v3. See the [rename table](api-reference.md#v3-renames-ios-breaking) |
 | **iOS device build: "requires a development team"** | Set `DEVELOPMENT_TEAM` in `Project.swift` (or pick a team in Xcode) and change the bundle ID |
+| **Demo: every mission shows "not done" after reinstalling an older demo build** | Expected. This build moves the completion record to the identifier key `demo.completedMissionIds` and deletes the old number-based key (iOS `demo.completedMissions`, Android `doneMissions`); an older build reads only the old key, so it finds nothing. Follows from the storage rules — not measured on a device. See [Demo App Tour](02-demo-app-tour.md#progress-survives-the-renumbering) |
 | **Android: SDK artifacts won't resolve** | The `cloud.shoplive` repository is missing from `settings.gradle.kts`, or the coordinates dropped the `shoplive-` prefix. The repository is public — see [Getting Started §1.4](01-getting-started.md#14-run-the-android-demo) |
 
 ---

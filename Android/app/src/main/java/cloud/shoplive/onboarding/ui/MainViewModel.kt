@@ -13,19 +13,23 @@ import cloud.shoplive.onboarding.data.DemoMode
 import cloud.shoplive.onboarding.data.DemoOptionsStore
 import cloud.shoplive.onboarding.data.DevSheetTab
 import cloud.shoplive.onboarding.data.Mission
+import cloud.shoplive.onboarding.data.MissionId
 import cloud.shoplive.onboarding.data.MissionRun
 import cloud.shoplive.onboarding.data.QrCredentials
-import cloud.shoplive.onboarding.data.missionOf
 import cloud.shoplive.onboarding.demo.DemoConfigurationFactory
 import cloud.shoplive.onboarding.demo.DemoDefaults
 import cloud.shoplive.onboarding.demo.DemoLabels
 import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
 import cloud.shoplive.onboarding.integration.ShopliveFailure
 import cloud.shoplive.onboarding.integration.ShopliveInitializer
+import cloud.shoplive.onboarding.integration.ShopliveNudgePreview
 import cloud.shoplive.onboarding.integration.ShoplivePlayerEventLogger
 import cloud.shoplive.onboarding.integration.ShoplivePlayerLauncher
 import cloud.shoplive.onboarding.integration.ShopliveStudioLauncher
 import cloud.shoplive.onboarding.integration.ShopliveUserSetup
+import cloud.shoplive.player.ShoplivePlayer
+import cloud.shoplive.player.ShoplivePlayerDelegate
+import cloud.shoplive.player.ShoplivePlayerView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,6 +60,8 @@ class MainViewModel : ViewModel() {
         val askAuthMethod: Boolean = false,
         /** Whether the fake push banner is showing. */
         val showPushBanner: Boolean = false,
+        /** Whether the inline-preview card is asking native or hybrid. */
+        val askInlineMode: Boolean = false,
         val devSheetTab: DevSheetTab? = null,
         val message: String? = null,
         /** Why the start screen rejected the input. */
@@ -77,11 +83,19 @@ class MainViewModel : ViewModel() {
      * app. Note what each one keeps on this side: routing (the app's Activity),
      * localized text (the app's resources), mission progress (demo-only state).
      */
-    private val playerDelegate = ShoplivePlayerEventLogger(
+    private val playerDelegate = newPlayerDelegate()
+
+    /**
+     * The nudge gets its own instance per session (see [newNudgeSession]): the SDK
+     * keeps the delegate it was given, and the failure counters inside are per
+     * session. Same callbacks, so the log and progress see one stream either way.
+     */
+    private fun newPlayerDelegate() = ShoplivePlayerEventLogger(
         onNavigation = { url -> ProductRouter.open(url) },
         onFailure = { failure -> reportFailure(failure) },
-        onMilestone = { milestone -> progress.record(milestone) },
+        onMilestone = { milestone, player -> progress.record(milestone, player) },
         couponMessage = { DemoContainer.string(R.string.coupon_issued) },
+        onShare = { chooser -> ProductRouter.share(chooser) },
     )
 
     init {
@@ -236,46 +250,56 @@ class MainViewModel : ViewModel() {
 
     // ── Running a mission ────────────────────────────────────────────────────
 
+    /** The demo-owned screens a card can lead to. The SDK's own screens have no route. */
+    enum class Destination { NUDGE, FEED, HYBRID }
+
     /**
-     * @return true when the caller should navigate to the feed screen (Mission 4).
+     * Runs a card. Every path that starts a player goes through
+     * [cloud.shoplive.onboarding.data.MissionProgress.startMission], which records the
+     * mission and the player it started — the only way a milestone gets credited.
+     *
+     * @return the screen the caller should navigate to, or null to stay on the list.
      */
-    fun runMission(activity: Activity, number: Int): Boolean {
-        val mission = missionOf(number)
+    fun runMission(activity: Activity, mission: Mission): Destination? {
         val lock = lockReason(mission)
         if (lock != null) {
             showMessage(lock)
-            return false
+            return null
         }
-
-        progress.startMission(number)
 
         return when (mission.run) {
             MissionRun.PLAYER -> {
                 openSheetFor(mission)
-                launchPlayer(activity)
-                false
+                launchPlayer(activity, mission.id)
+                null
+            }
+
+            // The nudge starts on its own screen, once that screen is showing.
+            MissionRun.NUDGE -> {
+                _state.update { it.copy(devSheetTab = null) }
+                Destination.NUDGE
             }
 
             MissionRun.DEEP_LINK -> {
                 // No dedicated screen — a banner over the list.
                 _state.update { it.copy(showPushBanner = true, devSheetTab = null) }
-                false
+                null
             }
 
             MissionRun.AUTH -> {
                 _state.update { it.copy(askAuthMethod = true, devSheetTab = null) }
-                false
+                null
             }
 
-            MissionRun.FEED -> {
-                openSheetFor(mission)
-                true
+            MissionRun.INLINE -> {
+                _state.update { it.copy(askInlineMode = true, devSheetTab = null) }
+                null
             }
 
             MissionRun.STUDIO -> {
                 openSheetFor(mission)
                 launchStudio(activity)
-                false
+                null
             }
         }
     }
@@ -284,12 +308,18 @@ class MainViewModel : ViewModel() {
         _state.update { it.copy(devSheetTab = mission.openSheet) }
     }
 
-    private fun launchPlayer(activity: Activity, referrerOverride: String? = null) {
+    private fun launchPlayer(
+        activity: Activity,
+        mission: MissionId,
+        referrerOverride: String? = null,
+        campaignKey: String = effectiveCampaignKey(),
+        delegate: ShoplivePlayerDelegate = playerDelegate,
+    ): ShoplivePlayer = progress.startMission(mission) {
         val options = DemoOptionsStore.current
         ShoplivePlayerLauncher.start(
             activity = activity,
-            campaignKey = effectiveCampaignKey(),
-            delegate = playerDelegate,
+            campaignKey = campaignKey,
+            delegate = delegate,
             // Demo-only assembly: every options-tab field at once. A customer app
             // would pass one of the ShoplivePlayerPresets instead.
             configuration = DemoConfigurationFactory.from(options),
@@ -297,18 +327,19 @@ class MainViewModel : ViewModel() {
         )
     }
 
-    /** The options tab's "replay with these options". */
+    /** The options tab's "replay with these options" — the UI customization mission. */
     fun replayWithCurrentOptions(activity: Activity) {
         if (effectiveCampaignKey().isBlank()) {
             showMessage(DemoContainer.string(R.string.msg_no_campaign_key))
             return
         }
         _state.update { it.copy(devSheetTab = null) }
-        progress.startMission(7)
-        launchPlayer(activity)
+        launchPlayer(activity, MissionId.UI)
     }
 
     private fun launchStudio(activity: Activity) {
+        // The studio never hands back a player; LIVE is credited by its own callback.
+        progress.startMission(MissionId.STUDIO)
         val started = ShopliveStudioLauncher.start(
             activity = activity,
             campaignKey = effectiveCampaignKey(),
@@ -318,6 +349,51 @@ class MainViewModel : ViewModel() {
         )
         if (!started) showMessage(DemoContainer.string(R.string.msg_studio_not_started))
     }
+
+    // ── Nudge preview ────────────────────────────────────────────────────────
+
+    /** One nudge session's delegate: a fresh logger wrapped in the session recorder. */
+    fun newNudgeSession(): ShopliveNudgePreview.Session = ShopliveNudgePreview.Session(
+        delegate = newPlayerDelegate(),
+        closeWhenNotLive = DemoOptionsStore.current.closeNudgeWhenNotLive,
+    )
+
+    /**
+     * Starts the nudge with the two PREVIEW presets — not the options tab, whose
+     * values are for full-screen playback.
+     */
+    fun startNudge(activity: Activity, session: ShopliveNudgePreview.Session): ShoplivePlayer =
+        progress.startMission(MissionId.NUDGE) {
+            ShopliveNudgePreview.start(
+                activity = activity,
+                campaignKey = effectiveCampaignKey(),
+                session = session,
+            )
+        }
+
+    // ── Inline preview ───────────────────────────────────────────────────────
+
+    fun dismissInlineChoice() = _state.update { it.copy(askInlineMode = false) }
+
+    /**
+     * Native way: the feed screen creates its embedded view through here, so the view
+     * it gets back is recorded as the inline mission's player before it plays.
+     */
+    fun startInlineEmbed(create: () -> ShoplivePlayerView): ShoplivePlayerView =
+        progress.startMission(MissionId.INLINE, create)
+
+    /**
+     * Hybrid way: a key the web list handed over through the bridge, already
+     * validated and on the main thread. Plays like the first mission — full screen.
+     * [wrap] lets the hybrid page watch its own session (double-tap guard) while the
+     * log and progress still get every event through the shared delegate.
+     */
+    fun playFromHybrid(
+        activity: Activity,
+        campaignKey: String,
+        wrap: (ShoplivePlayerDelegate) -> ShoplivePlayerDelegate,
+    ): ShoplivePlayer =
+        launchPlayer(activity, MissionId.INLINE, campaignKey = campaignKey, delegate = wrap(playerDelegate))
 
     // ── Deep link ────────────────────────────────────────────────────────────
 
@@ -343,8 +419,7 @@ class MainViewModel : ViewModel() {
         }
         // Cold-start safety — make sure initialization finished before playing.
         ShopliveInitializer.initializeIfNeeded(activity, accessKey)
-        progress.startMission(2)
-        launchPlayer(activity, referrerOverride = link.referrer)
+        launchPlayer(activity, MissionId.DEEPLINK, referrerOverride = link.referrer)
     }
 
     // ── Auth method ──────────────────────────────────────────────────────────
@@ -357,8 +432,7 @@ class MainViewModel : ViewModel() {
         if (applied != method) {
             showMessage(DemoContainer.string(R.string.msg_token_needs_jwt))
         }
-        progress.startMission(3)
-        launchPlayer(activity)
+        launchPlayer(activity, MissionId.USER)
     }
 
     /**

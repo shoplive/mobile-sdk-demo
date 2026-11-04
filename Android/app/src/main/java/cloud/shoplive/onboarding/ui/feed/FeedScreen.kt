@@ -51,7 +51,7 @@ import cloud.shoplive.player.ShoplivePlayerType
 import cloud.shoplive.player.ShoplivePlayerView
 
 /**
- * Mission 4 — embedded in one of the app's own screens.
+ * Inline-preview mission, native way — embedded in one of the app's own screens.
  *
  * `ShoplivePlayerView` goes straight into the app layout. **The app owns only the
  * layout**; control, events and PIP use the **same API** as full screen
@@ -75,6 +75,8 @@ import cloud.shoplive.player.ShoplivePlayerView
 fun FeedScreen(
     delegate: ShoplivePlayerDelegate,
     campaignKey: String,
+    /** Wraps creation so the demo records this view as the mission's player first. */
+    startEmbedded: (create: () -> ShoplivePlayerView) -> ShoplivePlayerView,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -112,18 +114,20 @@ fun FeedScreen(
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = { _ ->
-                        createEmbeddedPlayer(
-                            activity = activity,
-                            lifecycleOwner = lifecycleOwner,
-                            campaignKey = campaignKey,
-                            delegate = delegate,
-                            // The demo keeps the options tab in charge of every
-                            // field, forcing PREVIEW for the inline case. A customer
-                            // app would use ShoplivePlayerPresets.embeddedPreview().
-                            configuration = DemoConfigurationFactory.from(
-                                DemoOptionsStore.current.copy(type = ShoplivePlayerType.PREVIEW)
-                            ),
-                        )
+                        startEmbedded {
+                            createEmbeddedPlayer(
+                                activity = activity,
+                                lifecycleOwner = lifecycleOwner,
+                                campaignKey = campaignKey,
+                                delegate = delegate,
+                                // The demo keeps the options tab in charge of every
+                                // field, forcing PREVIEW for the inline case. A customer
+                                // app would use ShoplivePlayerPresets.embeddedPreview().
+                                configuration = DemoConfigurationFactory.from(
+                                    DemoOptionsStore.current.copy(type = ShoplivePlayerType.PREVIEW)
+                                ),
+                            )
+                        }
                     },
                     onRelease = { view -> releaseEmbeddedPlayer(view) },
                 )

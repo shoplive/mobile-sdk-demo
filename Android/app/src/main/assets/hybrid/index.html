@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+  Hybrid inline preview (SMV-1922) — a stand-in for your web list.
+
+  A real page draws the list with the Web SDK (cloud.shoplive.setOverall) and gets
+  the campaignKey from ON_CLICK_CAMPAIGN_LIST_ITEM. This bundled page skips the Web
+  SDK and keeps only the guide's step-1 branching code, so the demo needs no hosting.
+
+  The app passes ?campaignKey=…&lang=… (URL-encoded); the page reads them with
+  URLSearchParams and never writes them into script text.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shoplive hybrid list</title>
+  <style>
+    body { font-family: -apple-system, Roboto, sans-serif; margin: 0; padding: 12px; background: #f6f6f8; color: #111; }
+    h1 { font-size: 17px; margin: 4px 0 2px; }
+    p.note { font-size: 12px; color: #666; margin: 0 0 12px; }
+    .card { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 14px;
+            padding: 12px; margin-bottom: 10px; border: 0; width: 100%; text-align: left; font: inherit; }
+    .thumb { width: 64px; height: 64px; border-radius: 10px; background: #ff2d55; color: #fff;
+             display: flex; align-items: center; justify-content: center; font-weight: 800; flex: none; }
+    .thumb.test { background: #888; }
+    .title { font-size: 14px; font-weight: 700; }
+    .sub { font-size: 12px; color: #666; word-break: break-all; }
+    #status { font-size: 12px; color: #1f6feb; min-height: 16px; margin: 8px 0; }
+    a { color: #1f6feb; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h1 id="heading"></h1>
+  <p class="note" id="note"></p>
+
+  <button class="card" id="live">
+    <span class="thumb">LIVE</span>
+    <span><span class="title" id="liveTitle"></span><br><span class="sub" id="liveKey"></span></span>
+  </button>
+
+  <button class="card" id="empty">
+    <span class="thumb test">“ ”</span>
+    <span><span class="title" id="emptyTitle"></span><br><span class="sub" id="emptySub"></span></span>
+  </button>
+
+  <button class="card" id="object">
+    <span class="thumb test">{ }</span>
+    <span><span class="title" id="objectTitle"></span><br><span class="sub" id="objectSub"></span></span>
+  </button>
+
+  <div id="status"></div>
+  <a id="external" href="https://www.shoplive.cloud/"></a>
+
+  <script>
+    var APP_INTERFACE = "ShopLiveAppInterface";
+    var params = new URLSearchParams(window.location.search);
+    var campaignKey = params.get("campaignKey") || "";
+
+    var TEXT = {
+      en: { heading: "Live now", note: "A web list inside the app. Tapping a card sends one campaignKey to the native player.",
+            live: "Summer sale live", empty: "Test · send an empty key", emptySub: "The app ignores it and logs why.",
+            object: "Test · send a non-string", objectSub: "Shows what the JS-to-Java conversion delivers.",
+            external: "External link → opens in the browser, not here",
+            noApp: "No app interface — in a browser the Web SDK modal player would open here.",
+            sent: "Sent to the app: " },
+      ko: { heading: "지금 방송 중", note: "앱 안의 웹 목록입니다. 카드를 탭하면 campaignKey 하나가 네이티브 플레이어로 넘어갑니다.",
+            live: "여름 세일 라이브", empty: "테스트 · 빈 키 보내기", emptySub: "앱은 무시하고 이유를 로그에 남깁니다.",
+            object: "테스트 · 문자열이 아닌 값 보내기", objectSub: "JS→Java 변환이 무엇을 넘기는지 확인합니다.",
+            external: "외부 링크 → 여기가 아니라 브라우저로 열립니다",
+            noApp: "앱 인터페이스 없음 — 일반 브라우저라면 여기서 Web SDK 모달 플레이어가 열립니다.",
+            sent: "앱으로 보냄: " },
+      ja: { heading: "配信中", note: "アプリ内の Web 一覧です。カードをタップすると campaignKey がひとつネイティブプレイヤーへ渡ります。",
+            live: "サマーセール ライブ", empty: "テスト · 空のキーを送る", emptySub: "アプリは無視し、理由をログに残します。",
+            object: "テスト · 文字列以外を送る", objectSub: "JS→Java 変換が何を渡すか確認します。",
+            external: "外部リンク → ここではなくブラウザで開きます",
+            noApp: "アプリのインターフェースなし — 通常のブラウザならここで Web SDK のモーダルプレイヤーが開きます。",
+            sent: "アプリへ送信: " }
+    };
+    var t = TEXT[params.get("lang")] || TEXT.en;
+
+    function setText(id, value) { document.getElementById(id).textContent = value; }
+    setText("heading", t.heading);
+    setText("note", t.note);
+    setText("liveTitle", t.live);
+    setText("liveKey", "campaignKey: " + (campaignKey || "(none)"));
+    setText("emptyTitle", t.empty);
+    setText("emptySub", t.emptySub);
+    setText("objectTitle", t.object);
+    setText("objectSub", t.objectSub);
+    setText("external", t.external);
+
+    // The guide's step 1: hand the value to whichever native interface exists.
+    function sendToApp(value) {
+      if (window[APP_INTERFACE]) {
+        window[APP_INTERFACE].postMessage(value);                          // Android
+      } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers[APP_INTERFACE]) {
+        window.webkit.messageHandlers[APP_INTERFACE].postMessage(value);   // iOS
+      } else {
+        setText("status", t.noApp);
+        return;
+      }
+      setText("status", t.sent + String(value));
+    }
+
+    document.getElementById("live").onclick = function () { sendToApp(campaignKey); };
+    document.getElementById("empty").onclick = function () { sendToApp("   "); };
+    document.getElementById("object").onclick = function () { sendToApp({ campaignKey: campaignKey }); };
+  </script>
+</body>
+</html>

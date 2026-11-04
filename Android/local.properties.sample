@@ -11,7 +11,7 @@
 # ── Demo keys for "take a tour" mode (optional) ──────────────────────────────
 # Left empty, the app falls back to the demo account checked into the repo
 # (demo/DemoDefaults.kt). Set them to run the missions against your own account.
-# Without streamToken only Mission 8 (going live) stays locked.
+# Without streamToken only the go-live mission stays locked.
 shoplive.demo.accessKey=
 shoplive.demo.campaignKey=
 shoplive.demo.streamToken=
