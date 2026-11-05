@@ -67,7 +67,7 @@ static func start(campaignKey: String,
 }
 ```
 
-**Register your observers in `beforePlay`, before `play` runs** — a nudge reports its first events (entering the small window, playback) as soon as it starts, and a listener attached after `start` returns can miss them. The demo keeps the player and subscribes to its milestones there: `NudgePreview.start(…, beforePlay: { player in self.adopt(player) })`.
+**Register your observers in `beforePlay`, before `play` runs** — a nudge reports its first events (entering the small window, playback) as soon as it starts, and a listener attached after `start` returns can miss them. The demo does its setup there: it registers the controller with `DemoPlayerDelegate.adopt(_:)` ([why](known-issues.md#the-delegates-player-is-not-your-view-controller-ios)), keeps the player, and subscribes to its milestones.
 
 ### Android
 

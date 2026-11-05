@@ -83,6 +83,7 @@ final class FeedDemoViewController: UIViewController {
                 EventLog.shared.log(.error, "demo: expand — the embed has not started playing yet, nothing to expand")
                 return
             }
+            DemoPlayerDelegate.adopt(player)
             DevSheetViewController.recordSession(player, presentedAs: player, for: .inline)
         }
     }

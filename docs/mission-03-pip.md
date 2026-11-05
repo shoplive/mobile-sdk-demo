@@ -149,7 +149,7 @@ ShoplivePlayerLauncher.start(
 | If in-App PIP is off | **Silently plays full screen** (guide) — `applyStartStyle` logs that combination | Not documented — `ShoplivePlayerLauncher.start` logs it as an error; **unverified on a device** |
 | `intent()` | — | An Intent from `ShoplivePlayer.intent()` always opens full screen and ignores this |
 
-Both platforms start in **in-App PIP** — the floating window the SDK owns.
+Both platforms start in **in-App PIP** — the floating window the SDK owns. On iOS, do not also `present` the player, and **keep a strong reference to it until `.closed`** — see [below](#-ios-present-the-player-itself--never-embed-it-as-a-child). ⚠️ *Unverified on a device* ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i9).
 
 ---
 
@@ -188,35 +188,38 @@ The reason is structural: by the time a view's window becomes `nil`, the window 
 
 ---
 
-## ⚠️ iOS: the full-screen host must step out of the way
+## ⚠️ iOS: present the player itself — never embed it as a child
 
 This one produces a dramatic-looking bug, and it's worth understanding before you ship.
 
-**What happens:** on promotion to PIP, the render surface moves to a floating container over the app window. **The original full-screen view is left with nothing in it.** Leave that view visible and the user sees the entire screen covered in black with a small PIP window floating on top.
+**What happens:** the SDK takes its modal down on in-App PIP only when `ShoplivePlayerViewController` **is itself the presented modal** (SDK 3.0.4). Put it inside your own full-screen host as a child and it just floats the video: your host stays up, the screen behind the small window is black, every touch is swallowed, and swiping down into PIP does not work.
 
-**The fix, as implemented in [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift):**
+**The fix:** `present(player, animated: true)`. The modal goes down on PIP — the screen underneath is usable — and comes back when the viewer returns. There is nothing to hide, restore or poll.
 
-1. **Present the host as `.overFullScreen`, not `.fullScreen`.** `.fullScreen` detaches the presenter's view from the hierarchy, so hiding your host reveals nothing behind it.
-2. **Hide the host when PIP is entered:**
+**Need your own controls on top?** Subclass the player and add them to its view; they go away and come back with the modal. That's what [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift) does:
 
 ```swift
-// In your delegate (DemoPlayerDelegate) — one channel, always with the player that sent it:
-case .stateChanged(let state):
-    publish(.pipStateChanged(isActive: state == .inAppPIP), from: player)
-
-// In the host — subscribe to *its own* player only, so a late event from an old session
-// cannot hide or show a newer host:
-milestoneObserver = DemoPlayerDelegate.observeMilestones(of: player) { [weak self] _, milestone in
-    if case .pipStateChanged(let isActive) = milestone { self?.setPipPresentation(isActive) }
+final class DemoPlayerViewController: ShoplivePlayerViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(controls)            // after the SDK's player view, so hit-tested above it
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.bringSubviewToFront(controls)   // even if the SDK re-adds its player view later
+    }
 }
-func setPipPresentation(_ isPip: Bool) { /* hide/show the host */ }
 ```
 
-Now the mission list is visible behind the floating PIP window — the correct UX. `.closed` is a separate milestone (`PlayerMilestone.closed(reason:)`): closing the PIP window ends the session, which is *not* a return to full screen, so the host must not show itself again.
+Three more rules follow from the same behavior:
 
-3. **Add a polling safety net for the return trip.** `stateChanged` may not fire when PIP exits, so the demo polls `isInPictureInPicture` every 0.5 s.
+- **Starting in PIP: do not present, and hold the player strongly until `.closed`.** Presenting as well would race the SDK's own dismiss, but an unpresented player has no other owner: the SDK takes hold of it only after entering PIP succeeds, so one the app does not hold is released before it plays (reproduced on the simulator with 3.0.4). The demo uses `DemoPlayerViewController.keepAliveUntilClosed()`; with `pip.isInAppPipEnabled` off it takes the normal `present` path instead.
+- **Take down anything presented from the player before entering PIP.** With a sheet up, the SDK's dismiss takes down the sheet instead of the player. The demo's developer sheet dismisses itself first, then toggles PIP.
+- **Do not `reload()` a floating player.** `reload()` is stop + play, and `stop()` lets go of the floating player. The developer sheet's `reload()` is skipped during PIP.
 
-**Measured:** on the tested build, `stateChanged` fires **only on `.inAppPIP` entry** — not for playing/loading transitions. So `stateChanged` is reliable enough for detecting PIP entry, and nothing else. See [Known Issues](known-issues.md#statechanged-never-fires-ios).
+`.closed` is a separate milestone (`PlayerMilestone.closed(reason:)`): closing the PIP window ends the session, which is *not* a return to full screen. If your own UI follows PIP, keep the two apart — see [Known Issues](known-issues.md#closing-the-pip-window-is-closed-not-a-return-from-pip-ios). `stateChanged` is reliable for PIP and teardown transitions only, not as a "playback started" signal: [Known Issues](known-issues.md#statechanged-never-fires-ios).
+
+> ⚠️ **Unverified on a real device:** this path is SDK 3.0.4 behavior as the demo relies on it, and is still on the manual checklist — [Known Issues](known-issues.md#embedding-the-player-as-a-child-breaks-in-app-pip-ios).
 
 ---
 

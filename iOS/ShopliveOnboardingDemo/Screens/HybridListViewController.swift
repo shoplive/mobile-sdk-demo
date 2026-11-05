@@ -65,6 +65,7 @@ final class HybridListViewController: UIViewController {
                                                 options: DemoConfigBuilder.makePlayOptions(),
                                                 configuration: DemoConfigBuilder.makeConfiguration(.fullScreenLive),
                                                 delegate: DemoPlayerDelegate.shared)
+            DemoPlayerDelegate.adopt(player)
             self.openedPlayer = player        // at once — repeated taps are judged by this player
             DevSheetViewController.recordSession(player, presentedAs: player, for: .inline)
         }

@@ -2,7 +2,7 @@
 //  PlayerHostOverlay.swift  (S3 · what the demo app layers on top of the running screen)
 //  ShopliveOnboardingDemo — demo harness (not a copy target)
 //
-//  A host that **embeds the SDK player as a child VC**, with just two demo-only controls on top:
+//  The SDK player, subclassed, with just two demo-only controls on top:
 //    · ‹ List      — end the session and go back to the list
 //    · ⌗ Developer — the developer sheet (logs / options)
 //
@@ -10,40 +10,49 @@
 //    close button disappears along with it. With no way out the user is stuck on a black screen, so
 //    these two controls must keep working regardless of the SDK's UI.
 //
-//  ★ Why a child VC: so the controls sit above the player **deterministically**.
-//    With the host view's subviews ordered [player.view, controls], controls is the last sibling and
-//    is therefore always hit-tested first. Whatever the SDK puts up internally (the overlay web view
-//    and so on) lives **inside** player.view and cannot beat that ordering. Unlike a separate UIWindow
-//    or an addSubview approach, there is no layer race.
+//  ★ Why a subclass and not a child VC: the SDK takes its modal down on in-App PIP only when the player
+//    is **presented as itself**. Embedded as a child it just floats the video and leaves the full-screen
+//    modal in place — black, and swallowing every touch, so the app behind the small window is unusable.
+//    Presented directly, the modal goes away on PIP and comes back on return, and these controls go and
+//    come back with it — nothing here has to step aside.
+//
+//  ★ Why the controls stay on top: the view's subviews are [SDK player view, controls]. Whatever the SDK
+//    puts up internally (the overlay web view and so on) lives **inside** the SDK player view and cannot
+//    beat that ordering.
 
 import UIKit
 import ShoplivePlayerSDK
 
-/// A host that embeds the SDK player as a child and layers the demo controls on top.
-final class PlayerHostViewController: UIViewController {
+/// The SDK player with the demo controls layered on top. Present it directly — never embed it.
+final class DemoPlayerViewController: ShoplivePlayerViewController {
 
-    let player: ShoplivePlayerViewController
+    /// A player that starts in the small window is never presented, and nothing else owns it until it
+    /// is floating — the SDK only takes hold after entering PIP succeeds — so without this it is released
+    /// before it plays. One slot: there is one session at a time, and the next start replaces it.
+    private static var startedInSmallWindow: DemoPlayerViewController?
 
-    private let onClose: () -> Void
-    private let onDevSheet: (PlayerHostViewController) -> Void
+    func keepAliveUntilClosed() { Self.startedInSmallWindow = self }
 
-    init(player: ShoplivePlayerViewController,
-         onClose: @escaping () -> Void,
-         onDevSheet: @escaping (PlayerHostViewController) -> Void) {
-        self.player = player
+    private let onClose: (DemoPlayerViewController) -> Void
+    private let onDevSheet: (DemoPlayerViewController) -> Void
+    private var controls: UIView?
+    private var milestoneObserver: NSObjectProtocol?
+
+    init(campaignKey: String,
+         options: ShoplivePlayOptions,
+         configuration: ShoplivePlayerConfiguration,
+         onClose: @escaping (DemoPlayerViewController) -> Void,
+         onDevSheet: @escaping (DemoPlayerViewController) -> Void) {
         self.onClose = onClose
         self.onDevSheet = onDevSheet
-        super.init(nibName: nil, bundle: nil)
-        // ★ .overFullScreen, not .fullScreen.
-        //   When we move to in-App PIP this host has to hide itself (see setPipPresentation below),
-        //   but .fullScreen detaches the presenter's view (the list) from the hierarchy once the
-        //   presentation completes — so hiding the host would leave nothing behind it but black.
-        modalPresentationStyle = .overFullScreen
+        super.init(campaignKey: campaignKey, options: options, configuration: configuration)
 
-        // Only this host's player (`===`) — a late `.closed` from a previous session must not tear
-        // down a newer host (SMV-1922 S39).
-        milestoneObserver = DemoPlayerDelegate.observeMilestones(of: player) { [weak self] _, milestone in
-            self?.handle(milestone)
+        // Only this player (`===`) — a late `.closed` from a previous session must not touch a newer
+        // session's record (SMV-1922 S39).
+        milestoneObserver = DemoPlayerDelegate.observeMilestones(of: self) { [weak self] _, milestone in
+            guard let self, case .closed = milestone else { return }
+            if DevSheetViewController.activePlayer === self { DevSheetViewController.activePlayer = nil }
+            if Self.startedInSmallWindow === self { Self.startedInSmallWindow = nil }
         }
     }
 
@@ -51,105 +60,16 @@ final class PlayerHostViewController: UIViewController {
         if let milestoneObserver { NotificationCenter.default.removeObserver(milestoneObserver) }
     }
 
-    private var milestoneObserver: NSObjectProtocol?
-
-    /// The PIP-exit safety net polls this often (existing behavior, moved here from the list screen).
-    private static let pipExitPollInterval: TimeInterval = 0.5
-
-    private func handle(_ milestone: PlayerMilestone) {
-        switch milestone {
-        case .pipStateChanged(let isActive):
-            // On PIP promotion, step out of the way (prevents the black-screen cover) and restore on
-            // return. As a safety net for a missed exit signal, also poll isInPictureInPicture briefly.
-            setPipPresentation(isActive)
-            if isActive { watchPipExit() }
-
-        case .closed:
-            // Session end — including when the user closes the PIP window, which is *not* a return to
-            // full screen. Latching it stops the poll from un-hiding the host over a dead player; the
-            // SDK dismisses the host on its own, and the list reloads in viewWillAppear.
-            markSessionClosed()
-            if DevSheetViewController.activePlayer === player { DevSheetViewController.activePlayer = nil }
-
-        case .playbackReached, .requestReceived, .campaignStatusChanged, .fatalError:
-            break
-        }
-    }
-
-    /// Safety net for when PIP return does not arrive via stateChanged.
-    /// Shows the host again once `isInPictureInPicture` goes back to false.
-    private func watchPipExit() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.pipExitPollInterval) { [weak self] in
-            guard let self, self.viewIfLoaded?.window != nil || self.isViewLoaded else { return }
-            // The session ended while in PIP (the PIP window was closed). Stop watching — restoring
-            // now is what produced the full-screen black flash.
-            if self.isSessionClosed || self.isBeingDismissed || self.player.state == .closed { return }
-
-            if self.player.isInPictureInPicture {
-                self.watchPipExit()                 // still in PIP — keep watching
-            } else {
-                self.setPipPresentation(false)      // returned — restore the host
-            }
-        }
-    }
-
-    /// Set once the SDK reports the session ended. From then on the host must never make itself
-    /// visible again.
-    private(set) var isSessionClosed = false
-
-    /// Steps the host out of the way depending on whether in-App PIP is active.
-    ///
-    /// On promotion to PIP the render surface moves into a **floating container above the app
-    /// window**, leaving nothing in this host's full-screen view. Left alone, the whole screen is
-    /// covered in black with just the small PIP window on top (the symptom users reported). So we hide
-    /// the host while PIP is active, letting the list screen behind it show through, and restore it on
-    /// return.
-    func setPipPresentation(_ pipActive: Bool) {
-        guard viewIfLoaded != nil else { return }
-        // Stepping aside is always safe. Coming back is only valid while the session is alive: after
-        // the session closes (e.g. the user closed the PIP window) the player has no render surface,
-        // so un-hiding would flash this host's black background across the whole screen until the
-        // dismissal completes.
-        if !pipActive, isSessionClosed || isBeingDismissed { return }
-        view.isHidden = pipActive
-    }
-
-    /// Latches "the session is over" so no in-flight restore can un-hide the host.
-    ///
-    /// Deliberately does **not** touch `isHidden`, because the correct visibility differs by path and
-    /// in both cases it is already right:
-    ///   · closed from PIP        — the host is hidden, so it stays hidden and the SDK dismisses an
-    ///                              invisible host. No flash.
-    ///   · closed from full screen — the host is visible, so it stays visible and dismisses with the
-    ///                              normal slide-down. Hiding it here would make the player vanish
-    ///                              instantly instead of animating out.
-    func markSessionClosed() {
-        isSessionClosed = true
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
 
-        // 1) Embed the SDK player as a child — playback starts automatically in the player's
-        //    viewDidAppear.
-        addChild(player)
-        player.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(player.view)
-        NSLayoutConstraint.activate([
-            player.view.topAnchor.constraint(equalTo: view.topAnchor),
-            player.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            player.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            player.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        ])
-        player.didMove(toParent: self)
-
-        // 2) Demo controls — added after player.view, so they are always hit-tested above it.
+        // Added after the SDK's player view, so they are hit-tested above it.
         let back = DemoFab(L("player.overlay.back"))
         let dev = DemoFab(L("player.overlay.dev"))
-        back.addAction(UIAction { [weak self] _ in self?.onClose() }, for: .touchUpInside)
+        back.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.onClose(self)
+        }, for: .touchUpInside)
         dev.addAction(UIAction { [weak self] _ in
             guard let self else { return }
             self.onDevSheet(self)
@@ -169,13 +89,12 @@ final class PlayerHostViewController: UIViewController {
             controls.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -14),
             badge.heightAnchor.constraint(equalToConstant: 18),
         ])
+        self.controls = controls
     }
 
-    /// Keeps the controls the top-most sibling even if the SDK adds its overlay web view later.
+    /// Keeps the controls the top-most sibling even if the SDK re-adds its player view later.
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if let controls = view.subviews.last, controls !== player.view { return }
-        // If player.view ended up last (i.e. the SDK reordered), bring the controls forward again.
-        view.subviews.forEach { if $0 !== player.view { view.bringSubviewToFront($0) } }
+        if let controls { view.bringSubviewToFront(controls) }
     }
 }

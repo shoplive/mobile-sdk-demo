@@ -228,7 +228,16 @@ final class DevSheetViewController: UIViewController {
             guard let player = Self.activePlayer else {
                 EventLog.shared.log(.error, "reload() — " + L("dev.error.noPlayer")); return
             }
+            // reload() is stop + play: stop() lets go of a floating player, which then has nothing
+            // holding it. Return to full screen first.
+            guard !player.isInPictureInPicture else {
+                EventLog.shared.log(.error, "reload() — skipped while in PIP; return to full screen first")
+                return
+            }
             player.reload()
+            // reload() is stop + play, and the stop reports `.closed` — which clears this record while
+            // the session lives on. Without it the gate would see no session and open a second one.
+            Self.activePlayer = player
             EventLog.shared.log(.sdk, "reload() — restart the current campaign (stop→play)")
         })
         contentStack.addArrangedSubview(actionRow("send(command:)", L("dev.action.send")) {
@@ -237,11 +246,13 @@ final class DevSheetViewController: UIViewController {
             }
             DemoPlayerDelegate.sendHighlightProduct(sku: "A-1024", to: player)
         })
-        contentStack.addArrangedSubview(actionRow("enter/exitPictureInPicture()", L("dev.action.toggle")) {
+        contentStack.addArrangedSubview(actionRow("enter/exitPictureInPicture()", L("dev.action.toggle")) { [weak self] in
             guard let player = Self.activePlayer else {
                 EventLog.shared.log(.error, "PIP — " + L("dev.error.noPlayer")); return
             }
-            PipSetup.toggle(player)
+            // This sheet first: with it up, the SDK's dismiss on entering PIP would take down the sheet
+            // instead of the player, leaving the full-screen player behind the small window.
+            self?.dismiss(animated: true) { PipSetup.toggle(player) }
         })
 
         contentStack.addArrangedSubview(group(L("dev.group.advanced")))
@@ -540,32 +551,27 @@ extension DevSheetViewController {
                 }
                 return
             }
-            // The view controller that is actually presented: the player itself (deep link, hybrid) or
-            // the demo host it is embedded in (cards).
-            var root: UIViewController = current
-            while let parent = root.parent { root = parent }
-
             // Still arriving: keep the record and judge again once it is on screen (F1 b).
-            if root.isBeingPresented {
-                waitFor(root)
+            if current.isBeingPresented {
+                waitFor(current)
                 return
             }
             activePlayer = nil
 
-            if root.presentingViewController != nil {
-                if root.isBeingDismissed {
+            if current.presentingViewController != nil {
+                if current.isBeingDismissed {
                     // Already leaving ('‹ List', or the SDK closing itself): wait for that transition
                     // rather than dismissing twice.
-                    waitFor(root)
+                    waitFor(current)
                 } else {
                     // Same order as the '‹ List' button: end the session, then take the screen down. The
                     // dismiss completion is the "gone" signal (`.closed` is not — by then the SDK may
                     // already be dismissing on its own).
                     if current.state != .closed { current.stop() }
-                    root.presentingViewController?.dismiss(animated: false) { proceed("dismissed") }
+                    current.presentingViewController?.dismiss(animated: false) { proceed("dismissed") }
                 }
             } else if current.state != .closed {
-                // Floating but never presented (the nudge's small window): close() it and wait for its
+                // Floating with no modal (a player in PIP, the nudge's small window): close() it and wait for its
                 // own `.closed` — the PIP window has to be gone before the next session can promote (R3-1).
                 closedObserver = DemoPlayerDelegate.observeMilestones(of: current) { _, milestone in
                     if case .closed = milestone { proceed("closed") }
@@ -581,8 +587,8 @@ extension DevSheetViewController {
         run()
     }
 
-    /// Records `player` as the session on screen — and starts its mission — once `presented` (the
-    /// player itself, or the host it is embedded in) has finished appearing. Every presenting start
+    /// Records `player` as the session on screen — and starts its mission — once `presented` has
+    /// finished appearing. Every presenting start
     /// path goes through here, so the gate sees the same thing on every path: until then the
     /// presentation is in the window's chain and the gate waits for it (F1 a).
     static func recordSession(_ player: ShoplivePlayerViewController,

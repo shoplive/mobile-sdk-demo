@@ -321,44 +321,42 @@ On a campaign whose `campaignStatus` is `"ONAIR"` but whose egress all 404s (for
 
 ### Preventing a trapped (black screen) state
 If there is no stream the overlay cannot come up, and the SDK's own close button disappears with it, leaving no way out.
-So the demo uses a **host that holds the SDK player as a child VC** (`PlayerHostViewController` in
-`Screens/PlayerHostOverlay.swift`) and puts `‹ list` / `⌗ developer` on top of it as sibling views.
-The host view's subviews are ordered `[player.view, controls]`, so controls always hit-test first; whatever the SDK
-puts up internally lives inside `player.view` and cannot beat that ordering.
+So the demo presents `DemoPlayerViewController`, a **subclass of the SDK player** (`Screens/PlayerHostOverlay.swift`), and
+adds `‹ list` / `⌗ developer` to its view after the SDK's player view. The subviews are ordered `[SDK player view, controls]`,
+so controls always hit-test first; whatever the SDK puts up internally lives inside its player view and cannot beat that
+ordering.
 
-### In-app PIP — the host has to step aside ⚠️
-On promotion to PIP the render surface moves to a **floating container above the app window**, and nothing is left in
-the original full-screen view. Left alone, the whole screen goes black with just the small PIP window on top (the
-symptom users reported).
+### In-app PIP — present the player itself, never as a child ⚠️
+The SDK takes its modal down on in-App PIP only when the player **is itself the presented modal** (SDK 3.0.4). Embedded as
+a child of your own full-screen host it just floats the video and leaves that host up: the screen behind the small window
+is black (the symptom users reported), every touch is swallowed, and swiping down into PIP does not work.
 
 What the demo does:
-- Presents the host as `.overFullScreen` (`.fullScreen` detaches the presenter's view from the hierarchy, so hiding the host leaves nothing behind it).
-- On `stateChanged(.inAppPIP)`, hides the host via `PlayerHostViewController.setPipPresentation(true)` → the mission
-  list shows behind and only the PIP floats: correct UX.
-- Return may not arrive via `stateChanged`, so there is a safety net that polls `isInPictureInPicture` every 0.5s
-  (polling stops immediately when the session closes — see below).
+- Presents the player directly. The modal goes down on PIP, the mission list behind it is usable, and the modal comes back
+  on return — with the controls, which live in its view. Nothing hides, restores or polls.
+- With `presentationStyle = .pip` the card presents nothing, and **the app must hold the player strongly until `.closed`**: the SDK
+  takes hold of it only after entering PIP succeeds, so an unheld player is released before it plays (reproduced on the
+  simulator with 3.0.4). The demo uses `DemoPlayerViewController.keepAliveUntilClosed()`; with `pip.isInAppPipEnabled` off it
+  takes the normal present path.
+- The developer sheet's PIP toggle dismisses the sheet first — with a sheet up, the SDK's dismiss would take down the sheet
+  instead of the player. Its `reload()` is skipped during PIP: `stop()` lets go of a floating player.
 
-### The screen briefly went black when closing from the PIP window (fixed) ⚠️
+⚠️ **Unverified on a real device** — on the manual checklist. See
+[Known Issues](../docs/known-issues.md#embedding-the-player-as-a-child-breaks-in-app-pip-ios).
 
-**Symptom**: tapping close (X) on the PIP window covered the whole screen in black for a moment before dismissing.
+### Closing the PIP window is `.closed`, not a PIP exit ⚠️
 
-**Cause**: closing the PIP window does not deliver a PIP exit but **`stateChanged(.closed)` (session end)**.
-If the delegate folds every state into one boolean (`state == .inAppPIP`) and forwards that, `.closed` arrives as
-`false`, and the host that had stepped aside **becomes visible again over a player whose render surface is already
-gone**. At that moment the host's black background covers the screen, and the dismiss animation runs behind it.
+Closing the PIP window does not deliver a PIP exit but **`stateChanged(.closed)` (session end)**. If the delegate folds every
+state into one boolean (`state == .inAppPIP`) and forwards that, `.closed` arrives as `false`, and anything that restores on
+`false` acts on a player whose render surface is already gone. In the earlier host-based demo that showed as the host
+covering the screen in black for a moment.
 
-Measured values at the moment of closing: `inPip=false state=closed hostDismissing=true`
-— **the SDK dismisses the host itself**, so the host should simply have stayed out of the way.
+Measured on that earlier structure, at the moment of closing: `inPip=false state=closed hostDismissing=true` — **the SDK
+dismisses what it presented itself**, so the app should simply stay out of the way.
 
-**Fix**: session end and PIP exit are now separate. `ShopliveIntegration/DemoPlayerDelegate.swift` publishes `.closed`
-as its own milestone, `PlayerMilestone.closed(reason:)`, apart from `.pipStateChanged(isActive:)`, and the host latches it
-so that an in-flight return request cannot make it visible again. The host subscribes to its own player only
-(`DemoPlayerDelegate.observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot reach it.
-**`isHidden` is deliberately left alone** — closing from full screen must keep the existing slide-down animation, and
-in both paths the visibility state at that point is already correct.
-
-Verification: closing from PIP produces **no return call at all**, and tapping the PIP window to go back to full screen
-still works.
+`ShopliveIntegration/DemoPlayerDelegate.swift` therefore publishes `.closed` as its own milestone,
+`PlayerMilestone.closed(reason:)`, apart from `.pipStateChanged(isActive:)`. Listeners subscribe to their own player
+(`DemoPlayerDelegate.observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot reach them.
 
 ### When `stateChanged` actually does arrive (correction)
 

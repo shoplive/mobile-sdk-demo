@@ -117,8 +117,12 @@ final class NudgeProductViewController: UIViewController {
             // Owner and listener are registered before play() — no first signal goes unobserved (I3).
             NudgePreview.start(campaignKey: self.campaignKey,
                                over: self,
+                               configuration: DemoConfigBuilder.makeNudgeConfiguration(),
                                delegate: DemoPlayerDelegate.shared,
-                               beforePlay: { player in self.adopt(player) })
+                               beforePlay: { player in
+                                   DemoPlayerDelegate.adopt(player)
+                                   self.adopt(player)
+                               })
         }
     }
 

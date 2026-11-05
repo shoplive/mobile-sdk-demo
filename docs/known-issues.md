@@ -80,6 +80,21 @@ Without that, the demo's "verified" badge would never appear. **Never gate your 
 
 The one thing `stateChanged` *is* reliable for on iOS: `.inAppPIP` entry.
 
+### The delegate's `player` is not your view controller (iOS)
+
+**Status:** open · measured on the iOS simulator with SDK 3.0.4, not on a device · worked around in the demo
+
+**Symptom:** you compare the delegate's `player` with the `ShoplivePlayerViewController` you created, to keep only your own player's events — and nothing ever comes through. A screen that filters on its own player hears nothing, and a "was this my player?" check never passes.
+
+**Cause:** the view controller hands `delegate` to the `ShoplivePlayerView` inside it, and callbacks name **that view** as `player`. So `player === myViewController` is always false, even in a plain full-screen session. An embedded `ShoplivePlayerView` is different: there `player` is the view you hold.
+
+**What to do — one of these:**
+
+- **Do not compare.** If you only need to react to the event, use the callback as it is.
+- **Relay.** Give each view controller a small delegate that knows it and forwards every callback with the controller as the sender. That is `DemoPlayerDelegate.adopt(_:)` in [`DemoPlayerDelegate.swift`](../iOS/ShopliveIntegration/DemoPlayerDelegate.swift): call it in the same run-loop turn the controller is created, before playback can start. `delegate` is weak, so the controller keeps the relay itself.
+
+The demo adopts on every view-controller start path: cards, deep links, the feed's expand, the hybrid list, and the nudge (in `beforePlay`).
+
 ### No error event when a stream doesn't exist (Android)
 
 **Status:** open · reported to the SDK team
@@ -116,7 +131,7 @@ The same underlying situation, different symptom. On a campaign whose `campaignS
 - The original connection code (`connection Issue [34]`) survives only inside the `message` string — it is **not preserved as an `ErrorCode`**, so you can't branch on it.
 - It reports `isRecoverable: false` **while still retrying**, which contradicts the spec.
 
-**Demo behavior:** don't close the player; explain the reason **once per session**; keep the host-owned **‹ List** button as the escape route.
+**Demo behavior:** don't close the player; explain the reason **once per session**; keep the app-owned **‹ List** button as the escape route.
 
 ---
 
@@ -138,7 +153,7 @@ The demo leaves this visible rather than hiding it. **Don't design an iOS layout
 
 If the stream fails to resolve, the overlay web view never loads — and the SDK's own close button lives inside that overlay. The user is stranded on a black screen.
 
-**Mitigation** ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)): host the SDK player as a **child view controller** and add **‹ List** / **⌗ Developer** as sibling views. The host's subviews are ordered `[player.view, controls]`, so the controls always win hit-testing — whatever the SDK adds internally is inside `player.view` and can't beat that ordering.
+**Mitigation** ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)): subclass `ShoplivePlayerViewController`, add **‹ List** / **⌗ Developer** to its view after the SDK's player view, and present that subclass directly. The view's subviews are ordered `[SDK player view, controls]`, so the controls always win hit-testing — whatever the SDK adds internally lives inside its player view and can't beat that ordering. Do **not** add the controls by embedding the player as a child — see [below](#embedding-the-player-as-a-child-breaks-in-app-pip-ios).
 
 **If you ship a full-screen player, give the user an app-owned exit.** Don't rely solely on the SDK's close button.
 
@@ -164,32 +179,35 @@ The demo feed uses `Column + verticalScroll` instead. There is no "stay alive wh
 
 ## PIP behavior
 
-### The full-screen host must step aside (iOS)
+### Embedding the player as a child breaks in-App PIP (iOS)
 
-**Status:** mitigated in the demo — copy this
+**Status:** fixed in the demo — copy the structure, not the earlier one. ⚠️ **Unverified on a real device:** the direct-present path below is SDK 3.0.4 behavior as the demo now relies on it, and is still on the manual checklist.
 
-On promotion, the render surface moves to a floating container over the app window and **the original full-screen view is left empty.** Leave it visible and the user sees a black screen with a small PIP window on top. (This was a real user report.)
+**Symptom:** the player sits as a child view controller inside your own full-screen host. On entering in-App PIP the small window floats, but the full-screen modal stays: the screen behind the window is black (this was a real user report), every touch is swallowed so the app underneath cannot be used, and swiping down into PIP does not work either.
 
-**Mitigation, four parts:**
+**Cause (SDK 3.0.4):** the SDK takes its modal down on in-App PIP only when `ShoplivePlayerViewController` **is itself the presented modal**. As a child it just floats the video; the modal left on screen is your host, which the SDK knows nothing about.
 
-1. Present the host `.overFullScreen`, **not** `.fullScreen` — `.fullScreen` detaches the presenter's view, so hiding your host reveals nothing.
-2. On `stateChanged(.inAppPIP)` — in the demo, the `.pipStateChanged(isActive: true)` milestone of **this host's own player** — call `PlayerHostViewController.setPipPresentation(true)` to hide the host. Now the list screen shows behind the floating window.
-3. **Do not treat every non-`.inAppPIP` state as "returned from PIP"** — see the next entry. `.closed` means the session ended, and restoring the host on it is a bug.
-4. **Poll `isInPictureInPicture` every 0.5 s as a safety net**, and have the poll bail out once the session is closed.
+**Fix — present the player itself:**
 
-### Closing the PIP window flashes the host (iOS)
+1. **`present(player, animated: true)`, never `addChild`.** The modal goes down on PIP and comes back on return, so the app underneath is usable and there is nothing to hide, restore or poll.
+2. **Need controls on top? Subclass the player** and add them to its view, as [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift) does. They go away and come back with the modal.
+3. **Starting in PIP (`presentationStyle = .pip`): do not present, and hold the player strongly until `.closed`.** Presenting as well would race the SDK's own dismiss. But nothing else owns an unpresented player: the SDK takes hold of it only after entering PIP succeeds, so a player the app does not hold is released before it plays (reproduced on the simulator with 3.0.4). The demo keeps it with `DemoPlayerViewController.keepAliveUntilClosed()`. With `pip.isInAppPipEnabled` off there is no small window, so the demo takes the normal `present` path. Whether a device needs `present` for this start at all is still open — ⚠️ *Unverified*, [i9](#open-sdp-verify-markers-in-the-code).
+4. **Take down anything presented from the player before entering PIP.** With a sheet up, the SDK's dismiss on entering PIP takes down the sheet instead of the player, leaving the full-screen player behind the small window. The demo's developer sheet dismisses itself first, then toggles PIP.
+5. **Do not `reload()` a floating player.** `reload()` is stop + play, and `stop()` lets go of the floating player, which then has nothing holding it. The developer sheet's `reload()` is skipped during PIP and logs why; return to full screen first.
 
-**Status:** fixed in the demo — the fix is in the copy-target layer, so copy it
+**Known limit:** if a sheet or the product detail screen is up over the player and the **web overlay** triggers PIP, the app gets no chance to take that screen down first. The SDK's dismiss then takes down only that screen, and the transparent modal left behind can swallow touches. ⚠️ *Unverified.* Tapping the PIP window or **‹ List** recovers.
 
-**Symptom:** with the player in PIP, tapping the PIP window's close button covered the whole screen in black for a moment before it slid away.
+> **If you copied the earlier demo:** it hosted the player as a child, presented that host `.overFullScreen`, hid it on `.inAppPIP`, and polled `isInPictureInPicture` every 0.5 s to restore it. Remove all of that. Hiding the host removes the black screen but works around the wrong structure.
 
-**Cause:** `stateChanged(.closed)` is what arrives when the PIP window is closed — the session ends, it is *not* a PIP-exit. A delegate that collapses every state into one boolean (`state == .inAppPIP`) reports `false`, the stepped-aside host un-hides itself over a player that no longer has a render surface, and the host's own black background covers the screen until the dismissal finishes.
+### Closing the PIP window is `.closed`, not a return from PIP (iOS)
 
-Measured at the moment of close: `inPip=false state=closed hostDismissing=true` — **the SDK dismisses the host itself**, so the host only needed to stay out of the way.
+**Status:** by design — keep the two apart in your own code
 
-**Fix:** route session end and PIP-exit apart. `ShopliveIntegration/DemoPlayerDelegate.swift` publishes `.closed` as its own milestone, `PlayerMilestone.closed(reason:)`, separate from `.pipStateChanged(isActive:)` (which is never sent for `.closed`), and the host latches it so no in-flight restore can un-hide it. The host listens to its own player only (`observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot tear down a newer host. Deliberately it does **not** change `isHidden` — closing from full screen must keep the normal slide-down animation, and in both paths the visibility is already correct.
+`stateChanged(.closed)` is what arrives when the PIP window is closed: the session ends, it is *not* a PIP exit. A delegate that collapses every state into one boolean (`state == .inAppPIP`) reports `false`, and anything that "restores" on `false` acts on a player that no longer has a render surface. In the earlier host-based demo that showed as the host un-hiding and covering the screen in black for a moment before it slid away.
 
-Verified: closing from PIP produces **no un-hide at all**, while tapping the PIP window to return still restores the host.
+Measured at the moment of close, on that earlier structure: `inPip=false state=closed hostDismissing=true` — **the SDK dismisses what it presented itself**, so the app only has to stay out of the way.
+
+**What to do:** route session end and PIP exit apart. `ShopliveIntegration/DemoPlayerDelegate.swift` publishes `.closed` as its own milestone, `PlayerMilestone.closed(reason:)`, separate from `.pipStateChanged(isActive:)` (which is never sent for `.closed`). Listeners subscribe to their own player (`observeMilestones(of: player)`), so a late `.closed` from an earlier session cannot reach a newer one.
 
 ### What `stateChanged` actually delivers (iOS)
 
@@ -263,7 +281,7 @@ Each row is one `TODO(SDP-VERIFY)` left in the source (SMV-1922, 2026-11-04) —
 | # | Marker in | What is unverified | Docs that rely on it |
 |---|---|---|---|
 | i1 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `.stateChanged(.closed)` | Whether `closeReason` is already set when `stateChanged(.closed)` arrives (if not, the log says "no reason") | [Mission 6 § Why the player closed](mission-06-events-products-coupons.md#why-the-player-closed-304) |
-| i2 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `observeMilestones(of:)` | Whether the `player` handed to the delegate is the very object the app holds — the view controller itself, and for the feed the view `EmbeddedPlayerView.player` returns. Every `===` filter and the progress owner check rest on it | [Demo App Tour § done badge](02-demo-app-tour.md#the-done-badge-is-not-a-checkbox), [Mission 6](mission-06-events-products-coupons.md), [Mission 7](mission-07-embed-in-your-screen.md) |
+| i2 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `observeMilestones(of:)` | For the **feed embed**: whether the callback's `player` is the very `ShoplivePlayerView` that `EmbeddedPlayerView.player` returns — the `===` filter and the inline mission's owner check rest on it. It matches on the 3.0.4 simulator; no device run yet. View controller sessions are out of this question: they [go through `adopt(_:)`](#the-delegates-player-is-not-your-view-controller-ios) | [Demo App Tour § done badge](02-demo-app-tour.md#the-done-badge-is-not-a-checkbox), [Mission 7](mission-07-embed-in-your-screen.md) |
 | i3 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `publish(_:from:)` | Whether the SDK always calls the delegate on the main thread — the 3.0.4 interface declares no `@MainActor`. The demo moves an off-main callback to the main thread and logs it | [Mission 6](mission-06-events-products-coupons.md), [API Reference § Delegate: events](api-reference.md#delegate-events) |
 | i4 | iOS `ShopliveOnboardingDemo/Screens/DevSheetViewController.swift` — `replaceCurrentSession` timeout | The fallback that goes ahead once after `sessionCloseTimeout` (1.0 s) when neither the dismissal nor `.closed` arrives; whether `stop()` ends a session; when a nudge's PIP window is gone after `close()` | [Platform Differences § 3.0.4](platform-differences.md#sdk-304-additions), [Mission 4](mission-04-deep-link.md) |
 | i5 | iOS `ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift` — not-live campaign | What the nudge window shows for a campaign that is not live (a waiting screen, or closing at once — with which reason) | [Mission 2](mission-02-nudge-preview.md#platform-notes) |
@@ -299,6 +317,7 @@ Each row is one `TODO(SDP-VERIFY)` left in the source (SMV-1922, 2026-11-04) —
 **iOS**
 
 - Whether the embedded overlay is hidden by the configuration path or the runtime path (both are set — see above)
+- The directly presented player on a device: the app behind the small window scrolls and takes taps, tapping the window brings the player and its controls back, swiping down enters PIP, the developer sheet's PIP toggle, and the *start in PIP* card ([above](#embedding-the-player-as-a-child-breaks-in-app-pip-ios))
 
 ---
 
@@ -312,7 +331,7 @@ Each row is one `TODO(SDP-VERIFY)` left in the source (SMV-1922, 2026-11-04) —
 | **Black player, no error** | Very likely no stream. Verify the campaign is on air; count `playback(failed)` yourself ([above](#no-error-event-when-a-stream-doesnt-exist-android)) |
 | **"Verified"/playback-started never triggers (iOS)** | You're gating on `stateChanged`. Use `playback(started/rendering)` ([above](#statechanged-never-fires-ios)) |
 | **Playback stops when I scroll** | The player is in a lazy container. Use a non-recycling layout ([Mission 7](mission-07-embed-in-your-screen.md)) |
-| **Screen goes black when PIP starts (iOS)** | The host is still visible. Present `.overFullScreen` and hide it on `.inAppPIP` ([above](#the-full-screen-host-must-step-aside-ios)) |
+| **Screen goes black or stops taking touches when PIP starts (iOS)** | The player is embedded as a child of your own full-screen host, so its modal never goes down. Present the player itself ([above](#embedding-the-player-as-a-child-breaks-in-app-pip-ios)) |
 | **Overlay popup won't close** | You didn't call `respond`. Every `coupon` / `customWebAction` requires it ([Mission 6](mission-06-events-products-coupons.md)) |
 | **Tapping a product does nothing** | The `navigation` request isn't handled — the one request that's genuinely mandatory |
 | **Coupon works but nothing shows on Android** | You used a Snackbar. The SDK's Activity is in front; use `Toast` |

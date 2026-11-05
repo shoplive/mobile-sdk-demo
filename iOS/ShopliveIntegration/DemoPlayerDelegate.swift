@@ -17,6 +17,9 @@
 //  subscribes to the player it cares about (`observeMilestones(of:)`), so no screen overwrites another
 //  screen's callback and a late event from an old session cannot reach a new screen.
 //
+//  ★ A view controller session must go through `adopt(_:)`: the SDK names its inner ShoplivePlayerView as
+//    `player`, not the controller you created (measured, see there).
+//
 
 import UIKit
 import ShoplivePlayerSDK
@@ -204,7 +207,7 @@ extension DemoPlayerDelegate {
         of player: ShoplivePlayerControlling?,
         _ handler: @escaping (ShoplivePlayerControlling, PlayerMilestone) -> Void
     ) -> NSObjectProtocol {
-        // TODO(SDP-VERIFY): 요확인 — 콜백의 player 인자가 앱이 가진 그 객체인지(=== 필터·owner 비교의 전제): VC 세션은 ShoplivePlayerViewController 자신, 피드 임베드는 EmbeddedPlayerView.player 가 돌려주는 ShoplivePlayerView 자신. 3.0.4 디스어셈블상 VC.delegate.setter 가 VC 자체 weak 필드에 저장(0xdc2e0)해 VC 쪽 근거는 강하나 둘 다 실측 전 · 근거 SMV-1922 S50·S47
+        // TODO(SDP-VERIFY): 요확인 — 피드 임베드 콜백의 player 인자가 EmbeddedPlayerView.player 가 돌려주는 그 ShoplivePlayerView 자신인지(=== 필터·owner 비교의 전제). 시뮬레이터 3.0.4 실측은 일치, 실기기 확인 대기. VC 세션은 내부 뷰가 오므로 adopt(_:) 릴레이로 해결 · 근거 SMV-1922 S50·S47
         NotificationCenter.default.addObserver(forName: milestoneNotification, object: player, queue: nil) { note in
             guard let sender = note.object as? ShoplivePlayerControlling,
                   let milestone = note.userInfo?[milestoneKey] as? PlayerMilestone else { return }
@@ -221,6 +224,47 @@ extension DemoPlayerDelegate {
         }
         NotificationCenter.default.post(name: Self.milestoneNotification, object: player,
                                         userInfo: [Self.milestoneKey: milestone])
+    }
+}
+
+// MARK: - View controller sessions
+
+extension DemoPlayerDelegate {
+
+    /// Serves `controller` through this delegate, reporting `controller` itself as the sender.
+    ///
+    /// ★ Measured (SDK 3.0.4, simulator): a ShoplivePlayerViewController hands `delegate` to the
+    ///   ShoplivePlayerView inside it, and callbacks name **that view** as `player`. Comparing `player`
+    ///   with the controller you created therefore never matches — `observeMilestones(of:)` stays silent
+    ///   and no owner check passes. The relay puts the controller back.
+    ///
+    /// Call it in the same run-loop turn the controller is created, before playback can start. Embedded
+    /// views need none of this: there `player` is the view you hold.
+    static func adopt(_ controller: ShoplivePlayerViewController) {
+        let relay = ControllerRelay(controller: controller)
+        // `delegate` is weak and nothing else holds the relay, so the controller owns it.
+        objc_setAssociatedObject(controller, &ControllerRelay.associationKey, relay, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.delegate = relay
+    }
+}
+
+/// Passes one controller's callbacks to the shared delegate, with the controller as the sender.
+private final class ControllerRelay: ShoplivePlayerDelegate {
+
+    static var associationKey: UInt8 = 0
+
+    private weak var controller: ShoplivePlayerViewController?
+
+    init(controller: ShoplivePlayerViewController) {
+        self.controller = controller
+    }
+
+    func player(_ player: ShoplivePlayerControlling, didReceive event: ShoplivePlayerEvent) {
+        DemoPlayerDelegate.shared.player(controller ?? player, didReceive: event)
+    }
+
+    func player(_ player: ShoplivePlayerControlling, didRequest request: ShoplivePlayerRequest) {
+        DemoPlayerDelegate.shared.player(controller ?? player, didRequest: request)
     }
 }
 

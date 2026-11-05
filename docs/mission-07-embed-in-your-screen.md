@@ -93,7 +93,7 @@ public final class EmbeddedPlayerView: UIView {
 }
 ```
 
-The read-only `player` accessor is how the demo's feed tells *its* embed apart from another session: the feed records `embeddedView.player` as the mission's player, and a playback signal from any other player — say, a deep-link player opened on top while the feed keeps playing underneath — is not credited to the inline mission. ⚠️ *Unverified:* that the delegate receives that same view object as its `player` ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2).
+The read-only `player` accessor is how the demo's feed tells *its* embed apart from another session: the feed records `embeddedView.player` as the mission's player, and a playback signal from any other player — say, a deep-link player opened on top while the feed keeps playing underneath — is not credited to the inline mission. ⚠️ *Unverified on a device:* that the delegate receives that same view object as its `player` — it does on the 3.0.4 simulator ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2).
 
 ### Why `configuration` is a required argument
 

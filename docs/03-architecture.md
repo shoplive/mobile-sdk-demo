@@ -63,12 +63,12 @@ router.configurationProvider = { DemoConfigBuilder.makeConfiguration(.fullScreen
 router.delegateProvider = { DemoPlayerDelegate.shared }
 router.beforePresent = { proceed in DevSheetViewController.replaceCurrentSession(then: proceed) }
 router.onPresented = { player in
-    DevSheetViewController.activePlayer = player
-    MissionProgress.shared.startMission(.deeplink, owner: player)
+    DemoPlayerDelegate.adopt(player)
+    DevSheetViewController.recordSession(player, presentedAs: player, for: .deeplink)
 }
 ```
 
-Events reach the rest of your app through **one channel to listen on**, not a hook to set: `DemoPlayerDelegate` re-publishes what the app needs as `PlayerMilestone`, always with the player that sent it, and any screen subscribes with `DemoPlayerDelegate.observeMilestones(of:)` — to its own player, or to every player with `nil`. See [Mission 6](mission-06-events-products-coupons.md).
+Events reach the rest of your app through **one channel to listen on**, not a hook to set: `DemoPlayerDelegate` re-publishes what the app needs as `PlayerMilestone`, always with the player that sent it, and any screen subscribes with `DemoPlayerDelegate.observeMilestones(of:)` — to its own player, or to every player with `nil`. View controller sessions go through `DemoPlayerDelegate.adopt(_:)`, because the SDK names its inner view as `player` ([Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios)). See [Mission 6](mission-06-events-products-coupons.md).
 
 Why funnel logging through a single function? Because if a copy-target file referenced `EventLog` directly, it would stop compiling the moment someone copied it out. One indirection buys a guarantee.
 

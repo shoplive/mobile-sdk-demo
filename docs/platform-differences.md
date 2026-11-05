@@ -168,9 +168,9 @@ These come from the platforms themselves, but they change how much app code you 
 
 | | iOS | Android |
 |---|---|---|
-| Player hosting | A **ViewController** you present — so you can wrap it as a child VC and add sibling controls on top | An **SDK-owned Activity** — you cannot draw over it from your own composition |
-| Showing something over the player | Add sibling views to your host VC ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)) | **`Toast` only.** A Compose Snackbar sits behind the SDK Activity and is invisible |
-| Product detail destination | A modal presented from the host VC | **A separate Activity** — it has to be launched over the SDK Activity |
+| Player hosting | A **ViewController** you present **as itself** — subclass it to add controls on top. Embedding it as a child breaks in-App PIP ([Known Issues](known-issues.md#embedding-the-player-as-a-child-breaks-in-app-pip-ios)) | An **SDK-owned Activity** — you cannot draw over it from your own composition |
+| Showing something over the player | Add views to the player in a subclass ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)) | **`Toast` only.** A Compose Snackbar sits behind the SDK Activity and is invisible |
+| Product detail destination | A modal presented from the top-most view controller | **A separate Activity** — it has to be launched over the SDK Activity |
 | Deep-link entry | `SceneDelegate` — **two** methods (`willConnectTo` + `openURLContexts`) | A dedicated `SchemeActivity` that parses and forwards |
 | Getting a presenter | Walk the window/VC hierarchy yourself | Track the foreground Activity (`ActivityLifecycleCallbacks`) |
 | Embedded in a list | `UICollectionView` cells recycle — same hazard | `LazyColumn` disposes off-screen items — **use `Column + verticalScroll`** |

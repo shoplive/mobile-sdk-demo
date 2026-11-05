@@ -35,7 +35,7 @@ FORBIDDEN = [
     "DemoButton",
     "DemoToast",
     "DevSheetViewController",
-    "PlayerHostViewController",
+    "DemoPlayerViewController",
     "MissionListViewController",
     "StartViewController",
     "ProductDetailViewController",

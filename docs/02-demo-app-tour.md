@@ -16,7 +16,7 @@ Both platforms implement the same five surfaces. The prototype codenames (S1, S2
 |---|---|---|---|---|
 | **S1** | Start — pick a mode, enter keys | Demo app | [`StartViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/StartViewController.swift) | [`StartScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/start/StartScreen.kt) |
 | **S2** | Mission list — 9 cards | Demo app | [`MissionListViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/MissionListViewController.swift) | [`MissionListScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/missions/MissionListScreen.kt) |
-| **S3** | Player / studio | **The SDK** | + [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift) | SDK Activity |
+| **S3** | Player / studio | **The SDK** | The SDK player, subclassed for two demo controls — [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift) | SDK Activity |
 | **S3′** | Home feed (embedded player) — Mission 7, native | Demo app | [`FeedDemoViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/FeedDemoViewController.swift) | [`FeedScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/feed/FeedScreen.kt) |
 | — | Web list (WebView + bridge) — Mission 7, hybrid | Demo app | [`HybridListViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/HybridListViewController.swift) | [`HybridListScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/hybrid/HybridListScreen.kt) |
 | — | Product page with a nudge-style preview — Mission 2 | Demo app (the small window is the SDK) | [`NudgeProductViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift) | [`NudgeProductScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/nudge/NudgeProductScreen.kt) |
@@ -97,7 +97,7 @@ You cannot mark a mission complete yourself. The badge appears only when an SDK 
 
 The rules are the same on both platforms, and they live in one place: `MissionProgress` knows **which mission is running** and **which player that mission started**. Every start path — card, deep link, nudge, hybrid list, feed — registers its player. That is why a feed embed still playing underneath a deep-link player cannot complete the deep-link mission, and why a nudge's small window does not count as "keep watching in PIP". A start path that registered no player completes nothing (and says so in the log) — better not done than done wrongly.
 
-> ⚠️ **Unverified on iOS:** all of this rests on the delegate receiving the very player object the app holds (the view controller itself; for the feed, the view `EmbeddedPlayerView.player` returns). The 3.0.4 binary points that way, but it has not been run on a device — [Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2. Android rests on the same premise for the player `ShoplivePlayerLauncher.start` returns (a4).
+> All of this rests on the sender being the object the app holds. On iOS, view controller sessions get that from `DemoPlayerDelegate.adopt(_:)`, because the SDK names its inner view as `player` ([Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios), measured on the simulator). ⚠️ **Unverified on a device:** for the feed, that `player` is the view `EmbeddedPlayerView.player` returns — it is on the 3.0.4 simulator ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2). Android rests on the same premise for the player `ShoplivePlayerLauncher.start` returns (a4).
 
 Implementation: [`MissionProgress`](../Android/app/src/main/java/cloud/shoplive/onboarding/data/MissionProgress.kt) on Android, the `MissionProgress` class in [`MissionCatalog.swift`](../iOS/ShopliveOnboardingDemo/Support/MissionCatalog.swift) on iOS. The player signals come from the delegate together with the player that sent them — `onMilestone(milestone, player)` on Android, `DemoPlayerDelegate.observeMilestones(of:)` on iOS ([Mission 6](mission-06-events-products-coupons.md)).
 
@@ -128,18 +128,20 @@ Reading a session top-to-bottom in this tab is the fastest way to understand the
 
 Runtime controls (`isMuted`, `resizeMode`, `overlayUI`, `reload()`, `send()`, PIP enter/exit) act on the **live player handle**, not on configuration. Android keeps that handle in [`ShoplivePlayerSession.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerSession.kt) — a small object worth reading, because it demonstrates that full-screen and embedded players implement the *same* `ShoplivePlayerControlling` contract.
 
-> ⚠️ **The sheet cannot appear over the SDK's player.** On Android the player is an SDK-owned Activity, so a Compose bottom sheet from the demo app sits behind it. Logs keep accumulating; you read them after coming back. On iOS the demo works around this by hosting the player as a child view controller so it can put sibling controls on top — see [§2.5](#25-the-ios-player-host).
+> ⚠️ **The sheet cannot appear over the SDK's player.** On Android the player is an SDK-owned Activity, so a Compose bottom sheet from the demo app sits behind it. Logs keep accumulating; you read them after coming back. On iOS the player is a view controller the demo subclasses, so **⌗ Developer** sits on top of it and opens the sheet from the player — see [§2.5](#25-the-ios-player-and-its-demo-controls).
 
 ---
 
-## 2.5 The iOS player host
+## 2.5 The iOS player and its demo controls
 
-On iOS the demo doesn't present `ShoplivePlayerViewController` directly. It wraps it in `PlayerHostViewController` ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)) and adds two sibling buttons: **‹ List** and **⌗ Developer**.
+On iOS the demo's cards present `DemoPlayerViewController`, a subclass of `ShoplivePlayerViewController` ([`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift)), **directly**, with two extra buttons on top: **‹ List** and **⌗ Developer**.
 
 There are two concrete reasons, and both are worth copying if your app has similar needs:
 
-1. **Escape hatch.** If a stream fails to resolve, the overlay web view never loads — and the SDK's own close button lives *in* that overlay. Without a host-owned button the user is trapped on a black screen. The host's subviews are ordered `[player.view, controls]`, so the controls always win hit-testing no matter what the SDK puts inside `player.view`.
-2. **PIP hand-off.** When the player promotes to in-app PIP, the render surface moves to a floating container over the app window and the original full-screen view is left empty. Leave the host visible and the user sees a black screen with a small PIP window on top of it. The host is presented `.overFullScreen` and hides itself on `stateChanged(.inAppPIP)`. See [Mission 3](mission-03-pip.md).
+1. **Escape hatch.** If a stream fails to resolve, the overlay web view never loads — and the SDK's own close button lives *in* that overlay. Without an app-owned button the user is trapped on a black screen. The view's subviews are ordered `[SDK player view, controls]`, so the controls always win hit-testing no matter what the SDK puts inside its own view.
+2. **A subclass, not a child.** The SDK takes its modal down on in-App PIP only when the player is itself the presented modal. Embedded as a child it leaves a black full-screen modal that swallows every touch. Presented directly, the modal goes down on PIP — the mission list behind it is usable — and comes back on return, controls included. See [Mission 3](mission-03-pip.md) and [Known Issues](known-issues.md#embedding-the-player-as-a-child-breaks-in-app-pip-ios). ⚠️ *Unverified on a real device.*
+
+With *start in PIP* on, the card presents nothing and the demo holds the player itself until `.closed` (`keepAliveUntilClosed()`) — with `pip.isInAppPipEnabled` off it presents normally. The developer sheet's PIP toggle closes the sheet first, then enters PIP, and its `reload()` is skipped during PIP.
 
 ---
 

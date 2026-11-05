@@ -76,6 +76,28 @@ enum DemoConfigBuilder {
         return config
     }
 
+    /// Nudge: the `.preview` preset plus only the options changed from the SDK default.
+    static func makeNudgeConfiguration(from store: DemoConfigStore = .shared) -> ShoplivePlayerConfiguration {
+        var config = NudgePreview.presetConfiguration()
+        let options = makeConfiguration(.fullScreenLive, from: store)
+        let sdkDefault = ShoplivePlayerConfiguration()
+        func paint<T: Equatable>(_ field: WritableKeyPath<ShoplivePlayerConfiguration, T>) {
+            if options[keyPath: field] != sdkDefault[keyPath: field] { config[keyPath: field] = options[keyPath: field] }
+        }
+        paint(\.pip.isOSPipEnabled); paint(\.pip.defaultPosition); paint(\.pip.scale)
+        paint(\.pip.padding); paint(\.pip.floatingOffset); paint(\.pip.fixedWidth)
+        paint(\.sound.muteOnStart); paint(\.sound.mixWithOthers); paint(\.sound.autoResumeOnCallEnded)
+        paint(\.appearance.allowScreenCapture); paint(\.appearance.resizeMode)
+        paint(\.navigation.actionOnNavigation); paint(\.navigation.shareScheme); paint(\.navigation.isCustomShareEnabled)
+        paint(\.overlay.ui); paint(\.customParameters)
+        config.appearance.indicatorColor = options.appearance.indicatorColor
+        if store.customPipButtons {
+            config.pip.closeButton = options.pip.closeButton
+            config.pip.restoreButton = options.pip.restoreButton
+        }
+        return config
+    }
+
     /// The PIP close-button image for the options-tab switch. The demo has no asset catalog, so an SF
     /// Symbol stands in for your own image.
     private static let pipCloseSymbol = "xmark.circle.fill"

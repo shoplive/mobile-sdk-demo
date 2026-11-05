@@ -61,7 +61,7 @@ final class MissionListViewController: UIViewController {
     /// never appears": on a campaign with no stream, playback is never reached, so the SDK screen
     /// vanished after 6 seconds. The whole point of the demo is to **show** the SDK screen, so
     /// auto-closing worked against it. Being stuck is prevented instead by `‹ List` in
-    /// PlayerHostViewController — a sibling view above the player that is always tappable.
+    /// DemoPlayerViewController — a sibling view above the player that is always tappable.
     ///
     /// Errors repeat several times a second, so a toast per error would bury the screen — the notice is
     /// shown once per player (L3). Comparing players instead of resetting a flag on every start path
@@ -122,44 +122,49 @@ final class MissionListViewController: UIViewController {
     private func startPlayer(_ mission: Mission) {
         // One session at a time — close what is on screen (a card in PIP, a nudge, a deep link) first.
         DevSheetViewController.replaceCurrentSession { [weak self] in
-            self?.presentPlayerHost(mission)
+            self?.presentPlayer(mission)
         }
     }
 
-    private func presentPlayerHost(_ mission: Mission) {
-        // Rather than presenting the player, we embed it as a **child of the host VC** so the demo
-        // controls are reliably on top.
+    private func presentPlayer(_ mission: Mission) {
+        // The player is presented as itself, never embedded: the SDK only takes its modal down on
+        // in-App PIP when it is its own modal (see PlayerHostOverlay.swift).
         // The minimal code to copy is the present path in ShopliveIntegration/PlayerLauncher.swift,
         // exactly as written there.
         let configuration = DemoConfigBuilder.makeConfiguration(.fullScreenLive)
-        let player = ShoplivePlayerViewController(
+        let options = DemoConfigBuilder.makeCardPlayOptions(for: configuration)
+        let player = DemoPlayerViewController(
             campaignKey: DemoCredentials.shared.campaignKey,
-            options: DemoConfigBuilder.makeCardPlayOptions(for: configuration),
-            configuration: configuration)
-        player.delegate = DemoPlayerDelegate.shared
-
-        EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → embedded into the host")
-
-        // PIP step-aside and session end are handled by the host itself, for its own player only.
-        let host = PlayerHostViewController(
-            player: player,
-            onClose: { [weak self] in
+            options: options,
+            configuration: configuration,
+            onClose: { [weak self] player in
                 player.stop()
                 if DevSheetViewController.activePlayer === player { DevSheetViewController.activePlayer = nil }
-                // The host's presenter, whichever it was (see below) — not necessarily this list.
+                // The player's presenter, whichever it was (see below) — not necessarily this list.
                 player.presentingViewController?.dismiss(animated: true) { self?.reload() }
             },
-            onDevSheet: { hostVC in
-                guard hostVC.presentedViewController == nil else { return }
-                hostVC.present(DevSheetViewController(initialTab: .log), animated: true)
+            onDevSheet: { player in
+                guard player.presentedViewController == nil else { return }
+                player.present(DevSheetViewController(initialTab: .log), animated: true)
             })
+        DemoPlayerDelegate.adopt(player)
 
-        // From the top-most screen, as the hybrid list does — this list may not be the one on top (I4).
-        // The session is recorded once it is actually on screen; the first playback signal needs a
-        // network round trip, so it arrives after this. If not, the progress log shows "no owner".
-        let presenter = DeepLinkRouter.topViewController() ?? self
-        presenter.present(host, animated: true)
-        DevSheetViewController.recordSession(player, presentedAs: host, for: mission.id)
+        if options.presentationStyle == .pip, configuration.pip.isInAppPipEnabled {
+            // Starting in the small window: nothing to present — the SDK floats it and presents it
+            // itself when the viewer taps to return. Presenting here as well would race the SDK's own
+            // dismiss. With in-App PIP off there is no small window, so that case presents below.
+            player.keepAliveUntilClosed()
+            EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → small window, not presented")
+            DevSheetViewController.recordSession(player, presentedAs: player, for: mission.id)
+        } else {
+            EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → present")
+            // From the top-most screen, as the hybrid list does — this list may not be the one on top (I4).
+            // The session is recorded once it is actually on screen; the first playback signal needs a
+            // network round trip, so it arrives after this. If not, the progress log shows "no owner".
+            let presenter = DeepLinkRouter.topViewController() ?? self
+            presenter.present(player, animated: true)
+            DevSheetViewController.recordSession(player, presentedAs: player, for: mission.id)
+        }
         openDevSheetIfNeeded(mission)
 
         // UI customization: if .hidden was chosen, also apply it through the runtime property. On older

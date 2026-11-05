@@ -148,7 +148,7 @@ That two-step pattern is worth copying — a bad key, a missing campaign, an aut
 
 Tapping card ① calls the launcher, which is a thin, deliberately boring wrapper:
 
-- **iOS** — [`PlayerLauncher.present(campaignKey:from:options:configuration:delegate:)`](../iOS/ShopliveIntegration/PlayerLauncher.swift) creates the VC, assigns the delegate, logs the call, and presents. The demo then wraps it in `PlayerHostViewController` so it can put a **‹ List** escape button on top — see [Demo App Tour §2.5](02-demo-app-tour.md#25-the-ios-player-host).
+- **iOS** — [`PlayerLauncher.present(campaignKey:from:options:configuration:delegate:)`](../iOS/ShopliveIntegration/PlayerLauncher.swift) creates the VC, assigns the delegate, logs the call, and presents. The demo's cards present `DemoPlayerViewController` the same way — a subclass of the player that adds a **‹ List** escape button on top — see [Demo App Tour §2.5](02-demo-app-tour.md#25-the-ios-player-and-its-demo-controls).
 - **Android** — [`ShoplivePlayerLauncher.start(...)`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerLauncher.kt) creates the player, assigns the delegate, registers it with `ShoplivePlayerSession`, starts, and returns the player. The demo passes a configuration and play options assembled from the Options tab (`DemoConfigurationFactory`) — every card uses that path; a customer app would pass one of the `ShoplivePlayerPresets` instead.
 
 The "done" badge lights up when `playback(started)` arrives from **the player this card started** — not when `present`/`start` returns.

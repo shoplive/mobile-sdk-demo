@@ -35,7 +35,7 @@ Both callbacks are meant to arrive **on the main thread**; the demo's delegate i
 
 **Memory:** the delegate is weakly held on iOS and instance-owned on Android. If nothing owns it, events stop arriving with no warning. That's why the iOS demo holds it in a singleton (`DemoPlayerDelegate.shared`); on Android the player keeps the delegate it was given, and the demo builds one `ShoplivePlayerEventLogger` in its ViewModel and reuses it.
 
-**One delegate, many players.** A single delegate object usually serves every player in the app — a feed view, a full-screen player, a nudge. Every callback hands you the `player` that raised it, so anything you derive from an event should carry that player along. The demo does exactly that: iOS re-publishes what the rest of the app needs as one `PlayerMilestone` channel (`DemoPlayerDelegate.observeMilestones(of:)`), and Android reports `onMilestone(milestone, player)`. ⚠️ *Unverified on iOS:* that the `player` argument is the very object the app holds, which the per-player filtering relies on ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2).
+**One delegate, many players.** A single delegate object usually serves every player in the app — a feed view, a full-screen player, a nudge. Every callback hands you the `player` that raised it, so anything you derive from an event should carry that player along. The demo does exactly that: iOS re-publishes what the rest of the app needs as one `PlayerMilestone` channel (`DemoPlayerDelegate.observeMilestones(of:)`), and Android reports `onMilestone(milestone, player)`. On iOS a view controller session needs one extra step: 3.0.4 names the inner `ShoplivePlayerView` as `player`, not the view controller (measured on the simulator), so comparing it with your controller never matches. The demo registers each controller with `DemoPlayerDelegate.adopt(_:)`, a relay that puts the controller back as the sender — [Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios).
 
 ---
 
@@ -198,7 +198,7 @@ object ProductRouter {
 }
 ```
 
-On iOS the same problem is solved differently: the demo hosts the player as a child view controller, so it can present the product detail modal from a host it controls.
+On iOS the problem is smaller: the player is a view controller the app presented, so the demo presents the product detail modal from the top-most view controller (`DeepLinkRouter.topViewController()`).
 
 **Related:** `navigation.actionOnNavigation` decides what happens to the *player* on navigation — close it, or shrink to PIP. See [Mission 3](mission-03-pip.md).
 
@@ -307,7 +307,7 @@ Two details in there are the real lessons:
 - **A one-shot latch per session.** Without it you'd nag the user every 5 seconds. Reset it on `stateChanged(LOADING)`, since the delegate is reused across sessions.
 - **Use a `Toast`, not a Snackbar.** At this moment the SDK's player Activity is in front; a Compose Snackbar is behind it and invisible. `Toast` is the only thing that reliably draws over another Activity.
 
-The iOS demo takes the equivalent approach: don't close the player, explain the reason **once per session**, and keep the host-owned **‹ List** button available as the escape hatch.
+The iOS demo takes the equivalent approach: don't close the player, explain the reason **once per session**, and keep the app-owned **‹ List** button available as the escape hatch.
 
 If and when the SDK delivers `error` correctly here, these workarounds can be deleted. Both are marked in the source.
 

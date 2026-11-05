@@ -32,7 +32,7 @@ The numbers and titles are the [integration guide's mission map](https://sdk.sho
 |---|---|---|---|
 | **1** | [Launch the Player Directly](docs/mission-01-open-the-player.md) | `initialize` + full-screen playback | `PlayerLauncher` · `ShoplivePlayerLauncher` |
 | **2** | [Nudge-Style Preview](docs/mission-02-nudge-preview.md) | A muted small window over a product page that invites viewers in; tap to go full screen | `NudgePreview` · `ShopliveNudgePreview` |
-| **3** | [Keep Watching in PIP](docs/mission-03-pip.md) | in-app PIP vs. OS PIP, host hand-off, starting in PIP and PIP buttons (3.0.4) | `PipOptions` · `ShoplivePipPresets` |
+| **3** | [Keep Watching in PIP](docs/mission-03-pip.md) | in-app PIP vs. OS PIP, why the player is presented as itself, starting in PIP and PIP buttons (3.0.4) | `PipOptions` · `ShoplivePipPresets` |
 | **4** | [Launch via Deep Link](docs/mission-04-deep-link.md) | Push/SMS/web → playback, and cold-start ordering | `DeepLinkRouter` · `ShopliveDeepLinkRouter` |
 | **5** | [Connect User Information](docs/mission-05-user-identity.md) | Token / profile / guest, ID hashing, logout | `UserSetup` · `ShopliveUserSetup` |
 | **6** | [Events · Products · Coupons](docs/mission-06-events-products-coupons.md) | ⭐ The delegate — events vs. requests, close reason and custom share (3.0.4) | `DemoPlayerDelegate` · `ShoplivePlayerEventLogger` |

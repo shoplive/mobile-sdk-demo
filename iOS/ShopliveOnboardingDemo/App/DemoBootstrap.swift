@@ -28,6 +28,7 @@ enum DemoBootstrap {
         router.delegateProvider = { DemoPlayerDelegate.shared }
         router.beforePresent = { proceed in DevSheetViewController.replaceCurrentSession(then: proceed) }
         router.onPresented = { player in
+            DemoPlayerDelegate.adopt(player)
             DevSheetViewController.recordSession(player, presentedAs: player, for: .deeplink)
         }
     }
