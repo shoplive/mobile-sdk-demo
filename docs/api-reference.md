@@ -1,6 +1,6 @@
 # API Reference
 
-[◀ Mission 8](mission-08-go-live.md) · [Docs home](../README.md) · Next: [Platform Differences ▶](platform-differences.md)
+[◀ Mission 9](mission-09-go-live.md) · [Docs home](../README.md) · Next: [Platform Differences ▶](platform-differences.md)
 
 > **Guide cross-reference:** [Data field dictionary](https://sdk.shoplive.cloud/#fields) · [ShopliveConfiguration](https://sdk.shoplive.cloud/#f-config) · [Attribution](https://sdk.shoplive.cloud/#f-attr) · [ShopliveUser](https://sdk.shoplive.cloud/#f-user) · [PlayerConfiguration](https://sdk.shoplive.cloud/#f-playerconfig) · [PlayOptions](https://sdk.shoplive.cloud/#f-playoptions) · [Types & states](https://sdk.shoplive.cloud/#types) · [Error handling](https://sdk.shoplive.cloud/#errors)
 
@@ -16,6 +16,8 @@ against them. The Android 3.0.1 additions (in-app PIP options, OS PIP error code
 moved to `cloud.shoplive.core.publicsurface`) and 3.0.4 (`ShoplivePlayerState` is a sealed class) see the
 [3.0.3](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3) and
 [3.0.4](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.4) release notes.
+
+The **3.0.4 additions the demos use** — `presentationStyle`, the PIP window buttons, `ShopliveCloseReason`, custom share (`isCustomShareEnabled` · `shareRequested` · `ShopliveShareInfo`) and the `DEFAULT` / `PREVIEW` presets — were added on 2026-11-04 from the 3.0.4 iOS `.swiftinterface` and the 3.0.4 Android AAR. Everything else is still the 3.0.0 snapshot.
 
 Where the two disagree, the difference is called out here and explained in [Platform Differences](platform-differences.md).
 
@@ -51,7 +53,7 @@ Where the two disagree, the difference is called out here and explained in [Plat
 
 `logout()` clears **three slots at once**: `authToken`, `user`, `streamToken`.
 
-Related: [Mission 1](mission-01-open-the-player.md), [Mission 3](mission-03-user-identity.md), [Mission 8](mission-08-go-live.md).
+Related: [Mission 1](mission-01-open-the-player.md), [Mission 5](mission-05-user-identity.md), [Mission 9](mission-09-go-live.md).
 
 ---
 
@@ -94,7 +96,7 @@ Three variants. Takes effect **from the next playback onward**.
 > - **Token beats Profile** — if a token is set, a profile-derived token is ignored.
 > - `setUser` is **non-optional** in v3; `setUser(nil)` from v2 no longer compiles.
 
-Details: [Mission 3](mission-03-user-identity.md).
+Details: [Mission 5](mission-05-user-identity.md).
 
 ---
 
@@ -115,7 +117,7 @@ Details: [Mission 3](mission-03-user-identity.md).
 - **Both:** the delegate is weakly held / instance-owned. Hold it strongly or events stop.
 - **Android extras:** `intent()` returns an Intent instead of starting (you own the transition); `bindLifecycle(owner)` on the embedded view ties resource release to a lifecycle; `expandToFullScreen()` hands the session over from embedded to full screen (**no iOS equivalent**).
 
-Details: [Mission 1](mission-01-open-the-player.md), [Mission 4](mission-04-embed-in-your-screen.md).
+Details: [Mission 1](mission-01-open-the-player.md), [Mission 7](mission-07-embed-in-your-screen.md).
 
 ---
 
@@ -127,10 +129,10 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 
 | | iOS | Android |
 |---|---|---|
-| Full-screen live | `ShoplivePlayerConfiguration.live` | `type = ShoplivePlayerType.LIVE` |
-| Embedded preview | `ShoplivePlayerConfiguration.preview` | `type = ShoplivePlayerType.PREVIEW` |
+| Full-screen live | `ShoplivePlayerConfiguration.default` (equals `.init()`) | `ShoplivePlayerConfiguration.DEFAULT` · `type = ShoplivePlayerType.LIVE` |
+| Preview (inline, nudge) | `ShoplivePlayerConfiguration.preview` | `ShoplivePlayerConfiguration.PREVIEW` · `type = ShoplivePlayerType.PREVIEW` |
 
-`.preview` differs from `.live` in exactly five values: `pip.isInAppPipEnabled = false`, `pip.isOSPipEnabled = false`, `overlay.ui = .hidden`, `sound.muteOnStart = true`, `appearance.resizeMode = .fill`. It changes **display policy only** — the stream that plays is the same as live.
+The 3.0.4 guide describes the preview preset as **preview stream · muted · overlay hidden · in-App PIP**, with `type = preview` selecting the preview stream (iOS 3.0.4 has `configuration.type` too). On SDK 3.0.0, iOS `.preview` measured differently — PIP off and the live stream; the 3.0.4 values have not been re-measured. ⚠️ *Unverified:* the iOS 3.0.4 preset's `pip.isInAppPipEnabled` and `resizeMode` are not in the SDK interface ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i8). Details and what the demo does about the PIP value: [Mission 7](mission-07-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot), [Mission 2](mission-02-nudge-preview.md).
 
 ### `pip`
 
@@ -147,6 +149,8 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 | `aspectRatio` | ✗ | ✅ | Default 9:16 |
 | `autoEnterOnLeaveScreen` | ✗ **removed** | ✗ | Your app calls `enterPictureInPicture()` instead |
 | `keepWindowStyleOnReturnFromOSPip` | ✗ **removed** | ✗ | |
+| `closeButton` | ✅ `ButtonOptions(image:isHidden:)` | ✅ `ButtonOptions(imageResId, isHidden)` | 3.0.4+ — the in-App PIP window's close button. Default = SDK button |
+| `restoreButton` | ✅ | ✅ | 3.0.4+ — the "back to full screen" button; `isHidden = true` hides it |
 
 ### `sound`
 
@@ -176,6 +180,7 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 |---|---|---|---|
 | `actionOnNavigation` | ✅ | ✅ | `ShopliveNavigationAction` — with `.pip`, the SDK enters PIP internally on navigation |
 | `shareScheme` | ✅ | ✅ | Your app's URL scheme for the overlay share button |
+| `isCustomShareEnabled` | ✅ | ✅ | 3.0.4+, default `false`. `true` → the share button sends `shareRequested` instead of opening the SDK share sheet |
 | `closeWhenAppDestroyed` | ✗ | ✅ | |
 
 ### `overlay`
@@ -188,7 +193,7 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 
 Extra query parameters appended to the overlay URL. Your hook for passing app context (store ID, A/B bucket, tier) to overlay web content.
 
-Details: [Mission 7](mission-07-ui-customization.md).
+Details: [Mission 8](mission-08-ui-customization.md).
 
 ---
 
@@ -200,8 +205,11 @@ Per-`play`/`start` values. Distinct from configuration precisely because these d
 |---|---|---|
 | `referrer` | `String?` | Traffic source. **Truncated at 1024 chars on Android.** The only link between "which push" and "how long watched" |
 | `keepWindowStateOnPlayExecuted` | `Bool` | Preserve window state across a `play` call |
+| `presentationStyle` | `ShoplivePlayerPresentationStyle` | 3.0.4+ — `.fullScreen` / `FULLSCREEN` (default) or `.pip` / `PIP`: start in the in-App PIP window. Needs `pip.isInAppPipEnabled`; iOS silently plays full screen without it; Android needs `start()` (an `intent()` ignores it) |
 
-Details: [Mission 2](mission-02-deep-link.md).
+Presets: `ShoplivePlayOptions.preview` / `ShoplivePlayOptions.PREVIEW` = `presentationStyle` PIP — half of the nudge-style preview pair ([Mission 2](mission-02-nudge-preview.md)).
+
+Details: [Mission 4](mission-04-deep-link.md), [Mission 3](mission-03-pip.md#starting-directly-in-pip-304).
 
 ---
 
@@ -224,7 +232,7 @@ Implemented by **both** the full-screen player and the embedded view, so control
 
 **PIP promotion requires all four:** playback active · `isInAppPipEnabled` · the attach window resolves · no other instance floating. **Failure is silent** — verify via `isInPictureInPicture` or `stateChanged(.inAppPIP)`.
 
-Details: [Mission 5](mission-05-pip.md).
+Details: [Mission 3](mission-03-pip.md).
 
 ---
 
@@ -242,8 +250,10 @@ Notifications. Handle what you need, ignore the rest.
 | `.userNameUpdateRequested([String: Any])` | `UserNameUpdateRequested(payload)` | Overlay asks to change the nickname |
 | `.analytics(ShopliveAnalyticsInfo)` | `Analytics(info)` | `campaignKey`, `isPlaying`, `isMuted`, `durationMs`, `campaign`, `brand` |
 | `.error(ShopliveError)` | `Error(error)` | **Only unrecoverable errors** |
+| `.webCommand(name, payload)` | `WebCommandReceived(name, payload)` | A custom command from the overlay web |
+| `.shareRequested(ShopliveShareInfo)` | `ShareRequested(info)` | 3.0.4+, only with `navigation.isCustomShareEnabled = true`. `ShopliveShareInfo`: `url`, `campaignKey`, `title`, `descriptionText`, `thumbnailUrl` — all optional |
 
-**Threading:** both callbacks are guaranteed on the **main thread**. `respond` may be called from any thread.
+**Threading:** both callbacks are meant to arrive on the **main thread**; `respond` may be called from any thread. ⚠️ *Unverified on iOS:* the 3.0.4 interface does not declare it ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i3).
 
 **iOS:** `PlaybackEvent` is a **class**, not an enum. Read the state from `playback.event` (`PlaybackEventType`), extra detail from `playback.datas`. Comparing the event object directly (as one guide example does) doesn't work.
 
@@ -290,7 +300,9 @@ Details: [Mission 6](mission-06-events-products-coupons.md).
 
 | Type | Values |
 |---|---|
-| `ShoplivePlayerState` | `idle` · `loading` · `playing` · `inAppPIP` · `closed` … |
+| `ShoplivePlayerState` | `idle` · `loading` · `playing` · `paused` · `inAppPIP` · `closed` (iOS 3.0.4: no associated value) / Android `Closed(reason)` |
+| `ShopliveCloseReason` (3.0.4+) | `userAction` · `appRequest` · `accessKeyChanged` / `USER_ACTION` · `APP_REQUEST` · `ACCESS_KEY_CHANGED`. iOS reads it from the player's `closeReason` property (optional); Android from `Closed.reason`. See [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304) |
+| `ShoplivePlayerPresentationStyle` (3.0.4+) | `fullScreen` (default) · `pip` / `FULLSCREEN` · `PIP` |
 | `ShopliveCampaignStatus` | `ready` · `live` · `ended` |
 | `ShopliveConnectionState` | `connecting` · `connected` · `reconnecting` … |
 | `ShopliveResizeMode` | `fill` (default) · `fit` |
@@ -324,7 +336,7 @@ Details: [Mission 6](mission-06-events-products-coupons.md).
 | `CONNECTION_ISSUE` · `FAILED_NETWORK` | Network | Check the connection |
 | `SERVER_ERROR` | Server-side | Try again shortly |
 
-There is **no API to pre-validate a key.** `initialize` only stores the value. So the practical pattern is: local format check → play → translate the error event per cause. See `describe(error)` in [`DemoPlayerDelegate.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/DemoPlayerDelegate.kt).
+There is **no API to pre-validate a key.** `initialize` only stores the value. So the practical pattern is: local format check → play → translate the error event per cause. See `causeGroup` in [`ShopliveEventLabels.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveEventLabels.kt) and [Mission 6](mission-06-events-products-coupons.md#translate-error-codes-into-sentences).
 
 Guide: [Error handling](https://sdk.shoplive.cloud/#errors).
 
@@ -351,7 +363,7 @@ Failures surface as `.ended`; `error` comes only from the internal `onError`, so
 
 **One session at a time.** `start()` during an active session (not `IDLE`/`ENDED`) is ignored.
 
-Details: [Mission 8](mission-08-go-live.md).
+Details: [Mission 9](mission-09-go-live.md).
 
 ---
 
@@ -383,8 +395,8 @@ Every public type gained a `Shoplive` prefix. Code written against the old names
 
 **Deleted fields** (referencing them is a compile error): `PipOptions.keepWindowStyleOnReturnFromOSPip`, `PipOptions.autoEnterOnLeaveScreen`, `AppearanceOptions.isStatusBarVisible`, and the Streamer's `ShopliveAppearanceOptions`.
 
-Guide: [v2 → v3 migration](https://sdk.shoplive.cloud/#migration).
+The 3.0.4 integration guide has no v2 → v3 migration section any more; this table and [Known Issues § guide vs. API](known-issues.md#where-the-guide-and-the-api-disagree) are what is left. Upgrading within v3: [Guide · 3.0.3 → 3.0.4](https://sdk.shoplive.cloud/#upgrade-304).
 
 ---
 
-[◀ Mission 8](mission-08-go-live.md) · [Docs home](../README.md) · Next: [Platform Differences ▶](platform-differences.md)
+[◀ Mission 9](mission-09-go-live.md) · [Docs home](../README.md) · Next: [Platform Differences ▶](platform-differences.md)

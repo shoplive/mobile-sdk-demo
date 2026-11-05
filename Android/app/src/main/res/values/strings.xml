@@ -12,12 +12,12 @@
 
     <!-- ── S1 Start ─────────────────────────────────────────────────────── -->
     <string name="start_title">ShopLive SDK\nIntegration Demo</string>
-    <string name="start_subtitle">Tap any of the 8 features to run it right away — watching (Player) and broadcasting (Streamer). No need to read the docs first.</string>
+    <string name="start_subtitle">Tap any feature to run it right away — watching (Player) and broadcasting (Streamer). No need to read the docs first.</string>
     <string name="start_tour_button">Take a tour · Start now</string>
     <string name="start_tour_hint_ready">Uses the ShopLive demo campaign — no input required.</string>
     <string name="start_tour_hint_missing">No built-in demo keys — fill in local.properties or enter your own keys below.</string>
     <string name="start_own_button">Use my own account %s</string>
-    <string name="start_own_tip">You only need two values. The stream token is required for Mission 8 only.</string>
+    <string name="start_own_tip">You only need two values. The stream token is required for Mission %1$d only.</string>
     <string name="start_validate_button">Validate and start</string>
     <string name="start_validation_tip">Validation only checks the key format. The SDK has no API to verify keys up front, so real validity shows up on first playback as an error event — reported as invalid key / campaign not found / authentication required / network.</string>
     <string name="start_back_to_missions">Back to the feature list (%s)</string>
@@ -32,16 +32,16 @@
     <string name="field_stream_token">Stream token</string>
     <string name="field_stream_token_hint">Optional — a separate path from viewer authentication</string>
     <string name="field_user_jwt">User JWT</string>
-    <string name="field_user_jwt_hint">Optional — used to try the token method in Mission 3</string>
+    <string name="field_user_jwt_hint">Optional — used to try the token method in Mission %1$d</string>
 
     <!-- ── S2 Feature list ──────────────────────────────────────────────── -->
-    <string name="mission_list_tip">Tap a card to run it immediately. The numbers match the Mission numbers in the integration guide.</string>
+    <string name="mission_list_tip">Tap a card to run it immediately. The numbers 1–%1$d match the Mission numbers in the integration guide.</string>
     <string name="mission_list_code_tip">To read the code, open the 📄 file named on each card in the demo project. This app is for verifying behaviour.</string>
     <string name="mission_list_sdk_screen_tip">Demo-app UI cannot be drawn on top of the SDK player or studio (the SDK owns those screens). Events keep accumulating in the log — check the ⌗ developer sheet once you are back.</string>
     <string name="badge_confirmed">Confirmed</string>
     <string name="lock_message">🔒 %s — enter it via ⚙ at the top right</string>
     <string name="cd_locked">Locked</string>
-    <string name="topbar_progress">Features verified %1$d/8</string>
+    <string name="topbar_progress">Features verified %1$d/%2$d</string>
     <string name="cd_back_to_list">Back to the list</string>
     <string name="cd_settings">Settings</string>
     <string name="cd_close">Close</string>
@@ -53,30 +53,33 @@
     <string name="key_not_entered">no key</string>
 
     <!-- ── Missions ─────────────────────────────────────────────────────── -->
-    <string name="mission1_title">Open the player</string>
-    <string name="mission1_desc">Tap to open a full-screen live stream right away.</string>
-    <string name="mission1_check">Playback within 2–3s · chat and LIVE badge when live</string>
-    <string name="mission2_title">Open from a deep link</string>
-    <string name="mission2_desc">Sends a fake push banner. Tapping it plays straight from the link.</string>
-    <string name="mission2_check">Tap banner → playback · ref arrives as referrer</string>
-    <string name="mission3_title">Connect member info</string>
-    <string name="mission3_desc">Pick guest / profile / token, then play.</string>
-    <string name="mission3_check">Chat nickname shows the member name</string>
-    <string name="mission4_title">Embed in your screen</string>
-    <string name="mission4_desc">See a player embedded between home-feed cards.</string>
-    <string name="mission4_check">Playback survives scrolling · promotes to full screen</string>
-    <string name="mission5_title">Keep watching in PIP</string>
-    <string name="mission5_desc">Tap a product during playback and it continues in a small window.</string>
-    <string name="mission5_check">Small window persists · tap to return without interruption</string>
-    <string name="mission6_title">Events · products · coupons</string>
-    <string name="mission6_desc">Tap products and coupons, then watch what arrives in the log.</string>
-    <string name="mission6_check">navigation/coupon requests received and respond called</string>
-    <string name="mission7_title">Customize the UI</string>
-    <string name="mission7_desc">Change colors and the overlay in Options and see it applied.</string>
-    <string name="mission7_check">Color applied · events still arrive when hidden</string>
-    <string name="mission8_title">Go live</string>
-    <string name="mission8_desc">Open the studio and start/stop a broadcast.</string>
-    <string name="mission8_check">preview → LIVE transition · automatic recovery</string>
+    <string name="mission_player_title">Launch the Player Directly</string>
+    <string name="mission_player_desc">Tap to open a full-screen live stream right away.</string>
+    <string name="mission_player_check">Playback within 2–3s · chat and LIVE badge when live</string>
+    <string name="mission_nudge_title">Nudge-Style Preview</string>
+    <string name="mission_nudge_desc">A silent small window over a product page invites the viewer in. Tap it to go full screen.</string>
+    <string name="mission_nudge_check">Small silent window without overlay · tap expands to full screen</string>
+    <string name="mission_pip_title">Keep Watching in PIP</string>
+    <string name="mission_pip_desc">Tap a product during playback and it continues in a small window. Options can also start it in PIP.</string>
+    <string name="mission_pip_check">Small window persists · tap to return without interruption</string>
+    <string name="mission_deeplink_title">Launch via Deep Link</string>
+    <string name="mission_deeplink_desc">Sends a fake push banner. Tapping it plays straight from the link.</string>
+    <string name="mission_deeplink_check">Tap banner → playback · ref arrives as referrer</string>
+    <string name="mission_user_title">Connect User Information</string>
+    <string name="mission_user_desc">Pick guest / profile / token, then play.</string>
+    <string name="mission_user_check">Chat nickname shows the member name</string>
+    <string name="mission_events_title">Events · Products · Coupons</string>
+    <string name="mission_events_desc">Tap products and coupons, then watch what arrives in the log.</string>
+    <string name="mission_events_check">navigation/coupon requests received and respond called</string>
+    <string name="mission_inline_title">Add Inline Previews to a List Screen</string>
+    <string name="mission_inline_desc">Pick native (a player view inside the feed) or hybrid (a web list hands the key to the app).</string>
+    <string name="mission_inline_check">Playback survives scrolling · a web card tap opens the app player</string>
+    <string name="mission_ui_title">UI Customization &amp; Placement</string>
+    <string name="mission_ui_desc">Change colors and the overlay in Options and see it applied.</string>
+    <string name="mission_ui_check">Color applied · events still arrive when hidden</string>
+    <string name="mission_studio_title">Broadcasting</string>
+    <string name="mission_studio_desc">Open the studio and start/stop a broadcast.</string>
+    <string name="mission_studio_check">preview → LIVE transition · automatic recovery</string>
 
     <!-- ── Locks and messages ───────────────────────────────────────────── -->
     <string name="lock_need_mode">Choose a mode on the start screen first</string>
@@ -101,10 +104,10 @@
 
     <string name="group_playback_type">Playback type</string>
     <string name="tip_playback_type">type sets the defaults for volume-key policy and resolution. LIVE = volume keys allowed, live resolution / PREVIEW = volume keys blocked, preview resolution (less traffic).</string>
-    <string name="group_auth">Authentication · Mission 3</string>
-    <string name="tip_auth">Pick the authentication method on the Mission 3 card. It applies from the next playback.</string>
-    <string name="group_pip">PIP · Mission 5</string>
-    <string name="group_overlay_appearance">Overlay · appearance · Mission 7</string>
+    <string name="group_auth">Authentication · Mission %1$d</string>
+    <string name="tip_auth">Pick the authentication method on the Mission %1$d card. It applies from the next playback.</string>
+    <string name="group_pip">PIP · Mission %1$d</string>
+    <string name="group_overlay_appearance">Overlay · appearance · Mission %1$d</string>
     <string name="group_control">Controls · applied during playback</string>
     <string name="tip_control_runtime">Only this group applies mid-playback. configuration is immutable, so assignments after start are ignored.</string>
     <string name="group_play_options">PlayOptions · per playback</string>
@@ -131,7 +134,7 @@
     <string name="value_null_sdk_default">null (SDK default)</string>
     <string name="value_null_by_type">null (decided by type)</string>
 
-    <!-- ── Mission 4 Feed ───────────────────────────────────────────────── -->
+    <!-- ── Inline preview · native feed ───────────────────────────────────────────────── -->
     <string name="feed_tip_embed">Below is a ShoplivePlayerView. Your app owns only the layout; controls, events, and PIP use the same API as full screen. An embedded view shows video only (no overlay UI).</string>
     <string name="feed_warn_activity_context">An embedded view requires an Activity (LifecycleOwner) context. It cannot be created with applicationContext.</string>
     <string name="feed_warn_no_campaign">No campaignKey. Enter your keys via ⚙.</string>
@@ -161,12 +164,12 @@
     <string name="product_btn_exit_pip">Exit PIP and return to full screen</string>
     <string name="product_tip_policy">Change the policy (PIP/KEEP/CLOSE) in the developer sheet\'s Options tab and product taps behave differently on the next playback.</string>
 
-    <!-- ── Mission 2 push banner ────────────────────────────────────────── -->
+    <!-- ── Deep-link push banner ────────────────────────────────────────── -->
     <string name="push_banner_source">MY SHOP · now</string>
     <string name="push_banner_title">🔴 The summer sale is live! Come on in</string>
     <string name="push_banner_dismiss">Dismiss</string>
 
-    <!-- ── Mission 3 auth dialog ────────────────────────────────────────── -->
+    <!-- ── User info · auth dialog ────────────────────────────────────────── -->
     <string name="auth_dialog_title">How should we identify the user?</string>
     <string name="auth_dialog_note">You can mix methods in one app; the choice applies from the next playback.</string>
     <string name="auth_dialog_cancel">Cancel</string>
@@ -178,7 +181,7 @@
     <string name="err_access_key">Invalid key — accessKey is not set. Call initialize first.</string>
     <string name="err_campaign_not_found">Campaign not found — check the campaignKey.</string>
     <string name="err_not_on_air">The campaign is not on air. Check whether it is VOD and its scheduled time.</string>
-    <string name="err_auth_required">Authentication required — check user authentication (Mission 3).</string>
+    <string name="err_auth_required">Authentication required — check user authentication (the “Connect User Information” mission).</string>
     <string name="err_network">Network — check your connection. (The SDK is attempting automatic recovery.)</string>
     <string name="err_server">Server error — try again shortly.</string>
     <string name="err_other">Other error</string>
@@ -201,4 +204,26 @@
     <string name="qr_rejected">This QR has no usable values. It needs ak and ck together, or st, or userjwt in its URL query.</string>
     <string name="qr_camera_error">The camera is not available (%1$s). Allow camera access in Settings, or type the keys instead.</string>
     <string name="qr_applied">QR “%1$s” — filled %2$s. Check the values, then tap “Validate and start”.</string>
+
+    <!-- ── SMV-1922 · catalog numbers and the inline-preview choice ─────── -->
+    <string name="mission_badge">Mission %1$d</string>
+    <string name="inline_choice_title">Which list is yours?</string>
+    <string name="inline_choice_native">Native — a ShoplivePlayerView inside the app’s own feed</string>
+    <string name="inline_choice_hybrid">Hybrid — a web list in a WebView hands the campaignKey to the app</string>
+
+    <!-- ── SMV-1922 · 3.0.4 options and the nudge policy toggle ───────────── -->
+    <string name="tip_pip_start">presentationStyle = PIP opens the next playback straight in the small window (3.0.4+). It needs pip.isInAppPipEnabled.</string>
+    <string name="warn_custom_share">true: the SDK shows no share sheet and sends shareRequested instead; the app opens its own (ACTION_SEND). false (default): the SDK share sheet, and no event reaches the app.</string>
+    <string name="group_nudge">Nudge-Style Preview · Mission %1$d</string>
+    <string name="tip_nudge_close_not_live">App policy, not an SDK option. On: a nudge that was never expanded closes itself when the campaign is not live (the guide\'s recommendation). Off (default): it stays, so VOD and upcoming campaigns can still be shown.</string>
+
+    <!-- ── SMV-1922 · nudge-preview product page ─────────────────────────── -->
+    <string name="nudge_product_desc">A soft cotton shirt for every day. Demo copy — the small live window is the point.</string>
+    <string name="nudge_tip_page">This is the app\'s own product page. The nudge preview floats over it — silent, no overlay — and the page stays usable.</string>
+    <string name="nudge_tip_reshow">Tap the small window to watch full screen. Close it with ✕ and it will not come back on this page; open the card again for a new page.</string>
+    <string name="nudge_tip_leave">Leaving this page closes a nudge you never expanded. One you expanded keeps playing.</string>
+
+    <!-- ── SMV-1922 · hybrid inline preview (web list) ──────────────────── -->
+    <string name="hybrid_tip_bridge">Below is a web list in a WebView (a bundled page). Tapping a card sends one campaignKey through ShopLiveAppInterface, and the app opens the native full-screen player. Links to other sites open in the browser.</string>
+    <string name="hybrid_page_error">The web page did not load: %1$s</string>
 </resources>

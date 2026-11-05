@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.MISSIONS
 import cloud.shoplive.onboarding.data.Mission
+import cloud.shoplive.onboarding.data.MissionId
 import cloud.shoplive.onboarding.ui.components.NumberBadge
 import cloud.shoplive.onboarding.ui.components.Pill
 import cloud.shoplive.onboarding.ui.components.SourcePathLine
@@ -44,15 +45,16 @@ import cloud.shoplive.onboarding.ui.theme.Ok
  * The feature list, and effectively the app's only menu.
  *
  * **Tapping a card runs it.** There is no screen in between showing steps or code.
- * The numbers match the integration guide's Mission numbers, and the file path on
- * each card is the only bridge between the app and the project sources.
+ * The number on a card is its position in [MISSIONS], which follows the integration
+ * guide's mission map; the file path on each card is the only bridge between the app
+ * and the project sources.
  *
  * "Verified" is decided **automatically from SDK events** — there is nothing for the
  * user to tick.
  */
 @Composable
 fun MissionListScreen(
-    doneMissions: Set<Int>,
+    doneMissions: Set<MissionId>,
     lockReasonOf: (Mission) -> String?,
     onMissionClick: (Mission) -> Unit,
     modifier: Modifier = Modifier,
@@ -63,13 +65,14 @@ fun MissionListScreen(
         verticalArrangement = Arrangement.spacedBy(9.dp),
     ) {
         item {
-            Tip(stringResource(R.string.mission_list_tip))
+            Tip(stringResource(R.string.mission_list_tip, MISSIONS.size))
         }
 
-        items(MISSIONS, key = { it.number }) { mission ->
+        itemsIndexed(MISSIONS, key = { _, mission -> mission.id.raw }) { index, mission ->
             MissionCard(
                 mission = mission,
-                isDone = mission.number in doneMissions,
+                number = index + 1,
+                isDone = mission.id in doneMissions,
                 lockReason = lockReasonOf(mission),
                 onClick = { onMissionClick(mission) },
             )
@@ -89,6 +92,7 @@ fun MissionListScreen(
 @Composable
 private fun MissionCard(
     mission: Mission,
+    number: Int,
     isDone: Boolean,
     lockReason: String?,
     onClick: () -> Unit,
@@ -104,7 +108,7 @@ private fun MissionCard(
         Column(Modifier.padding(horizontal = 14.dp, vertical = 13.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 NumberBadge(
-                    label = if (isDone) "✓" else mission.number.toString(),
+                    label = if (isDone) "✓" else number.toString(),
                     background = when {
                         isDone -> Ok
                         isLocked -> MaterialTheme.colorScheme.outline
@@ -131,7 +135,7 @@ private fun MissionCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(6.dp))
-                    SourcePathLine(mission.sourcePath)
+                    mission.sourcePaths.forEach { path -> SourcePathLine(path) }
                 }
 
                 Spacer(Modifier.width(8.dp))

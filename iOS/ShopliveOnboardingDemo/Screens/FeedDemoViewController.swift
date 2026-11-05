@@ -2,8 +2,8 @@
 //  FeedDemoViewController.swift  (S3 · home feed variant)
 //  ShopliveOnboardingDemo — demo harness (not a copy target)
 //
-//  The demo shell for mission 4. It only owns the feed cards, callouts, and control buttons — the SDK
-//  embedding is handled entirely by ShopliveIntegration/EmbeddedPlayerView.swift.
+//  The demo shell for the inline-preview mission (native). It only owns the feed cards, callouts, and
+//  control buttons — the SDK embedding is handled entirely by ShopliveIntegration/EmbeddedPlayerView.swift.
 //
 
 import UIKit
@@ -12,8 +12,8 @@ import ShoplivePlayerSDK
 final class FeedDemoViewController: UIViewController {
 
     private let campaignKey: String
-    /// ★ The embed uses the **preview preset** (the SDK's `.preview`).
-    ///   PIP off, overlay hidden, muteOnStart, and resizeMode .fill are all applied at once.
+    /// ★ The embed uses the **preview preset** (the SDK's `.preview`): preview stream, muted start and
+    ///   hidden overlay at once — see PlayerConfigurationFactory.embeddedPreview().
     private lazy var embedded = EmbeddedPlayerView(
         configuration: DemoConfigBuilder.makeConfiguration(.embeddedPreview)
     )
@@ -38,11 +38,13 @@ final class FeedDemoViewController: UIViewController {
         buildFeed()
 
         embedded.delegate = DemoPlayerDelegate.shared
-        DemoPlayerDelegate.shared.onPlaybackReached = { MissionProgress.shared.markDone(4) }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // Whenever the feed is visible again its embed is the inline mission's player (owner) — also when
+        // it kept playing behind another screen, so a mission run meanwhile does not keep the slot (M3 · I7).
+        MissionProgress.shared.startMission(.inline, owner: embedded.player)
         if embedded.state == .idle || embedded.state == .closed {
             embedded.play(campaignKey: campaignKey,
                           options: DemoConfigBuilder.makePlayOptions())
@@ -53,7 +55,6 @@ final class FeedDemoViewController: UIViewController {
         super.viewWillDisappear(animated)
         if isMovingFromParent || isBeingDismissed {
             embedded.stop()
-            DemoPlayerDelegate.shared.onPlaybackReached = nil
         }
     }
 
@@ -69,17 +70,28 @@ final class FeedDemoViewController: UIViewController {
     }
 
     @objc private func expandToFullScreen() {
-        // After promotion we are full screen, so switch to the **live preset**.
-        embedded.expandToFullScreen(from: self,
-                                    options: DemoConfigBuilder.makePlayOptions(),
-                                    configuration: DemoConfigBuilder.makeConfiguration(.fullScreenLive),
-                                    delegate: DemoPlayerDelegate.shared)
+        // A full-screen session — close any other one first (the embed itself is not closed by this).
+        DevSheetViewController.replaceCurrentSession { [weak self] in
+            guard let self else { return }
+            // After promotion we are full screen, so switch to the **live preset**. Presented from the
+            // top-most screen, like the hybrid list (I4).
+            guard let player = self.embedded.expandToFullScreen(
+                from: DeepLinkRouter.topViewController() ?? self,
+                options: DemoConfigBuilder.makePlayOptions(),
+                configuration: DemoConfigBuilder.makeConfiguration(.fullScreenLive),
+                delegate: DemoPlayerDelegate.shared) else {
+                EventLog.shared.log(.error, "demo: expand — the embed has not started playing yet, nothing to expand")
+                return
+            }
+            DemoPlayerDelegate.adopt(player)
+            DevSheetViewController.recordSession(player, presentedAs: player, for: .inline)
+        }
     }
 
     // MARK: - Feed construction
 
     private func buildFeed() {
-        let nav = DemoNavBar(title: L("feed.title"), onBack: { [weak self] in
+        let nav = DemoNavBar(title: L("feed.title", MissionCatalog.number(of: .inline)), onBack: { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         })
 

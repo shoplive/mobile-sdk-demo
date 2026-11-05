@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  ShopliveOnboardingDemo
 //
-//  ★ The actual entry point for mission 2 (deep links). Parsing and playback logic live in
+//  ★ The actual entry point for mission 4 (deep links). Parsing and playback logic live in
 //    Integration/DeepLinkRouter.swift.
 //    From this file you only need the two methods: openURLContexts, and the urlContexts handling in
 //    willConnectTo.

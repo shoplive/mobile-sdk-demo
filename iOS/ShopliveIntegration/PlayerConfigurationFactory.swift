@@ -1,6 +1,6 @@
 //
 //  PlayerConfigurationFactory.swift
-//  ★ COPY THIS — mission 7 · UI customization & repositioning
+//  ★ COPY THIS — mission 8 · UI customization & repositioning
 //
 //  ShoplivePlayerConfiguration is a bundle of "playback policy". Every field has a default, so
 //  `.init()` alone works and you override only what you want to change (design principle:
@@ -25,16 +25,13 @@ enum PlayerConfigurationFactory {
         ShoplivePlayerConfiguration.default
     }
 
+    // TODO(SDP-VERIFY): 요확인 — 3.0.4 .preview 의 pip.isInAppPipEnabled·resizeMode 값은 swiftinterface 에 없음(예전 주석의 "PIP fully off"·"resizeMode .fill" 은 근거 없어 삭제). NudgePreview.presetConfiguration() 이 넛지 시작 때 PIP 값을 로그로 남기므로 실기기 로그로 확정 · 근거 SMV-1922 S07
     /// Embedded preview — a small inline preview placed in a product list and the like.
     ///
-    /// The SDK's `.preview` preset handles all of this at once:
-    /// PIP fully off (in-App and OS) · overlay UI `.hidden` · `muteOnStart` · `resizeMode = .fill`.
-    /// This prevents a PIP window popping up from a preview slot, chat/coupon UI overlapping a tiny
-    /// thumbnail, and audio playing without the user's consent.
-    ///
-    /// - Important: This preset changes **display policy only**. The switch to a preview-only stream
-    ///   (`previewLiveUrl`) that v2's `ShopLive.preview()` also performed is not included, because
-    ///   the embedded path has no wiring for it — the stream that plays is the same as live.
+    /// The SDK's `.preview` preset (3.0.4) sets these at once (guide missions 2 · 7):
+    /// the preview stream (`type = .preview`, lower resolution) · muted start · overlay UI `.hidden`.
+    /// So several previews can play in one list on little traffic, a tiny thumbnail carries no
+    /// chat/coupon UI, and no audio plays before the viewer chooses to watch.
     static func embeddedPreview() -> ShoplivePlayerConfiguration {
         ShoplivePlayerConfiguration.preview
     }

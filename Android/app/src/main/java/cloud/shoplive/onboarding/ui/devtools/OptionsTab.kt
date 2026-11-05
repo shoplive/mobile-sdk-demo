@@ -32,6 +32,7 @@ import cloud.shoplive.onboarding.data.ChatInputFont
 import cloud.shoplive.onboarding.data.DemoOptions
 import cloud.shoplive.onboarding.data.IndicatorColor
 import cloud.shoplive.onboarding.data.LoadingAnimation
+import cloud.shoplive.onboarding.data.MissionId
 import cloud.shoplive.onboarding.integration.ShoplivePlayerSession
 import cloud.shoplive.onboarding.ui.components.GroupLabel
 import cloud.shoplive.onboarding.ui.components.OptionRow
@@ -87,12 +88,31 @@ fun OptionsTab(
             },
         )
 
-        // ── Authentication (Mission 3) ───────────────────────────────────────
-        GroupLabel(stringResource(R.string.group_auth))
-        Tip(stringResource(R.string.tip_auth))
+        // ── Authentication (user-info mission) ───────────────────────────────
+        GroupLabel(stringResource(R.string.group_auth, MissionId.USER.displayNumber))
+        Tip(stringResource(R.string.tip_auth, MissionId.USER.displayNumber))
 
-        // ── PIP (Mission 5) ──────────────────────────────────────────────────
-        GroupLabel(stringResource(R.string.group_pip))
+        // ── PIP (PIP mission) ────────────────────────────────────────────────
+        GroupLabel(stringResource(R.string.group_pip, MissionId.PIP.displayNumber))
+        Tip(stringResource(R.string.tip_pip_start))
+        CycleOption(
+            name = "PlayOptions.presentationStyle",
+            defaultHint = "FULLSCREEN",
+            value = if (options.startInPip) "PIP" else "FULLSCREEN",
+            onTap = { onChange { it.copy(startInPip = !it.startInPip) } },
+        )
+        SwitchOption(
+            name = "pip.closeButton.imageResId",
+            defaultHint = "null",
+            checked = options.pipCloseButtonImage,
+            onChange = { v -> onChange { it.copy(pipCloseButtonImage = v) } },
+        )
+        SwitchOption(
+            name = "pip.restoreButton.isHidden",
+            defaultHint = "false",
+            checked = options.pipRestoreButtonHidden,
+            onChange = { v -> onChange { it.copy(pipRestoreButtonHidden = v) } },
+        )
         SwitchOption(
             name = "pip.isInAppPipEnabled",
             defaultHint = "true",
@@ -161,8 +181,18 @@ fun OptionsTab(
             },
         )
 
-        // ── Overlay and appearance (Mission 7) ───────────────────────────────
-        GroupLabel(stringResource(R.string.group_overlay_appearance))
+        // ── Nudge preview (nudge mission) — demo policy ──────────────────────
+        GroupLabel(stringResource(R.string.group_nudge, MissionId.NUDGE.displayNumber))
+        SwitchOption(
+            name = "closeNudgeWhenNotLive",
+            defaultHint = "false",
+            checked = options.closeNudgeWhenNotLive,
+            onChange = { v -> onChange { it.copy(closeNudgeWhenNotLive = v) } },
+            warning = stringResource(R.string.tip_nudge_close_not_live),
+        )
+
+        // ── Overlay and appearance (UI mission) ──────────────────────────────
+        GroupLabel(stringResource(R.string.group_overlay_appearance, MissionId.UI.displayNumber))
         CycleOption(
             name = "overlay.ui",
             defaultHint = "BUILT_IN",
@@ -317,6 +347,13 @@ fun OptionsTab(
                         )
                     }
                 },
+            )
+            SwitchOption(
+                name = "navigation.isCustomShareEnabled",
+                defaultHint = "false",
+                checked = options.isCustomShareEnabled,
+                onChange = { v -> onChange { it.copy(isCustomShareEnabled = v) } },
+                warning = stringResource(R.string.warn_custom_share),
             )
             SwitchOption(
                 name = "navigation.closeWhenAppDestroyed",

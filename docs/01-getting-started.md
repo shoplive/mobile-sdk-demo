@@ -17,11 +17,11 @@ You need three values. All of them come from the ShopLive Queenie console or fro
 |---|---|---|
 | **accessKey** | Everything | `Shoplive.initialize(...)`, once per app launch |
 | **campaignKey** | Playing a specific broadcast | Every `start` / `play` call |
-| **streamToken** | Broadcasting only (Mission 8) | `Shoplive.setStreamToken(...)` |
+| **streamToken** | Broadcasting only (Mission 9) | `Shoplive.setStreamToken(...)` |
 
 Neither platform needs repository credentials: iOS pulls the SDK through SPM from a public GitHub repository, Android from the public Maven repository at `https://sdk.shoplive.cloud/maven-repo`.
 
-> **Tip:** You can complete Missions 1–7 with just `accessKey` + `campaignKey`. Mission 8 stays locked until a `streamToken` is present, because there is no way to start a broadcast without one.
+> **Tip:** You can complete Missions 1–8 with just `accessKey` + `campaignKey`. Mission 9 stays locked until a `streamToken` is present, because there is no way to start a broadcast without one.
 
 ---
 
@@ -60,13 +60,13 @@ Xcode directly — there is no regeneration step.
 enum DemoDefaults {
     static let accessKey   = "…"   // your Queenie access key
     static let campaignKey = "…"   // a campaign that is currently on air
-    static let streamToken = ""    // Mission 8 only — intentionally empty, see below
+    static let streamToken = ""    // Mission 9 only — intentionally empty, see below
 }
 ```
 
 If these are filled in, the app skips the start screen and goes straight to the mission list. If you leave them empty, the app asks the user to type them in on the start screen — which is exactly what you want when handing the build to someone else. Values typed by the user stay on the device (access/campaign keys in `UserDefaults`, the stream token in the Keychain) and are never sent anywhere.
 
-> **`streamToken` ships empty on purpose.** A stream token grants **broadcast permission**, so it is not kept in source control. Missions 1–7 need no token and run with no typing; Mission 8 stays locked until you enter one on the start screen. The access and campaign keys are identifiers rather than secrets, which is why they can live in source.
+> **`streamToken` ships empty on purpose.** A stream token grants **broadcast permission**, so it is not kept in source control. Missions 1–8 need no token and run with no typing; Mission 9 stays locked until you enter one on the start screen. The access and campaign keys are identifiers rather than secrets, which is why they can live in source.
 
 **Code signing:** the app target sets `DEVELOPMENT_TEAM` in its build settings. Simulator builds work on any machine (signing is disabled for the simulator SDK), but for a device build you must select your own team in Signing & Capabilities and use your own bundle ID.
 
@@ -176,7 +176,7 @@ This demo declares them the same way, as plain coordinates in [`Android/integrat
 <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 ```
 
-Runtime permission prompts are handled for you by `ShopliveStreamer.start()`. (If you build the Intent yourself with `intent()`, they are not — see [Mission 8](mission-08-go-live.md).)
+Runtime permission prompts are handled for you by `ShopliveStreamer.start()`. (If you build the Intent yourself with `intent()`, they are not — see [Mission 9](mission-09-go-live.md).)
 
 ---
 
@@ -217,7 +217,7 @@ ShoplivePlayer(activity).start(campaignKey = "{CAMPAIGN_KEY}")
 
 Three things are worth internalizing right now, because they cause the majority of "nothing happens" reports:
 
-1. **Initialization is once per app, not once per playback.** Calling `present`/`start` before `initialize` fails with `notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (code 9000). Put it in `AppDelegate` / `Application.onCreate()` so that even a cold start from a deep link is covered — see [Mission 2](mission-02-deep-link.md).
+1. **Initialization is once per app, not once per playback.** Calling `present`/`start` before `initialize` fails with `notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (code 9000). Put it in `AppDelegate` / `Application.onCreate()` so that even a cold start from a deep link is covered — see [Mission 4](mission-04-deep-link.md).
 2. **On Android the context must be an Activity.** `ShoplivePlayer(context)` requires a `LifecycleOwner`. Pass `applicationContext` and the SDK silently refuses to start, leaving only a warning in logcat.
 3. **The delegate is weakly held on both platforms.** If nothing in your app owns it strongly, events stop arriving and you get no error telling you why. See [Mission 6](mission-06-events-products-coupons.md).
 
@@ -229,7 +229,7 @@ Three things are worth internalizing right now, because they cause the majority 
 |---|---|
 | See what the demo app actually does, screen by screen | [Demo App Tour](02-demo-app-tour.md) |
 | Understand which files to copy and which to ignore | [Architecture & Copy Boundary](03-architecture.md) |
-| Start integrating feature by feature | [Mission 1 — Open the player](mission-01-open-the-player.md) |
+| Start integrating feature by feature | [Mission 1 — Launch the Player Directly](mission-01-open-the-player.md) |
 | Look up a specific type or field | [API Reference](api-reference.md) |
 | Check something that isn't behaving as documented | [Known Issues & Troubleshooting](known-issues.md) |
 

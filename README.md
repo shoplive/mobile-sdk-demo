@@ -1,6 +1,8 @@
 # ShopLive SDK v3 — Mobile Onboarding Demo
 
-Demo apps — **iOS (UIKit)**, **Android (Jetpack Compose)** and **Flutter** — that walk you through integrating the ShopLive SDK v3, one feature at a time. Each app shows 8 missions; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
+Demo apps — **iOS (UIKit)**, **Android (Jetpack Compose)** and **Flutter** — that walk you through integrating the ShopLive SDK v3, one feature at a time. The iOS and Android apps show the **9 missions of the integration guide's mission map** (SDK 3.0.4), in the guide's order and under the guide's titles; tapping a card runs the real SDK feature and tells you which file produced it. These docs are the written companion to that walkthrough.
+
+> **Flutter is not renumbered yet.** The Flutter demo still shows the **earlier 8 missions** (SDK 3.0.2, before the guide moved to the 9-mission map), with the earlier numbers — so its "Mission 2" is the deep link, not the nudge. [Flutter/README.md](Flutter/README.md) uses those numbers.
 
 > **📘 Official integration guide: <https://sdk.shoplive.cloud/>**
 >
@@ -22,18 +24,21 @@ Then work through the missions in order. Each one is self-contained: what you're
 
 ---
 
-## The 8 missions
+## The 9 missions
 
-| # | Mission | What it covers | Source |
+The numbers and titles are the [integration guide's mission map](https://sdk.shoplive.cloud/#mission-map); each mission links its guide section (`#m1` … `#m9`).
+
+| # | Mission | What it covers | Source (iOS · Android) |
 |---|---|---|---|
-| **1** | [Open the player](docs/mission-01-open-the-player.md) | `initialize` + full-screen playback | `PlayerLauncher` |
-| **2** | [Open from a deep link](docs/mission-02-deep-link.md) | Push/SMS/web → playback, and cold-start ordering | `DeepLinkRouter` |
-| **3** | [Connect member info](docs/mission-03-user-identity.md) | Token / profile / guest, ID hashing, logout | `UserSetup` |
-| **4** | [Embed in your screen](docs/mission-04-embed-in-your-screen.md) | `ShoplivePlayerView` inside your own layout | `EmbeddedPlayerView` · `FeedScreen` |
-| **5** | [Keep watching in PIP](docs/mission-05-pip.md) | in-app PIP vs. OS PIP, host hand-off | `PipOptions` |
-| **6** | [Events · products · coupons](docs/mission-06-events-products-coupons.md) | ⭐ The delegate — events vs. requests | `DemoPlayerDelegate` |
-| **7** | [Customize the UI](docs/mission-07-ui-customization.md) | Colors, fonts, or replacing the overlay entirely | `PlayerConfigurationFactory` |
-| **8** | [Go live](docs/mission-08-go-live.md) | Broadcasting from the SDK's studio | `StudioLauncher` |
+| **1** | [Launch the Player Directly](docs/mission-01-open-the-player.md) | `initialize` + full-screen playback | `PlayerLauncher` · `ShoplivePlayerLauncher` |
+| **2** | [Nudge-Style Preview](docs/mission-02-nudge-preview.md) | A muted small window over a product page that invites viewers in; tap to go full screen | `NudgePreview` · `ShopliveNudgePreview` |
+| **3** | [Keep Watching in PIP](docs/mission-03-pip.md) | in-app PIP vs. OS PIP, why the player is presented as itself, starting in PIP and PIP buttons (3.0.4) | `PipOptions` · `ShoplivePipPresets` |
+| **4** | [Launch via Deep Link](docs/mission-04-deep-link.md) | Push/SMS/web → playback, and cold-start ordering | `DeepLinkRouter` · `ShopliveDeepLinkRouter` |
+| **5** | [Connect User Information](docs/mission-05-user-identity.md) | Token / profile / guest, ID hashing, logout | `UserSetup` · `ShopliveUserSetup` |
+| **6** | [Events · Products · Coupons](docs/mission-06-events-products-coupons.md) | ⭐ The delegate — events vs. requests, close reason and custom share (3.0.4) | `DemoPlayerDelegate` · `ShoplivePlayerEventLogger` |
+| **7** | [Add Inline Previews to a List Screen](docs/mission-07-embed-in-your-screen.md) | Native: `ShoplivePlayerView` in your layout. Hybrid: a web list hands one `campaignKey` to the app | `EmbeddedPlayerView` + `WebBridge` · `ShopliveEmbeddedPlayer` + `ShopliveWebBridge` |
+| **8** | [UI Customization & Placement](docs/mission-08-ui-customization.md) | Colors, fonts, or replacing the overlay entirely | `PlayerConfigurationFactory` · `ShoplivePlayerPresets` |
+| **9** | [Broadcasting](docs/mission-09-go-live.md) | Broadcasting from the SDK's studio | `StudioLauncher` · `ShopliveStudioLauncher` |
 
 **If you only read one, read Mission 6.** Everything else is configuration; the delegate is where your app actually participates.
 
@@ -87,10 +92,10 @@ Everything after that is refinement. Guide: [Quick start](https://sdk.shoplive.c
 
 Each of these has burned someone already. Details are in the linked docs.
 
-1. **Initialize once per app, not per playback.** Playing before `initialize` fails with code 9000, and it bites hardest on a deep-link cold start. → [Mission 1](docs/mission-01-open-the-player.md), [Mission 2](docs/mission-02-deep-link.md)
+1. **Initialize once per app, not per playback.** Playing before `initialize` fails with code 9000, and it bites hardest on a deep-link cold start. → [Mission 1](docs/mission-01-open-the-player.md), [Mission 4](docs/mission-04-deep-link.md)
 2. **Android: the context must be an Activity.** `applicationContext` makes the SDK refuse to start with only a logcat warning — the button just looks dead. → [Mission 1](docs/mission-01-open-the-player.md)
 3. **Something must own the delegate.** It's weakly held on iOS and instance-owned on Android; drop it and events stop silently. → [Mission 6](docs/mission-06-events-products-coupons.md)
-4. **Configuration is immutable once playback starts.** Mid-session assignments are ignored. Runtime changes go through runtime properties (`isMuted`, `resizeMode`, `overlayUI`). → [Mission 7](docs/mission-07-ui-customization.md)
+4. **Configuration is immutable once playback starts.** Mid-session assignments are ignored. Runtime changes go through runtime properties (`isMuted`, `resizeMode`, `overlayUI`). → [Mission 8](docs/mission-08-ui-customization.md)
 5. **Don't treat "no error event" as "everything is fine."** On iOS `stateChanged` never fires during healthy playback; on Android a missing stream produces 404 loops with no `error` at all. Judge playback from `playback(started/rendering)` and count failures yourself. → [Known Issues](docs/known-issues.md)
 
 ---
@@ -106,17 +111,20 @@ mobile-sdk-demo/
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
 │   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.4
 │   └── scripts/                   boundary scanner
-├── Flutter/                     same 8 missions on the Flutter SDK 3.0.2 → Flutter/README.md
+├── Flutter/                     the earlier 8 missions on the Flutter SDK 3.0.2 → Flutter/README.md
 │   ├── lib/shoplive_integration/ ★ COPY THIS — SDK calls only, boundary enforced by flutter test
 │   └── lib/demo/                  demo harness (screens · developer sheet · strings)
-└── Android/
-    └── app/src/main/java/cloud/shoplive/onboarding/
-        ├── sdk/                 ★ COPY THIS — SDK calls, with KDoc on the "why"
-        ├── ui/                    Compose screens, developer sheet, theme
-        └── data/                  credentials, options, log, progress, locale
+├── Android/
+│   ├── integration/             ★ COPY THIS — the :integration module, SDK calls with KDoc on the "why"
+│   ├── app/src/main/java/cloud/shoplive/onboarding/
+│   │   ├── ui/                    Compose screens, developer sheet, theme
+│   │   ├── data/                  credentials, options, log, progress, locale
+│   │   └── demo/                  wiring between the two (log bridge, options → configuration, labels)
+│   └── scripts/                   boundary scanner
+└── scripts/                     docs and string checks (docs_link_check.py, format_args_check.py)
 ```
 
-The `Integration` / `sdk` split is not just a convention — on iOS it's **enforced by the compiler**. A dedicated `IntegrationCopyPasteProof` target builds `ShopliveIntegration/**` and nothing else, so a single dependency on the demo harness breaks the build. → [Architecture](docs/03-architecture.md)
+The copy-target split is not just a convention — on both platforms it's **enforced by the compiler**. On iOS a dedicated `IntegrationCopyPasteProof` target builds `ShopliveIntegration/**` and nothing else; on Android `:integration` is its own module that cannot see `:app`. A single dependency on the demo harness breaks the build. → [Architecture](docs/03-architecture.md)
 
 ---
 
@@ -129,7 +137,7 @@ The `Integration` / `sdk` split is not just a convention — on iOS it's **enfor
 [Demo App Tour](docs/02-demo-app-tour.md) → [Platform Differences](docs/platform-differences.md) → [Known Issues](docs/known-issues.md).
 
 **Migrating from v2**
-[API Reference § v3 renames](docs/api-reference.md#v3-renames-ios-breaking) → [Known Issues § guide vs. API](docs/known-issues.md#where-the-guide-and-the-api-disagree) → [v2 → v3 migration guide](https://sdk.shoplive.cloud/#migration).
+[API Reference § v3 renames](docs/api-reference.md#v3-renames-ios-breaking) → [Known Issues § guide vs. API](docs/known-issues.md#where-the-guide-and-the-api-disagree). (The 3.0.4 guide no longer has a v2 → v3 migration section; for 3.0.3 → 3.0.4 see [the guide](https://sdk.shoplive.cloud/#upgrade-304).)
 
 **Debugging something right now**
 [Known Issues § Troubleshooting by symptom](docs/known-issues.md#troubleshooting-by-symptom).

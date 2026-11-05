@@ -263,12 +263,14 @@ final class StartViewController: UIViewController {
         qrButton.addTarget(self, action: #selector(scanQR), for: .touchUpInside)
 
         let inner = UIStackView.demo(.vertical, spacing: 11, [
-            DemoTipView(.info, L("start.form.tip")),
+            DemoTipView(.info, L("start.form.tip", MissionCatalog.number(of: .studio))),
             qrButton,
             fieldGroup(L("start.field.accessKey"), accessKeyField, hint: L("start.field.accessKey.hint")),
             fieldGroup(L("start.field.campaignKey"), campaignKeyField, hint: L("start.field.campaignKey.hint")),
-            fieldGroup(L("start.field.streamToken"), streamTokenField, hint: L("start.field.streamToken.hint")),
-            fieldGroup(L("start.field.userJwt"), userJwtField, hint: L("start.field.userJwt.hint")),
+            fieldGroup(L("start.field.streamToken", MissionCatalog.number(of: .studio)), streamTokenField,
+                       hint: L("start.field.streamToken.hint")),
+            fieldGroup(L("start.field.userJwt", MissionCatalog.number(of: .user)), userJwtField,
+                       hint: L("start.field.userJwt.hint", MissionCatalog.number(of: .user))),
         ])
         inner.isLayoutMarginsRelativeArrangement = true
         inner.layoutMargins = UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)

@@ -163,3 +163,7 @@ playground.xcworkspace
 # bottom of the file. Without the jar, `./gradlew` fails on any fresh clone and in
 # CI with "Could not find or load main class org.gradle.wrapper.GradleWrapperMain".
 !gradle/wrapper/gradle-wrapper.jar
+
+# Spec pipeline runtime artifacts (per-ticket, not versioned)
+.spec-state/
+__pycache__/

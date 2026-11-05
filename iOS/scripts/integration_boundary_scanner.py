@@ -35,11 +35,14 @@ FORBIDDEN = [
     "DemoButton",
     "DemoToast",
     "DevSheetViewController",
-    "PlayerHostViewController",
+    "DemoPlayerViewController",
     "MissionListViewController",
     "StartViewController",
     "ProductDetailViewController",
     "FeedDemoViewController",
+    "NudgeProductViewController",
+    "HybridListViewController",
+    "MissionID",
 ]
 
 # The localization helper L("...") depends on the harness's DemoStrings.
@@ -66,7 +69,10 @@ def strip_comments(source: str) -> str:
 
 
 def main() -> int:
-    root = Path(sys.argv[1] if len(sys.argv) > 1 else "ShopliveIntegration")
+    # Default: the ShopliveIntegration/ next to this script's parent, so the scanner works from any
+    # working directory (repo root or iOS/).
+    default_root = Path(__file__).resolve().parent.parent / "ShopliveIntegration"
+    root = Path(sys.argv[1]) if len(sys.argv) > 1 else default_root
     files = sorted(root.rglob("*.swift"))
 
     print(f"[boundary] scanning ShopliveIntegration/ — {root} · {len(files)} .swift file(s)")

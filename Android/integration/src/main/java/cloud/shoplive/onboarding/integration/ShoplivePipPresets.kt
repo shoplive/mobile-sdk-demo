@@ -3,7 +3,9 @@ package cloud.shoplive.onboarding.integration
 import cloud.shoplive.player.ShopliveInsets
 import cloud.shoplive.player.ShoplivePipPosition
 import cloud.shoplive.player.ShoplivePipRatio
+import cloud.shoplive.player.ShoplivePlayOptions
 import cloud.shoplive.player.ShoplivePlayerConfiguration
+import cloud.shoplive.player.ShoplivePlayerPresentationStyle
 
 /**
  * Keeping the stream visible after the viewer leaves the player.
@@ -27,6 +29,13 @@ import cloud.shoplive.player.ShoplivePlayerConfiguration
  * With `navigation.actionOnNavigation = PIP`, the SDK switches to PIP by itself
  * when a product tap navigates away. "Tap a product, video shrinks into a corner"
  * is that value, not something you implement.
+ *
+ * ## Starting in PIP, and the PIP buttons (3.0.4+)
+ * [startInPip] skips full screen and opens straight in the in-App PIP window — for a
+ * viewer who came in through a notification and wants to keep the screen they are
+ * on. A viewer who has not started watching yet gets a nudge preview instead (see
+ * `ShopliveNudgePreview`). [withButtons] swaps or hides the window's close and
+ * restore buttons.
  */
 object ShoplivePipPresets {
 
@@ -92,4 +101,34 @@ object ShoplivePipPresets {
             isInAppPipEnabled = false,
             isOSPipEnabled = false,
         )
+
+    /**
+     * Play options that open the session in the in-App PIP window instead of full
+     * screen (3.0.4+). The default `presentationStyle` is FULLSCREEN, so existing code
+     * is unaffected.
+     *
+     * Needs `pip.isInAppPipEnabled = true` (the default). Use
+     * `ShoplivePlayer.start()`; an Intent from `intent()` always opens full screen and
+     * ignores this.
+     */
+    fun startInPip(base: ShoplivePlayOptions = ShoplivePlayOptions()): ShoplivePlayOptions =
+        base.copy(presentationStyle = ShoplivePlayerPresentationStyle.PIP)
+
+    /**
+     * The in-App PIP window's close and restore buttons (3.0.4+). Leaving both at
+     * their defaults keeps the SDK's own buttons.
+     *
+     * @param closeImageResId a drawable from **your** app for the close button, or
+     *   null for the SDK image. An Int on purpose: this file must not reference any
+     *   particular app's `R` class.
+     * @param hideRestore true hides the "back to full screen" button.
+     */
+    fun withButtons(
+        pip: ShoplivePlayerConfiguration.PipOptions = ShoplivePlayerConfiguration.PipOptions(),
+        closeImageResId: Int? = null,
+        hideRestore: Boolean = false,
+    ): ShoplivePlayerConfiguration.PipOptions = pip.copy(
+        closeButton = ShoplivePlayerConfiguration.ButtonOptions(imageResId = closeImageResId),
+        restoreButton = ShoplivePlayerConfiguration.ButtonOptions(isHidden = hideRestore),
+    )
 }

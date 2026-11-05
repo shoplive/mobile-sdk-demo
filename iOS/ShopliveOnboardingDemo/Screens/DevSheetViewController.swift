@@ -161,7 +161,7 @@ final class DevSheetViewController: UIViewController {
     private func renderOptions() {
         let store = DemoConfigStore.shared
 
-        contentStack.addArrangedSubview(group(L("dev.group.auth")))
+        contentStack.addArrangedSubview(group(L("dev.group.auth", MissionCatalog.number(of: .user))))
         contentStack.addArrangedSubview(row("setUser", "guest", store.authMode.rawValue) {
             let all = DemoConfigStore.AuthMode.allCases
             let next = all[(all.firstIndex(of: store.authMode)! + 1) % all.count]
@@ -169,7 +169,7 @@ final class DevSheetViewController: UIViewController {
             DemoAuthApplier.applyCurrentSelection()
         })
 
-        contentStack.addArrangedSubview(group(L("dev.group.pip")))
+        contentStack.addArrangedSubview(group(L("dev.group.pip", MissionCatalog.number(of: .pip))))
         contentStack.addArrangedSubview(sliderRow("pip.scale", "0.4", value: Float(store.pipScale),
                                                   min: 0.2, max: 0.8) { store.pipScale = CGFloat($0) })
         contentStack.addArrangedSubview(row("pip.defaultPosition", "bottomRight", store.pipPosition.logLabel) {
@@ -183,8 +183,21 @@ final class DevSheetViewController: UIViewController {
         contentStack.addArrangedSubview(row("navigation.actionOnNavigation", "pip", store.actionOnNavigation.logLabel) {
             store.actionOnNavigation = store.actionOnNavigation.next
         })
+        contentStack.addArrangedSubview(row("ShoplivePlayOptions.presentationStyle", "fullScreen",
+                                            store.startInPip ? "pip" : "fullScreen") {
+            store.startInPip.toggle()
+        })
+        contentStack.addArrangedSubview(row("pip.closeButton · restoreButton", "default",
+                                            store.customPipButtons ? "symbol · hidden" : "default") {
+            store.customPipButtons.toggle()
+        })
 
-        contentStack.addArrangedSubview(group(L("dev.group.overlay")))
+        contentStack.addArrangedSubview(group(L("dev.group.nudge", MissionCatalog.number(of: .nudge))))
+        contentStack.addArrangedSubview(row("closeNudgeWhenNotLive", "false", "\(store.closeNudgeWhenNotLive)") {
+            store.closeNudgeWhenNotLive.toggle()
+        })
+
+        contentStack.addArrangedSubview(group(L("dev.group.overlay", MissionCatalog.number(of: .ui))))
         contentStack.addArrangedSubview(row("overlay.ui", "builtIn", store.overlayUI.logLabel) {
             store.overlayUI = store.overlayUI.toggled
             if let player = Self.activePlayer {
@@ -215,7 +228,16 @@ final class DevSheetViewController: UIViewController {
             guard let player = Self.activePlayer else {
                 EventLog.shared.log(.error, "reload() — " + L("dev.error.noPlayer")); return
             }
+            // reload() is stop + play: stop() lets go of a floating player, which then has nothing
+            // holding it. Return to full screen first.
+            guard !player.isInPictureInPicture else {
+                EventLog.shared.log(.error, "reload() — skipped while in PIP; return to full screen first")
+                return
+            }
             player.reload()
+            // reload() is stop + play, and the stop reports `.closed` — which clears this record while
+            // the session lives on. Without it the gate would see no session and open a second one.
+            Self.activePlayer = player
             EventLog.shared.log(.sdk, "reload() — restart the current campaign (stop→play)")
         })
         contentStack.addArrangedSubview(actionRow("send(command:)", L("dev.action.send")) {
@@ -224,11 +246,13 @@ final class DevSheetViewController: UIViewController {
             }
             DemoPlayerDelegate.sendHighlightProduct(sku: "A-1024", to: player)
         })
-        contentStack.addArrangedSubview(actionRow("enter/exitPictureInPicture()", L("dev.action.toggle")) {
+        contentStack.addArrangedSubview(actionRow("enter/exitPictureInPicture()", L("dev.action.toggle")) { [weak self] in
             guard let player = Self.activePlayer else {
                 EventLog.shared.log(.error, "PIP — " + L("dev.error.noPlayer")); return
             }
-            PipSetup.toggle(player)
+            // This sheet first: with it up, the SDK's dismiss on entering PIP would take down the sheet
+            // instead of the player, leaving the full-screen player behind the small window.
+            self?.dismiss(animated: true) { PipSetup.toggle(player) }
         })
 
         contentStack.addArrangedSubview(group(L("dev.group.advanced")))
@@ -256,6 +280,9 @@ final class DevSheetViewController: UIViewController {
         })
         contentStack.addArrangedSubview(row("navigation.shareScheme", "nil", store.shareScheme ?? "nil") {
             store.shareScheme = store.shareScheme == nil ? "shopliveDemo://share" : nil
+        })
+        contentStack.addArrangedSubview(row("navigation.isCustomShareEnabled", "false", "\(store.isCustomShareEnabled)") {
+            store.isCustomShareEnabled.toggle()
         })
         contentStack.addArrangedSubview(row("customParameters", "{}",
                                             store.customParameters.isEmpty ? "{}" : "{tier:vip}") {
@@ -421,5 +448,172 @@ final class DevSheetViewController: UIViewController {
             footer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             footer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+    }
+}
+
+// MARK: - Session switch (SMV-1922 §1 ⑥)
+//
+// `activePlayer` above is the app's one record of "the session on screen". Opening a new one goes
+// through `replaceCurrentSession(then:)` so that record and the screen never hold two sessions.
+
+extension DevSheetViewController {
+
+    /// How long to wait for the previous session to finish closing before opening the next one anyway
+    /// (CG-8). Only a fallback — normally the dismiss completion or `.closed` arrives first.
+    static let sessionCloseTimeout: TimeInterval = 1.0
+
+    /// The newest request's `open` while a switch is waiting; nil when idle. A request that arrives
+    /// during the wait replaces it, so overlapping taps (hybrid list, a deep link mid-switch) wait for
+    /// the same close and open exactly one player — the earlier request is dropped (S39 · S46).
+    private static var pendingOpen: (() -> Void)?
+
+    /// A switch is waiting. Automatic requests (e.g. the nudge re-showing itself on viewDidAppear) skip
+    /// themselves while this is true, so they never replace a request the user made (a deep link).
+    static var isSwitchingSession: Bool { pendingOpen != nil }
+
+    /// Closes the session on screen, waits until it is really gone, then calls `open` (main thread).
+    ///
+    /// iOS does not do this for us — Android 3.0.4's `start()` closes other sessions, the iOS SDK does
+    /// not (guide L513-514) — and a second session left floating makes the new one's PIP promotion fail
+    /// silently (PipOptions.swift, condition ④). Every path that opens a full-screen or floating player
+    /// comes through here: cards, the nudge, the hybrid list, the feed's expand, and deep links
+    /// (DeepLinkRouter.beforePresent).
+    ///
+    /// An embedded view (the feed) is not a session here and is never closed — guide L514.
+    static func replaceCurrentSession(then open: @escaping () -> Void) {
+        if pendingOpen != nil {
+            EventLog.shared.log(.sdk, "demo: session switch already waiting — the newer request replaces the earlier one (dropped)")
+            pendingOpen = open
+            return
+        }
+        pendingOpen = open
+        var finished = false
+        var closedObserver: NSObjectProtocol?
+
+        func proceed(_ how: String) {
+            guard !finished else { return }
+            finished = true
+            if let closedObserver { NotificationCenter.default.removeObserver(closedObserver) }
+            let next = pendingOpen
+            pendingOpen = nil
+            EventLog.shared.log(.sdk, "demo: session switch — previous session \(how) → opening the next one")
+            next?()
+        }
+
+        /// A screen that is still moving cannot be presented over — continue when its transition ends.
+        func afterTransition(of controller: UIViewController, _ next: @escaping () -> Void) {
+            controller.transitionCoordinator?.animate(alongsideTransition: nil) { _ in next() }
+        }
+
+        /// A screen in transition: one leaving → go ahead once it is gone; one arriving → it may be a
+        /// session that is not on record yet — every presenting start path records itself through
+        /// `recordSession(_:presentedAs:for:)` only when its transition ends — so judge again after that.
+        /// The re-judgement hops one main-queue turn so it runs after every completion of that
+        /// transition, `recordSession`'s included.
+        func waitFor(_ moving: UIViewController) {
+            if moving.isBeingPresented {
+                afterTransition(of: moving) { DispatchQueue.main.async { run() } }
+            } else {
+                afterTransition(of: moving) { proceed("finished dismissing") }
+            }
+        }
+
+        /// The one fallback: go ahead once if no signal arrives (CG-8 constant above). Re-arming replaces
+        /// the previous deadline, so a re-judgement that starts closing gets the full wait (F2).
+        var deadline = 0
+        func scheduleTimeout() {
+            deadline += 1
+            let armed = deadline
+            // TODO(SDP-VERIFY): 요확인 — dismiss completion / .closed 가 오지 않을 때 sessionCloseTimeout(1.0s) 뒤 1회 진행이 맞는지, stop() 이 세션을 끝내는지(N1)·넛지 close() 후 PIP 창이 정리되는 시점(R3-1) 실측 · 근거 SMV-1922 S35·U15
+            DispatchQueue.main.asyncAfter(deadline: .now() + sessionCloseTimeout) {
+                guard armed == deadline else { return }
+                proceed("did not report closing within \(sessionCloseTimeout)s (timeout fallback)")
+            }
+        }
+
+        /// Judges, and — unless that already went ahead — arms the timeout for what it started.
+        func run() {
+            evaluate()
+            if !finished { scheduleTimeout() }
+        }
+
+        /// Judges the session on record and starts closing it. Re-run after a screen finishes arriving.
+        func evaluate() {
+            guard !finished else { return }     // the timeout already went ahead — touch nothing
+
+            guard let current = activePlayer as? ShoplivePlayerViewController else {
+                // No session on record — but '‹ List' and the SDK's own close clear the record before
+                // their screen is gone (I1), and cards record theirs only once presented (I4).
+                if let moving = controllerInTransition() {
+                    waitFor(moving)
+                } else {
+                    proceed("none")
+                }
+                return
+            }
+            // Still arriving: keep the record and judge again once it is on screen (F1 b).
+            if current.isBeingPresented {
+                waitFor(current)
+                return
+            }
+            activePlayer = nil
+
+            if current.presentingViewController != nil {
+                if current.isBeingDismissed {
+                    // Already leaving ('‹ List', or the SDK closing itself): wait for that transition
+                    // rather than dismissing twice.
+                    waitFor(current)
+                } else {
+                    // Same order as the '‹ List' button: end the session, then take the screen down. The
+                    // dismiss completion is the "gone" signal (`.closed` is not — by then the SDK may
+                    // already be dismissing on its own).
+                    if current.state != .closed { current.stop() }
+                    current.presentingViewController?.dismiss(animated: false) { proceed("dismissed") }
+                }
+            } else if current.state != .closed {
+                // Floating with no modal (a player in PIP, the nudge's small window): close() it and wait for its
+                // own `.closed` — the PIP window has to be gone before the next session can promote (R3-1).
+                closedObserver = DemoPlayerDelegate.observeMilestones(of: current) { _, milestone in
+                    if case .closed = milestone { proceed("closed") }
+                }
+                current.close()
+            } else if let moving = controllerInTransition() {
+                waitFor(moving)
+            } else {
+                proceed("already closed")
+            }
+        }
+
+        run()
+    }
+
+    /// Records `player` as the session on screen — and starts its mission — once `presented` has
+    /// finished appearing. Every presenting start
+    /// path goes through here, so the gate sees the same thing on every path: until then the
+    /// presentation is in the window's chain and the gate waits for it (F1 a).
+    static func recordSession(_ player: ShoplivePlayerViewController,
+                              presentedAs presented: UIViewController,
+                              for mission: MissionID) {
+        let record = {
+            activePlayer = player
+            MissionProgress.shared.startMission(mission, owner: player)
+        }
+        if let coordinator = presented.transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { _ in record() }
+        } else {
+            record()        // not animating (already on screen) — record now
+        }
+    }
+
+    /// The first controller in the key window's presentation chain that is being presented or
+    /// dismissed, if any.
+    private static func controllerInTransition() -> UIViewController? {
+        let windows = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows)
+        var controller = (windows.first(where: \.isKeyWindow) ?? windows.first)?.rootViewController
+        while let current = controller {
+            if current.isBeingDismissed || current.isBeingPresented { return current }
+            controller = current.presentedViewController
+        }
+        return nil
     }
 }

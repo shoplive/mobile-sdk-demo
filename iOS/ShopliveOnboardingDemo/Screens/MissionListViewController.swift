@@ -3,8 +3,11 @@
 //  ShopliveOnboardingDemo — demo harness (not a copy target)
 //
 //  Effectively the app's only menu. Tapping a card runs it immediately (zero intermediate screens).
-//  Feature 2 shows a fake push banner and feature 3 an auth-mode action sheet over the list before
-//  running.
+//  The deep-link card shows a fake push banner, the user-info card an auth-mode action sheet, and the
+//  inline-preview card a native/hybrid choice over the list before running.
+//
+//  Cards, numbers and the "verified" marks come from MissionCatalog / MissionProgress and are keyed by
+//  MissionID — nothing here branches on a number (SMV-1922 §1 ①).
 //
 
 import UIKit
@@ -14,7 +17,7 @@ final class MissionListViewController: UIViewController {
 
     private let scrollView = UIScrollView()
     private let stack = UIStackView()
-    private lazy var navBar = DemoNavBar(title: L("list.title", 0),
+    private lazy var navBar = DemoNavBar(title: L("list.title", 0, MissionCatalog.count),
                                         actionSymbol: "⚙",
                                         onAction: { [weak self] in self?.openSettings() })
     private lazy var fab = DemoFab(L("player.overlay.dev"))
@@ -27,35 +30,51 @@ final class MissionListViewController: UIViewController {
         wireNotifications()
         reload()
 
-        // Route product landings (navigation) to the V2 modal.
-        DemoPlayerDelegate.shared.onNavigation = { [weak self] url in
-            self?.presentProductDetail(url: url)
-        }
-
-        // Unrecoverable error handling — **we do not close the player.**
-        //
-        // This used to auto-close after a 6-second grace period, which presented as "the player
-        // screen never appears": on a campaign with no stream, playback is never reached, so the SDK
-        // screen vanished after 6 seconds. The whole point of the demo is to **show** the SDK screen,
-        // so auto-closing worked against it.
-        // Being stuck is prevented instead by `‹ List` in PlayerHostViewController — a sibling view
-        // above the player that is always tappable.
-        //
-        // Errors repeat several times a second, so a toast per error would bury the screen — we
-        // surface it once per session.
-        DemoPlayerDelegate.shared.onFatalError = { [weak self] error in
-            guard let self, !self.didNotifyPlaybackFailure else { return }
-            self.didNotifyPlaybackFailure = true
-
-            EventLog.shared.log(.sdk, "demo: showing the playback-failure notice (player kept alive) — use '‹ List' to leave")
-
-            guard let host = DeepLinkRouter.topViewController()?.view else { return }
-            DemoToast.show(L("player.failure.notice", error.code.logLabel), in: host)
+        // Product landings (navigation) → the V2 modal, and the unrecoverable-error notice. Both arrive
+        // on the delegate's milestone channel from any player, for as long as this list exists.
+        milestoneObserver = DemoPlayerDelegate.observeMilestones(of: nil) { [weak self] player, milestone in
+            switch milestone {
+            case .requestReceived(.navigation(let url)):
+                self?.presentProductDetail(url: url)
+            case .fatalError(let error):
+                self?.notifyPlaybackFailure(error, from: player)
+            default:
+                break
+            }
         }
     }
 
-    /// Notifies the user only on the first of the repeating errors (per session).
-    private var didNotifyPlaybackFailure = false
+    deinit {
+        [milestoneObserver, progressObserver].compactMap { $0 }.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+
+    private var milestoneObserver: NSObjectProtocol?
+    private var progressObserver: NSObjectProtocol?
+
+    /// The player the failure notice was last shown for — weak, so a new player is never mistaken for
+    /// an old one.
+    private weak var lastNotifiedFailurePlayer: AnyObject?
+
+    /// Unrecoverable error handling — **we do not close the player.**
+    ///
+    /// This used to auto-close after a 6-second grace period, which presented as "the player screen
+    /// never appears": on a campaign with no stream, playback is never reached, so the SDK screen
+    /// vanished after 6 seconds. The whole point of the demo is to **show** the SDK screen, so
+    /// auto-closing worked against it. Being stuck is prevented instead by `‹ List` in
+    /// DemoPlayerViewController — a sibling view above the player that is always tappable.
+    ///
+    /// Errors repeat several times a second, so a toast per error would bury the screen — the notice is
+    /// shown once per player (L3). Comparing players instead of resetting a flag on every start path
+    /// means no start path can forget to reset it.
+    private func notifyPlaybackFailure(_ error: ShopliveError, from player: ShoplivePlayerControlling) {
+        guard lastNotifiedFailurePlayer !== player else { return }
+        lastNotifiedFailurePlayer = player
+
+        EventLog.shared.log(.sdk, "demo: showing the playback-failure notice (player kept alive) — use '‹ List' to leave")
+
+        guard let host = DeepLinkRouter.topViewController()?.view else { return }
+        DemoToast.show(L("player.failure.notice", error.code.logLabel), in: host)
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -78,16 +97,18 @@ final class MissionListViewController: UIViewController {
         case .player:
             startPlayer(mission)
 
-        case .feed:
-            openDevSheetIfNeeded(mission)
+        case .nudge:
             navigationController?.pushViewController(
-                FeedDemoViewController(campaignKey: DemoCredentials.shared.campaignKey),
+                NudgeProductViewController(campaignKey: DemoCredentials.shared.campaignKey),
                 animated: true)
+
+        case .inline:
+            presentInlineChoice(mission)
 
         case .deeplink:
             // ★ Do not open the developer sheet first here — the sheet covers the fake push banner,
-            //   making it untappable and mission 2 impossible to complete (measured). Open the sheet
-            //   after the banner is tapped.
+            //   making it untappable and the deep-link mission impossible to complete (measured). Open
+            //   the sheet after the banner is tapped.
             showFakePushBanner()
 
         case .auth:
@@ -99,58 +120,55 @@ final class MissionListViewController: UIViewController {
     }
 
     private func startPlayer(_ mission: Mission) {
-        didNotifyPlaybackFailure = false        // new playback session — allow the failure notice again
-        // Automatic "verified" marking — the harness turns the playback-reached signal into progress.
-        DemoPlayerDelegate.shared.onPlaybackReached = { MissionProgress.shared.markDone(mission.number) }
-        openDevSheetIfNeeded(mission)
+        // One session at a time — close what is on screen (a card in PIP, a nudge, a deep link) first.
+        DevSheetViewController.replaceCurrentSession { [weak self] in
+            self?.presentPlayer(mission)
+        }
+    }
 
-        // Rather than presenting the player, we embed it as a **child of the host VC** so the demo
-        // controls are reliably on top.
+    private func presentPlayer(_ mission: Mission) {
+        // The player is presented as itself, never embedded: the SDK only takes its modal down on
+        // in-App PIP when it is its own modal (see PlayerHostOverlay.swift).
         // The minimal code to copy is the present path in ShopliveIntegration/PlayerLauncher.swift,
         // exactly as written there.
-        let player = ShoplivePlayerViewController(
+        let configuration = DemoConfigBuilder.makeConfiguration(.fullScreenLive)
+        let options = DemoConfigBuilder.makeCardPlayOptions(for: configuration)
+        let player = DemoPlayerViewController(
             campaignKey: DemoCredentials.shared.campaignKey,
-            options: DemoConfigBuilder.makePlayOptions(),
-            configuration: DemoConfigBuilder.makeConfiguration(.fullScreenLive))
-        player.delegate = DemoPlayerDelegate.shared
-        DevSheetViewController.activePlayer = player
-
-        EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → embedded into the host")
-
-        let host = PlayerHostViewController(
-            player: player,
-            onClose: { [weak self] in
+            options: options,
+            configuration: configuration,
+            onClose: { [weak self] player in
                 player.stop()
-                DevSheetViewController.activePlayer = nil
-                self?.dismiss(animated: true) { self?.reload() }
+                if DevSheetViewController.activePlayer === player { DevSheetViewController.activePlayer = nil }
+                // The player's presenter, whichever it was (see below) — not necessarily this list.
+                player.presentingViewController?.dismiss(animated: true) { self?.reload() }
             },
-            onDevSheet: { hostVC in
-                guard hostVC.presentedViewController == nil else { return }
-                hostVC.present(DevSheetViewController(initialTab: .log), animated: true)
+            onDevSheet: { player in
+                guard player.presentedViewController == nil else { return }
+                player.present(DevSheetViewController(initialTab: .log), animated: true)
             })
+        DemoPlayerDelegate.adopt(player)
 
-        // On PIP promotion, step the host out of the way (prevents the black-screen cover) and restore
-        // it on return.
-        // As a safety net for a missed exit signal, we also poll isInPictureInPicture briefly.
-        DemoPlayerDelegate.shared.onPipStateChanged = { [weak host, weak player] pipActive in
-            host?.setPipPresentation(pipActive)
-            guard pipActive else { return }
-            Self.watchPipExit(host: host, player: player)
+        if options.presentationStyle == .pip, configuration.pip.isInAppPipEnabled {
+            // Starting in the small window: nothing to present — the SDK floats it and presents it
+            // itself when the viewer taps to return. Presenting here as well would race the SDK's own
+            // dismiss. With in-App PIP off there is no small window, so that case presents below.
+            player.keepAliveUntilClosed()
+            EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → small window, not presented")
+            DevSheetViewController.recordSession(player, presentedAs: player, for: mission.id)
+        } else {
+            EventLog.shared.log(.sdk, "ShoplivePlayerViewController(campaignKey: \"\(DemoCredentials.shared.campaignKey)\") → present")
+            // From the top-most screen, as the hybrid list does — this list may not be the one on top (I4).
+            // The session is recorded once it is actually on screen; the first playback signal needs a
+            // network round trip, so it arrives after this. If not, the progress log shows "no owner".
+            let presenter = DeepLinkRouter.topViewController() ?? self
+            presenter.present(player, animated: true)
+            DevSheetViewController.recordSession(player, presentedAs: player, for: mission.id)
         }
+        openDevSheetIfNeeded(mission)
 
-        // Session end (`stateChanged(.closed)`) — including when the user closes the PIP window, which
-        // is *not* a return to full screen. Latching it here stops the poll below from un-hiding the
-        // host over a dead player; the SDK dismisses the host on its own, and viewWillAppear reloads
-        // the list.
-        DemoPlayerDelegate.shared.onSessionClosed = { [weak host] in
-            host?.markSessionClosed()
-            DevSheetViewController.activePlayer = nil
-        }
-
-        present(host, animated: true)
-
-        // Mission 7: if .hidden was chosen, also apply it through the runtime property. On older SDK
-        // builds the overlay.ui configuration path was not wired at all; on the current build it is,
+        // UI customization: if .hidden was chosen, also apply it through the runtime property. On older
+        // SDK builds the overlay.ui configuration path was not wired at all; on the current build it is,
         // so this is belt-and-braces.
         if DemoConfigStore.shared.overlayUI == .hidden {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -159,31 +177,22 @@ final class MissionListViewController: UIViewController {
         }
     }
 
-    /// Safety net for when PIP return does not arrive via stateChanged.
-    /// Shows the host again once `isInPictureInPicture` goes back to false.
-    private static func watchPipExit(host: PlayerHostViewController?,
-                                     player: ShoplivePlayerViewController?) {
-        guard let host, let player else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            guard host.viewIfLoaded?.window != nil || host.isViewLoaded else { return }
-            // The session ended while in PIP (the PIP window was closed). Stop watching — restoring
-            // now is what produced the full-screen black flash.
-            if host.isSessionClosed || host.isBeingDismissed || player.state == .closed { return }
-
-            if player.isInPictureInPicture {
-                watchPipExit(host: host, player: player)      // still in PIP — keep watching
-            } else {
-                host.setPipPresentation(false)                // returned — restore the host
-            }
-        }
-    }
-
     private func startStudio(_ mission: Mission) {
-        StudioLauncher.present(
-            campaignKey: DemoCredentials.shared.campaignKey,
-            streamToken: DemoCredentials.shared.streamToken,
-            from: self,
-            delegate: DemoStreamerDelegate.shared)
+        // §1 ⑥ covers viewing player sessions only: the studio is not recorded as one, so a deep link
+        // received while broadcasting opens its player above the studio — to be measured (F3).
+        // LIVE is the broadcasting mission's success signal (S25 — this path had none before).
+        DemoStreamerDelegate.shared.onStateChanged = { state in
+            if state == .live { MissionProgress.shared.markBroadcastLive() }
+        }
+        DevSheetViewController.replaceCurrentSession { [weak self] in
+            guard let self else { return }
+            let studio = StudioLauncher.present(
+                campaignKey: DemoCredentials.shared.campaignKey,
+                streamToken: DemoCredentials.shared.streamToken,
+                from: self,
+                delegate: DemoStreamerDelegate.shared)
+            MissionProgress.shared.startMission(mission.id, owner: studio)
+        }
     }
 
     private func lockReason(for mission: Mission) -> String? {
@@ -195,14 +204,14 @@ final class MissionListViewController: UIViewController {
 
     private func openDevSheetIfNeeded(_ mission: Mission) {
         guard let sheet = mission.autoSheet else { return }
-        // Surface the verification point right after launching — the log for mission 6, options for
-        // mission 7.
+        // Surface the verification point right after launching — the log for events, options for UI
+        // customization.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.presentDevSheet(tab: sheet == .log ? .log : .options)
         }
     }
 
-    // MARK: - Mission 2 · fake push banner
+    // MARK: - Deep link · fake push banner
 
     private func showFakePushBanner() {
         let campaignKey = DemoCredentials.shared.campaignKey
@@ -255,14 +264,14 @@ final class MissionListViewController: UIViewController {
         guard let urlString = bannerURLString, let url = URL(string: urlString) else { return }
         // Take exactly the same path as a real OS deep link — this is the function SceneDelegate calls.
         DeepLinkRouter.shared.handle(url)
-        // Open the log sheet after the banner is tapped (mission 2's verification point =
+        // Open the log sheet after the banner is tapped (the deep-link mission's verification point =
         // ref → referrer being passed through).
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
             self?.presentDevSheet(tab: .log)
         }
     }
 
-    // MARK: - Mission 3 · choosing an auth mode
+    // MARK: - User info · choosing an auth mode
 
     private func presentAuthActionSheet(_ mission: Mission) {
         let sheet = UIAlertController(
@@ -281,6 +290,28 @@ final class MissionListViewController: UIViewController {
             UserSetup.logout()
         })
         sheet.addAction(UIAlertAction(title: L("auth.cancel"), style: .cancel))
+        present(sheet, animated: true)
+    }
+
+    // MARK: - Inline preview · native or hybrid (E3)
+
+    private func presentInlineChoice(_ mission: Mission) {
+        let sheet = UIAlertController(
+            title: L("inline.sheet.title"),
+            message: L("inline.sheet.message"),
+            preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: L("inline.native"), style: .default) { [weak self] _ in
+            self?.openDevSheetIfNeeded(mission)
+            self?.navigationController?.pushViewController(
+                FeedDemoViewController(campaignKey: DemoCredentials.shared.campaignKey),
+                animated: true)
+        })
+        sheet.addAction(UIAlertAction(title: L("inline.hybrid"), style: .default) { [weak self] _ in
+            self?.navigationController?.pushViewController(
+                HybridListViewController(campaignKey: DemoCredentials.shared.campaignKey),
+                animated: true)
+        })
+        sheet.addAction(UIAlertAction(title: L("common.cancel"), style: .cancel))
         present(sheet, animated: true)
     }
 
@@ -313,7 +344,7 @@ final class MissionListViewController: UIViewController {
     // MARK: - List construction
 
     private func wireNotifications() {
-        NotificationCenter.default.addObserver(
+        progressObserver = NotificationCenter.default.addObserver(
             forName: MissionProgress.didChange, object: nil, queue: .main) { [weak self] _ in
                 self?.reload()
             }
@@ -332,13 +363,13 @@ final class MissionListViewController: UIViewController {
 
         navBar.subviews.compactMap { $0 as? UIStackView }.first?
             .arrangedSubviews.compactMap { $0 as? UILabel }.first?
-            .text = L("list.title", MissionProgress.shared.doneCount)
+            .text = L("list.title", MissionProgress.shared.doneCount, MissionCatalog.count)
 
         buildModeBar()
     }
 
     private func card(for mission: Mission) -> UIView {
-        let isDone = MissionProgress.shared.isDone(mission.number)
+        let isDone = MissionProgress.shared.isDone(mission.id)
         let lockReason = self.lockReason(for: mission)
 
         let card = UIControl()
@@ -346,8 +377,7 @@ final class MissionListViewController: UIViewController {
         card.layer.cornerRadius = DemoTheme.Radius.card
         card.layer.borderWidth = 1
         card.layer.borderColor = DemoTheme.hairline.cgColor
-        card.tag = mission.number
-        card.addTarget(self, action: #selector(cardTapped(_:)), for: .touchUpInside)
+        card.addAction(UIAction { [weak self] _ in self?.run(mission) }, for: .touchUpInside)
 
         // Number badge
         let badge = UIView()
@@ -367,8 +397,7 @@ final class MissionListViewController: UIViewController {
         let texts = UIStackView.demo(.vertical, spacing: 2, [
             UILabel.demo(mission.title, size: 14, weight: .bold),
             UILabel.demo(mission.summary, size: 11.5, color: DemoTheme.textSecondary),
-            UILabel.demo("📄 \(mission.sourceFile)", size: 10, color: DemoTheme.textTertiary),
-        ])
+        ] + mission.sourceFiles.map { UILabel.demo("📄 \($0)", size: 10, color: DemoTheme.textTertiary) })
 
         let trailing: UIView = isDone
             ? pill(L("list.badge.done"), background: UIColor(red: 0.90, green: 0.965, blue: 0.918, alpha: 1), foreground: DemoTheme.ok)
@@ -394,11 +423,6 @@ final class MissionListViewController: UIViewController {
             content.bottomAnchor.constraint(equalTo: card.bottomAnchor),
         ])
         return card
-    }
-
-    @objc private func cardTapped(_ sender: UIControl) {
-        guard let mission = MissionCatalog.mission(sender.tag) else { return }
-        run(mission)
     }
 
     private func pill(_ text: String, background: UIColor, foreground: UIColor) -> UIView {

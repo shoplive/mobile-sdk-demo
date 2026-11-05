@@ -4,12 +4,12 @@
 
     <!-- ── S1 시작 ──────────────────────────────────────────────────────── -->
     <string name="start_title">ShopLive SDK\n동작 확인 데모</string>
-    <string name="start_subtitle">시청(Player)과 송출(Streamer)의 8가지 기능을 목록에서 탭하면 바로 실행됩니다. 설명을 읽지 않아도 됩니다.</string>
+    <string name="start_subtitle">시청(Player)과 송출(Streamer) 기능을 목록에서 탭하면 바로 실행됩니다. 설명을 읽지 않아도 됩니다.</string>
     <string name="start_tour_button">둘러보기 · 바로 시작</string>
     <string name="start_tour_hint_ready">ShopLive 데모 캠페인으로 입력 없이 확인합니다.</string>
     <string name="start_tour_hint_missing">내장 데모 키가 비어 있습니다 — local.properties 를 채우거나 아래에서 직접 입력하세요.</string>
     <string name="start_own_button">내 계정으로 체험하기 %s</string>
-    <string name="start_own_tip">2개만 있으면 됩니다. 송출 토큰은 Mission 8 을 볼 때만 필요합니다.</string>
+    <string name="start_own_tip">2개만 있으면 됩니다. 송출 토큰은 미션 %1$d 을 볼 때만 필요합니다.</string>
     <string name="start_validate_button">검증하고 시작하기</string>
     <string name="start_validation_tip">검증은 키 형식만 확인합니다. SDK 에는 키 유효성을 미리 묻는 API 가 없어, 실제 유효성은 첫 재생에서 error 이벤트로 판별됩니다 — 키 오류 / 캠페인 없음 / 인증 필요 / 네트워크로 구분해 안내합니다.</string>
     <string name="start_back_to_missions">기능 목록으로 돌아가기 (%s)</string>
@@ -24,16 +24,16 @@
     <string name="field_stream_token">송출 토큰</string>
     <string name="field_stream_token_hint">선택 — 시청용 사용자 인증과 별개 경로입니다</string>
     <string name="field_user_jwt">사용자 JWT</string>
-    <string name="field_user_jwt_hint">선택 — Mission 3 의 token 방식을 확인할 때 씁니다</string>
+    <string name="field_user_jwt_hint">선택 — 미션 %1$d 의 token 방식을 확인할 때 씁니다</string>
 
     <!-- ── S2 기능 목록 ─────────────────────────────────────────────────── -->
-    <string name="mission_list_tip">카드를 탭하면 바로 실행됩니다. 번호는 연동 가이드의 Mission 번호와 같습니다.</string>
+    <string name="mission_list_tip">카드를 탭하면 바로 실행됩니다. 번호 1~%1$d 는 연동 가이드의 미션 번호와 같습니다.</string>
     <string name="mission_list_code_tip">코드를 보려면 함께 드린 데모앱 프로젝트에서 카드의 📄 파일을 열어보세요. 이 앱은 동작 확인용입니다.</string>
     <string name="mission_list_sdk_screen_tip">SDK 플레이어·스튜디오 화면 위에는 데모앱 UI 를 얹을 수 없습니다(SDK 소유 화면). 그 동안의 이벤트는 로그에 쌓이니, 돌아온 뒤 ⌗ 개발자 시트에서 확인하세요.</string>
     <string name="badge_confirmed">확인됨</string>
     <string name="lock_message">🔒 %s — 우상단 ⚙ 에서 입력하세요</string>
     <string name="cd_locked">잠김</string>
-    <string name="topbar_progress">기능 확인 %1$d/8</string>
+    <string name="topbar_progress">기능 확인 %1$d/%2$d</string>
     <string name="cd_back_to_list">목록으로</string>
     <string name="cd_settings">설정</string>
     <string name="cd_close">닫기</string>
@@ -45,30 +45,33 @@
     <string name="key_not_entered">키 미입력</string>
 
     <!-- ── 미션 ─────────────────────────────────────────────────────────── -->
-    <string name="mission1_title">플레이어 띄우기</string>
-    <string name="mission1_desc">탭하면 전체화면 라이브가 바로 열립니다.</string>
-    <string name="mission1_check">2~3초 내 재생 · 라이브면 채팅·LIVE 배지</string>
-    <string name="mission2_title">딥링크로 띄우기</string>
-    <string name="mission2_desc">가짜 푸시 배너를 보냅니다. 탭하면 링크에서 바로 재생됩니다.</string>
-    <string name="mission2_check">배너 탭 → 재생 · ref 가 referrer 로 전달</string>
-    <string name="mission3_title">회원 정보 연결</string>
-    <string name="mission3_desc">guest / profile / token 중 골라 재생합니다.</string>
-    <string name="mission3_check">채팅 닉네임이 회원명으로 표시</string>
-    <string name="mission4_title">화면 안에 임베드</string>
-    <string name="mission4_desc">홈 피드 카드 사이에 들어간 플레이어를 봅니다.</string>
-    <string name="mission4_check">스크롤해도 재생 유지 · 전체화면 승격</string>
-    <string name="mission5_title">PIP로 계속 보기</string>
-    <string name="mission5_desc">재생 후 상품을 탭하면 작은 창으로 이어집니다.</string>
-    <string name="mission5_check">작은 창 유지 · 탭하면 끊김 없이 복귀</string>
-    <string name="mission6_title">이벤트 · 상품 · 쿠폰</string>
-    <string name="mission6_desc">상품·쿠폰을 탭하고 로그에서 무엇이 오는지 봅니다.</string>
-    <string name="mission6_check">navigation·coupon 요청 수신과 respond 호출</string>
-    <string name="mission7_title">UI 커스터마이즈</string>
-    <string name="mission7_desc">옵션에서 색·오버레이를 바꿔 바로 확인합니다.</string>
-    <string name="mission7_check">색 반영 · hidden 에서도 이벤트 도착</string>
-    <string name="mission8_title">라이브 송출하기</string>
-    <string name="mission8_desc">스튜디오를 열어 방송을 시작·종료합니다.</string>
-    <string name="mission8_check">프리뷰 → LIVE 전이 · 자동 복구</string>
+    <string name="mission_player_title">플레이어 직접 띄우기</string>
+    <string name="mission_player_desc">탭하면 전체화면 라이브가 바로 열립니다.</string>
+    <string name="mission_player_check">2~3초 내 재생 · 라이브면 채팅·LIVE 배지</string>
+    <string name="mission_nudge_title">넛지형 프리뷰</string>
+    <string name="mission_nudge_desc">상품 상세 위에 소리 없는 작은 창으로 방송을 띄워 시청을 유도합니다. 탭하면 화면 가득 커집니다.</string>
+    <string name="mission_nudge_check">무음·오버레이 없는 작은 창 · 탭하면 풀스크린</string>
+    <string name="mission_pip_title">PIP로 이어보기</string>
+    <string name="mission_pip_desc">재생 후 상품을 탭하면 작은 창으로 이어집니다. 옵션에서 작은 창으로 시작할 수도 있습니다.</string>
+    <string name="mission_pip_check">작은 창 유지 · 탭하면 끊김 없이 복귀</string>
+    <string name="mission_deeplink_title">딥링크로 띄우기</string>
+    <string name="mission_deeplink_desc">가짜 푸시 배너를 보냅니다. 탭하면 링크에서 바로 재생됩니다.</string>
+    <string name="mission_deeplink_check">배너 탭 → 재생 · ref 가 referrer 로 전달</string>
+    <string name="mission_user_title">사용자 정보 연결</string>
+    <string name="mission_user_desc">guest / profile / token 중 골라 재생합니다.</string>
+    <string name="mission_user_check">채팅 닉네임이 회원명으로 표시</string>
+    <string name="mission_events_title">이벤트 · 상품 · 쿠폰</string>
+    <string name="mission_events_desc">상품·쿠폰을 탭하고 로그에서 무엇이 오는지 봅니다.</string>
+    <string name="mission_events_check">navigation·coupon 요청 수신과 respond 호출</string>
+    <string name="mission_inline_title">목록 화면에 인라인 프리뷰 넣기</string>
+    <string name="mission_inline_desc">네이티브(피드 안 플레이어 뷰)와 하이브리드(웹 목록이 앱으로 키 전달) 중 골라 봅니다.</string>
+    <string name="mission_inline_check">스크롤해도 재생 유지 · 웹 카드 탭 → 앱 플레이어</string>
+    <string name="mission_ui_title">UI 커스터마이징 &amp; 위치</string>
+    <string name="mission_ui_desc">옵션에서 색·오버레이를 바꿔 바로 확인합니다.</string>
+    <string name="mission_ui_check">색 반영 · hidden 에서도 이벤트 도착</string>
+    <string name="mission_studio_title">방송 송출</string>
+    <string name="mission_studio_desc">스튜디오를 열어 방송을 시작·종료합니다.</string>
+    <string name="mission_studio_check">프리뷰 → LIVE 전이 · 자동 복구</string>
 
     <!-- ── 잠금·메시지 ──────────────────────────────────────────────────── -->
     <string name="lock_need_mode">먼저 시작 화면에서 모드를 고르세요</string>
@@ -93,10 +96,10 @@
 
     <string name="group_playback_type">재생 형태</string>
     <string name="tip_playback_type">type 이 볼륨키 정책과 수신 해상도의 기본값을 정합니다. LIVE = 볼륨키 허용·라이브 해상도 / PREVIEW = 볼륨키 차단·프리뷰 해상도(트래픽 절감).</string>
-    <string name="group_auth">인증 · Mission 3</string>
-    <string name="tip_auth">인증 방식은 Mission 3 카드에서 고릅니다. 다음 재생부터 적용됩니다.</string>
-    <string name="group_pip">PIP · Mission 5</string>
-    <string name="group_overlay_appearance">오버레이 · 외형 · Mission 7</string>
+    <string name="group_auth">인증 · 미션 %1$d</string>
+    <string name="tip_auth">인증 방식은 미션 %1$d 카드에서 고릅니다. 다음 재생부터 적용됩니다.</string>
+    <string name="group_pip">PIP · 미션 %1$d</string>
+    <string name="group_overlay_appearance">오버레이 · 외형 · 미션 %1$d</string>
     <string name="group_control">제어 · 재생 중 즉시 반영</string>
     <string name="tip_control_runtime">이 그룹만 재생 중에 반영됩니다. configuration 은 불변이라 시작 후 대입이 무시됩니다.</string>
     <string name="group_play_options">PlayOptions · 회차 단위</string>
@@ -123,7 +126,7 @@
     <string name="value_null_sdk_default">null (SDK 기본)</string>
     <string name="value_null_by_type">null (type 이 결정)</string>
 
-    <!-- ── Mission 4 피드 ───────────────────────────────────────────────── -->
+    <!-- ── 인라인 프리뷰 · 네이티브 피드 ───────────────────────────────────────────────── -->
     <string name="feed_tip_embed">아래가 ShoplivePlayerView 입니다. 레이아웃만 앱이 소유하고, 컨트롤·이벤트·PIP 는 전체화면과 동일한 API 를 씁니다. 임베드 뷰는 영상만 보여 줍니다(오버레이 UI 없음).</string>
     <string name="feed_warn_activity_context">임베드 뷰는 Activity(LifecycleOwner) context 를 요구합니다. applicationContext 로는 생성할 수 없습니다.</string>
     <string name="feed_warn_no_campaign">campaignKey 가 없습니다. ⚙ 에서 키를 입력하세요.</string>
@@ -153,12 +156,12 @@
     <string name="product_btn_exit_pip">PIP 해제하고 전체화면으로 돌아가기</string>
     <string name="product_tip_policy">정책(PIP/KEEP/CLOSE)을 개발자 시트 옵션 탭에서 바꾸면, 다음 재생에서 상품을 탭할 때 거동이 달라집니다.</string>
 
-    <!-- ── Mission 2 푸시 배너 ──────────────────────────────────────────── -->
+    <!-- ── 딥링크 푸시 배너 ──────────────────────────────────────────── -->
     <string name="push_banner_source">MY SHOP · 지금</string>
     <string name="push_banner_title">🔴 여름 특가 라이브 시작! 지금 입장하세요</string>
     <string name="push_banner_dismiss">닫기</string>
 
-    <!-- ── Mission 3 인증 다이얼로그 ────────────────────────────────────── -->
+    <!-- ── 사용자 정보 · 인증 다이얼로그 ────────────────────────────────────── -->
     <string name="auth_dialog_title">어떤 방식으로 사용자를 식별할까요?</string>
     <string name="auth_dialog_note">한 앱에서 혼용할 수 있고, 다음 재생부터 적용됩니다.</string>
     <string name="auth_dialog_cancel">취소</string>
@@ -170,7 +173,7 @@
     <string name="err_access_key">키 오류 — accessKey 가 설정되지 않았습니다. initialize 를 먼저 호출하세요.</string>
     <string name="err_campaign_not_found">캠페인 없음 — campaignKey 를 다시 확인하세요.</string>
     <string name="err_not_on_air">캠페인이 방송 중이 아닙니다. VOD 여부·편성 시간을 확인하세요.</string>
-    <string name="err_auth_required">인증 필요 — 사용자 인증(Mission 3)을 확인하세요.</string>
+    <string name="err_auth_required">인증 필요 — 사용자 인증(‘사용자 정보 연결’ 미션)을 확인하세요.</string>
     <string name="err_network">네트워크 — 연결 상태를 확인하세요. (SDK 가 자동 복구를 시도합니다)</string>
     <string name="err_server">서버 오류 — 잠시 후 다시 시도하세요.</string>
     <string name="err_other">기타 오류</string>
@@ -193,4 +196,26 @@
     <string name="qr_rejected">이 QR 에는 쓸 수 있는 값이 없습니다. URL 쿼리에 ak 와 ck 를 함께, 또는 st, 또는 userjwt 가 있어야 합니다.</string>
     <string name="qr_camera_error">카메라를 쓸 수 없습니다(%1$s). 설정에서 카메라 접근을 허용하거나 키를 직접 입력하세요.</string>
     <string name="qr_applied">QR “%1$s” — %2$s 입력 완료. 값을 확인한 뒤 “검증하고 시작하기” 를 누르세요.</string>
+
+    <!-- ── SMV-1922 · catalog numbers and the inline-preview choice ─────── -->
+    <string name="mission_badge">미션 %1$d</string>
+    <string name="inline_choice_title">목록을 무엇으로 만들었나요?</string>
+    <string name="inline_choice_native">네이티브 — 앱 피드 안에 ShoplivePlayerView 를 넣습니다</string>
+    <string name="inline_choice_hybrid">하이브리드 — 웹뷰의 웹 목록이 campaignKey 를 앱으로 넘깁니다</string>
+
+    <!-- ── SMV-1922 · 3.0.4 options and the nudge policy toggle ───────────── -->
+    <string name="tip_pip_start">presentationStyle = PIP 이면 다음 재생이 처음부터 작은 창으로 열립니다(3.0.4+). pip.isInAppPipEnabled 가 켜져 있어야 합니다.</string>
+    <string name="warn_custom_share">true: SDK 공유 시트 대신 shareRequested 이벤트가 오고, 앱이 자체 공유 화면(ACTION_SEND)을 띄웁니다. false(기본): SDK 공유 시트가 뜨고 앱에는 이벤트가 오지 않습니다.</string>
+    <string name="group_nudge">넛지형 프리뷰 · 미션 %1$d</string>
+    <string name="tip_nudge_close_not_live">SDK 옵션이 아니라 앱 정책입니다. 켜면: 키운 적 없는 넛지가 라이브가 아닐 때 스스로 닫힙니다(가이드 권장). 끄면(기본): 그대로 두어 VOD·예정 캠페인도 시연할 수 있습니다.</string>
+
+    <!-- ── SMV-1922 · nudge-preview product page ─────────────────────────── -->
+    <string name="nudge_product_desc">매일 입기 좋은 부드러운 면 셔츠. 데모 문구입니다 — 핵심은 위에 뜨는 작은 라이브 창입니다.</string>
+    <string name="nudge_tip_page">앱이 가진 상품 상세 화면입니다. 넛지형 프리뷰가 소리·오버레이 없이 그 위에 뜨고, 화면은 그대로 쓸 수 있습니다.</string>
+    <string name="nudge_tip_reshow">작은 창을 탭하면 화면 가득 커집니다. ✕ 로 닫으면 이 화면에서는 다시 뜨지 않습니다 — 카드를 다시 열면 새 화면입니다.</string>
+    <string name="nudge_tip_leave">키운 적 없는 넛지는 이 화면을 떠나면 닫힙니다. 키운 넛지는 계속 재생됩니다.</string>
+
+    <!-- ── SMV-1922 · hybrid inline preview (web list) ──────────────────── -->
+    <string name="hybrid_tip_bridge">아래는 웹뷰 안의 웹 목록(앱에 들어 있는 페이지)입니다. 카드를 탭하면 ShopLiveAppInterface 로 campaignKey 하나가 넘어오고, 앱이 네이티브 풀스크린 플레이어를 엽니다. 다른 사이트 링크는 브라우저로 열립니다.</string>
+    <string name="hybrid_page_error">웹 페이지를 불러오지 못했습니다: %1$s</string>
 </resources>

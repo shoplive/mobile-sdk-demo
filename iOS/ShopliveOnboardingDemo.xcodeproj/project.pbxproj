@@ -54,6 +54,16 @@
 		F9E487D4654AAC34B7A092F2 /* DemoTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B1F8CD9264CE954DD8E839 /* DemoTheme.swift */; };
 		FC030C50679841FBBFD74FEC /* StudioLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961658DA0B2ECB873D81B1F5 /* StudioLauncher.swift */; };
 		FF2935921A8A9D53FD5AE288 /* PipOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC11398ED023B880B2D94E1 /* PipOptions.swift */; };
+		60B0F97EA3585FF7DFF5D86C /* MissionID.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA02DE3F353D470A7FDBE7F9 /* MissionID.swift */; };
+		EFED7735B0963401B5EFE6A8 /* HybridListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841B06786924BD98C8885142 /* HybridListViewController.swift */; };
+		2C1B93411198F3FA2B86D3E2 /* NudgeProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF04F770E5271169C38D07B3 /* NudgeProductViewController.swift */; };
+		604B1C05E6474E6EF0BD92C9 /* NudgePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F460E59604DAD1E87A8239A /* NudgePreview.swift */; };
+		F16443C401B8645ED41B21F9 /* NudgePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F460E59604DAD1E87A8239A /* NudgePreview.swift */; };
+		7F8D041FCDDA720C426E121E /* WebBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A45D56530E0B3B3E15797 /* WebBridge.swift */; };
+		9FA3CAFE02DFC4934BA2EEFA /* WebBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A45D56530E0B3B3E15797 /* WebBridge.swift */; };
+		B58B6610C75AB8121C80C176 /* WebBridgeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9D548B77C1C1C7BE05FC10 /* WebBridgeInput.swift */; };
+		829E0CBF617EC3D9A7098BBC /* WebBridgeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9D548B77C1C1C7BE05FC10 /* WebBridgeInput.swift */; };
+		0B7F57CBEDBACF1C2D769B04 /* hybrid in Resources */ = {isa = PBXBuildFile; fileRef = 3175C887A5CB6B207077CD0F /* hybrid */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -95,6 +105,13 @@
 		DCC11398ED023B880B2D94E1 /* PipOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipOptions.swift; sourceTree = "<group>"; };
 		F752E05215E0B7E6177DE06B /* ShopliveBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopliveBootstrap.swift; sourceTree = "<group>"; };
 		F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSetup.swift; sourceTree = "<group>"; };
+		DA02DE3F353D470A7FDBE7F9 /* MissionID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionID.swift; sourceTree = "<group>"; };
+		841B06786924BD98C8885142 /* HybridListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridListViewController.swift; sourceTree = "<group>"; };
+		EF04F770E5271169C38D07B3 /* NudgeProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgeProductViewController.swift; sourceTree = "<group>"; };
+		8F460E59604DAD1E87A8239A /* NudgePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgePreview.swift; sourceTree = "<group>"; };
+		1D1A45D56530E0B3B3E15797 /* WebBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBridge.swift; sourceTree = "<group>"; };
+		BE9D548B77C1C1C7BE05FC10 /* WebBridgeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBridgeInput.swift; sourceTree = "<group>"; };
+		3175C887A5CB6B207077CD0F /* hybrid */ = {isa = PBXFileReference; lastKnownFileType = folder; path = hybrid; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +164,8 @@
 				2E2307BE53FD7F78E5F23C94 /* ProductDetailViewController.swift */,
 				A21637917CE04E8F74B3E2A8 /* StartViewController.swift */,
 				125C6B94F527C72D98EC0F1C /* QRScanViewController.swift */,
+				841B06786924BD98C8885142 /* HybridListViewController.swift */,
+				EF04F770E5271169C38D07B3 /* NudgeProductViewController.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -165,6 +184,9 @@
 				BCE7A9B6D543F320EC07603C /* ShopliveLog.swift */,
 				961658DA0B2ECB873D81B1F5 /* StudioLauncher.swift */,
 				F9FB90A0016A9FE41793C0D8 /* UserSetup.swift */,
+				8F460E59604DAD1E87A8239A /* NudgePreview.swift */,
+				1D1A45D56530E0B3B3E15797 /* WebBridge.swift */,
+				BE9D548B77C1C1C7BE05FC10 /* WebBridgeInput.swift */,
 			);
 			path = ShopliveIntegration;
 			sourceTree = "<group>";
@@ -191,6 +213,7 @@
 				C406CEA33C73F1492EAE37B2 /* EventLog.swift */,
 				B0CC246411D83EC6FDFBC0C4 /* MissionCatalog.swift */,
 				8D900C3D8B186228AB6818F3 /* QrCredentials.swift */,
+				DA02DE3F353D470A7FDBE7F9 /* MissionID.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -209,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				34A5020368FB2478C14F763C /* Localizable.strings */,
+				3175C887A5CB6B207077CD0F /* hybrid */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -308,6 +332,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				569201E9CDD7C926AD559B80 /* Localizable.strings in Resources */,
+				0B7F57CBEDBACF1C2D769B04 /* hybrid in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +381,12 @@
 				F5BC89D698FE69AA558AED08 /* MissionCatalog.swift in Sources */,
 				527989B735062368500EFD89 /* QrCredentials.swift in Sources */,
 				AF8B6F6161123F327877A07A /* QRScanViewController.swift in Sources */,
+				60B0F97EA3585FF7DFF5D86C /* MissionID.swift in Sources */,
+				EFED7735B0963401B5EFE6A8 /* HybridListViewController.swift in Sources */,
+				2C1B93411198F3FA2B86D3E2 /* NudgeProductViewController.swift in Sources */,
+				604B1C05E6474E6EF0BD92C9 /* NudgePreview.swift in Sources */,
+				7F8D041FCDDA720C426E121E /* WebBridge.swift in Sources */,
+				B58B6610C75AB8121C80C176 /* WebBridgeInput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,6 +405,9 @@
 				87C3C6E221A52A937F5EFFFF /* ShopliveLog.swift in Sources */,
 				FC030C50679841FBBFD74FEC /* StudioLauncher.swift in Sources */,
 				CFEB12732967B157A5DC4FF4 /* UserSetup.swift in Sources */,
+				F16443C401B8645ED41B21F9 /* NudgePreview.swift in Sources */,
+				9FA3CAFE02DFC4934BA2EEFA /* WebBridge.swift in Sources */,
+				829E0CBF617EC3D9A7098BBC /* WebBridgeInput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,54 +6,52 @@
 //    · didReceive event  — things you just listen to (notifications)
 //    · didRequest request — things the app must answer. You must call respond.
 //
-//  Threading contract: the SDK **guarantees both callbacks are invoked on the main thread**. The
-//  respond closure may be called from any thread.
+//  Threading: both callbacks are expected on the main thread, but the SDK interface does not state it
+//  (no @MainActor) — 요확인 (S55). publish() below moves an off-main callback to main. The respond
+//  closure may be called from any thread.
 //  Memory contract: `delegate` is weak — the host owns its lifetime. That is why this demo holds it
 //  in a singleton.
+//
+//  One delegate serves every player in the app, so what the rest of the app needs is re-published on
+//  **one** channel — `PlayerMilestone`, always together with the player that sent it. Each listener
+//  subscribes to the player it cares about (`observeMilestones(of:)`), so no screen overwrites another
+//  screen's callback and a late event from an old session cannot reach a new screen.
+//
+//  ★ A view controller session must go through `adopt(_:)`: the SDK names its inner ShoplivePlayerView as
+//    `player`, not the controller you created (measured, see there).
 //
 
 import UIKit
 import ShoplivePlayerSDK
 import ShopliveCore
 
+/// What this delegate tells the rest of the app — one channel, one publish per fact (CG-4.2).
+enum PlayerMilestone {
+    /// Playback reached (first frame). Can repeat within one session (`rendering`).
+    case playbackReached
+    /// Sent on every state change except `.closed`; `true` only while in in-App PIP.
+    case pipStateChanged(isActive: Bool)
+    /// A request arrived. coupon/customWebAction are already answered here; navigation must be routed.
+    case requestReceived(PlayerRequestKind)
+    /// The session ended. `reason` is the player's `closeReason` at that moment (3.0.4+).
+    case closed(reason: ShopliveCloseReason?)
+    /// `.ready` / `.live` / `.ended` — e.g. close a preview that is not live (guide "Tip").
+    case campaignStatusChanged(ShopliveCampaignStatus)
+    /// An unrecoverable error (`isRecoverable == false`).
+    case fatalError(ShopliveError)
+}
+
+enum PlayerRequestKind {
+    /// Product landing — open `url` in your own screen.
+    case navigation(URL)
+    case coupon
+    case customWebAction
+}
+
 final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
 
     /// Because the delegate is weak, something must hold it strongly or events stop arriving.
     static let shared = DemoPlayerDelegate()
-
-    /// Routes product landings (navigation) to an app screen. In the demo this opens the V2 product
-    /// detail modal.
-    var onNavigation: ((URL) -> Void)?
-
-    /// Called when an unrecoverable error arrives. The demo shows the reason.
-    /// (If the error prevents the overlay from loading, the SDK's own close button is missing too and
-    /// the user gets stuck.)
-    var onFatalError: ((ShopliveError) -> Void)?
-
-    /// in-App PIP enter/exit. `true` = promoted to PIP.
-    ///
-    /// Going to PIP moves the render surface into a floating container on the app window, so the
-    /// full-screen host must step out of the way (otherwise a black screen covers everything).
-    ///
-    /// - Important: This is **only** reported while the session is alive. Session end arrives through
-    ///   `onSessionClosed` instead — see there for why the two must not be conflated.
-    var onPipStateChanged: ((Bool) -> Void)?
-
-    /// The playback session ended (`stateChanged(.closed)`). A host that wraps the player should
-    /// treat this as "tear down", not as "back to full screen".
-    ///
-    /// - Important: Closing the **PIP window** ends the session, so `.closed` is what arrives — not a
-    ///   PIP-exit. Reporting it as "no longer in PIP" makes a stepped-aside host un-hide itself over a
-    ///   player that no longer has a render surface, which flashes the host's own background across the
-    ///   whole screen until the dismissal finishes (measured: the SDK dismisses the host itself, so the
-    ///   host is already `isBeingDismissed` by the time this arrives).
-    var onSessionClosed: (() -> Void)?
-
-    /// Playback reached (first frame rendered). The host uses this for its "verified" marker.
-    ///
-    /// - Note: Some SDK builds never deliver `stateChanged(.playing)` (measured), so
-    ///   `playback(STARTED/RENDERING)` is used as the playback-reached signal.
-    var onPlaybackReached: (() -> Void)?
 
     // MARK: - Notifications (didReceive)
 
@@ -62,22 +60,28 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
 
         case .stateChanged(let state):
             // Playback lifecycle. Entering/leaving .inAppPIP also arrives through this event.
-            shopliveLog(.event, "stateChanged(.\(state.logLabel))")
-            if state == .playing { onPlaybackReached?() }
-
+            //
             // ★ `.closed` is session end, NOT a return from PIP — closing the PIP window lands here.
-            //   Do not fold it into onPipStateChanged(false): the render surface is already gone, so a
-            //   host that un-hides on it covers the screen with its own background until it is
-            //   dismissed. Route the two apart.
+            //   Keep the two apart: after `.closed` the render surface is gone, so a host that un-hides
+            //   on "PIP ended" covers the screen with its own background until it is dismissed.
             if state == .closed {
-                onSessionClosed?()
+                // 3.0.4: the reason is a property of the player, not of the state — `.closed` has no
+                // associated value in this build (the guide's `if case .closed(let reason)` does not
+                // compile on iOS 3.0.4).
+                let reason = player.closeReason
+                // TODO(SDP-VERIFY): 요확인 — .closed 수신 시점에 closeReason 이 이미 채워져 있는지(nil 이면 아래 로그가 '이유 없음'), 실기기 3종(✕·앱 close·accessKey 변경) 확인 · 근거 SMV-1922 S16
+                shopliveLog(.event, "stateChanged(.closed) — closeReason: \(reason.map { ".\($0.logLabel)" } ?? "nil (no reason)")")
+                publish(.closed(reason: reason), from: player)
             } else {
-                onPipStateChanged?(state == .inAppPIP)
+                shopliveLog(.event, "stateChanged(.\(state.logLabel))")
+                if state == .playing { publish(.playbackReached, from: player) }
+                publish(.pipStateChanged(isActive: state == .inAppPIP), from: player)
             }
 
         case .campaignStatusChanged(let status):
             // .ready / .live / .ended — decide whether to show the LIVE badge from this value.
             shopliveLog(.event, "campaignStatusChanged(.\(status.logLabel))")
+            publish(.campaignStatusChanged(status), from: player)
 
         case .campaignInfoReceived(let info):
             shopliveLog(.event,
@@ -90,10 +94,8 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // ★ Measured (2026-07-30, SDK 3.0.0): across a healthy playback session the SDK never
             //   sends `stateChanged` even once. So gating "did playback start?" on stateChanged alone
             //   never becomes true. We decide it from playback(STARTED/RENDERING), which does arrive.
-            //   (`campaignStatusChanged` and `campaignInfoReceived` were also missing on older builds
-            //   but are delivered again on the current one.)
             if playback.event == .started || playback.event == .rendering {
-                onPlaybackReached?()
+                publish(.playbackReached, from: player)
             }
 
         case .connectionStateChanged(let state):
@@ -115,7 +117,19 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // errors.
             shopliveLog(.error,
                 "error(code: .\(error.code.logLabel), isRecoverable: \(error.isRecoverable)) — \(error.message)")
-            if !error.isRecoverable { onFatalError?(error) }
+            if !error.isRecoverable { publish(.fatalError(error), from: player) }
+
+        case .webCommand(let name, let payload):
+            // A custom command from the overlay web (e.g. a login request). The reverse direction is
+            // send(command:payload:).
+            shopliveLog(.event, "webCommand(name: \"\(name)\", payload: \(payload.map { "\($0.keys.sorted())" } ?? "nil"))")
+
+        case .shareRequested(let info):
+            // 3.0.4+: arrives only with navigation.isCustomShareEnabled = true, and then the SDK shows
+            // no share sheet of its own — the app shows one (or nothing is shared).
+            shopliveLog(.event,
+                "shareRequested(url: \(info.url?.absoluteString ?? "nil"), campaignKey: \(info.campaignKey ?? "nil"), title: \(info.title ?? "nil"))")
+            Self.presentShareSheet(for: info)
 
         // The SDK ships with library evolution enabled, so its enums are resilient — always include
         // @unknown default so a newly added case cannot break this app.
@@ -133,8 +147,8 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // ★ The one request the app absolutely must handle. Without it, tapping a product does
             //   nothing at all.
             shopliveLog(.request, "navigation(url: \"\(url.absoluteString)\") received — the app must handle this")
-            onNavigation?(url)
-            shopliveLog(.request, "→ router.open(url) called")
+            publish(.requestReceived(.navigation(url)), from: player)
+            shopliveLog(.request, "→ handed to the app's router")
 
         case .coupon(let id, let respond):
             // The app (i.e. your server) issues the coupon and returns the result to the overlay.
@@ -151,6 +165,7 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             )
             respond(result)
             shopliveLog(.request, "→ respond(success: true, status: .show, alertType: .toast) called")
+            publish(.requestReceived(.coupon), from: player)
 
         case .customWebAction(let id, let type, let payload, let respond):
             // An arbitrary action defined by the overlay web. Branch on `type` to run an app feature.
@@ -166,12 +181,125 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             )
             respond(result)
             shopliveLog(.request, "→ respond(success: true, status: .keep) called")
+            publish(.requestReceived(.customWebAction), from: player)
 
         @unknown default:
             // A request that demands an answer, but we don't know how to handle it. Logging and
             // ignoring it can leave the overlay waiting forever, so check the SDK version.
             shopliveLog(.error, "Unknown ShoplivePlayerRequest — cannot call respond. Check your SDK version")
         }
+    }
+}
+
+// MARK: - The milestone channel
+
+extension DemoPlayerDelegate {
+
+    static let milestoneNotification = Notification.Name("DemoPlayerDelegate.milestone")
+    private static let milestoneKey = "milestone"
+
+    /// Subscribes to milestones. `player` nil = every player; otherwise only that player's (identity,
+    /// not equality — NotificationCenter matches `object` by `===`).
+    ///
+    /// Delivered on the main thread (moved there if a callback ever arrives off main). Keep the returned
+    /// token and pass it to `NotificationCenter.default.removeObserver(_:)` when the listener goes away.
+    static func observeMilestones(
+        of player: ShoplivePlayerControlling?,
+        _ handler: @escaping (ShoplivePlayerControlling, PlayerMilestone) -> Void
+    ) -> NSObjectProtocol {
+        // TODO(SDP-VERIFY): 요확인 — 피드 임베드 콜백의 player 인자가 EmbeddedPlayerView.player 가 돌려주는 그 ShoplivePlayerView 자신인지(=== 필터·owner 비교의 전제). 시뮬레이터 3.0.4 실측은 일치, 실기기 확인 대기. VC 세션은 내부 뷰가 오므로 adopt(_:) 릴레이로 해결 · 근거 SMV-1922 S50·S47
+        NotificationCenter.default.addObserver(forName: milestoneNotification, object: player, queue: nil) { note in
+            guard let sender = note.object as? ShoplivePlayerControlling,
+                  let milestone = note.userInfo?[milestoneKey] as? PlayerMilestone else { return }
+            handler(sender, milestone)
+        }
+    }
+
+    private func publish(_ milestone: PlayerMilestone, from player: ShoplivePlayerControlling) {
+        // TODO(SDP-VERIFY): 요확인 — SDK 가 delegate 를 항상 메인 스레드에서 부르는지(swiftinterface 에 @MainActor 근거 없음, P.si:318). 아니면 여기서 메인으로 넘기고 로그 · 근거 SMV-1922 S55
+        guard Thread.isMainThread else {
+            shopliveLog(.error, "delegate callback arrived off the main thread — milestone moved to main")
+            DispatchQueue.main.async { self.publish(milestone, from: player) }
+            return
+        }
+        NotificationCenter.default.post(name: Self.milestoneNotification, object: player,
+                                        userInfo: [Self.milestoneKey: milestone])
+    }
+}
+
+// MARK: - View controller sessions
+
+extension DemoPlayerDelegate {
+
+    /// Serves `controller` through this delegate, reporting `controller` itself as the sender.
+    ///
+    /// ★ Measured (SDK 3.0.4, simulator): a ShoplivePlayerViewController hands `delegate` to the
+    ///   ShoplivePlayerView inside it, and callbacks name **that view** as `player`. Comparing `player`
+    ///   with the controller you created therefore never matches — `observeMilestones(of:)` stays silent
+    ///   and no owner check passes. The relay puts the controller back.
+    ///
+    /// Call it in the same run-loop turn the controller is created, before playback can start. Embedded
+    /// views need none of this: there `player` is the view you hold.
+    static func adopt(_ controller: ShoplivePlayerViewController) {
+        let relay = ControllerRelay(controller: controller)
+        // `delegate` is weak and nothing else holds the relay, so the controller owns it.
+        objc_setAssociatedObject(controller, &ControllerRelay.associationKey, relay, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.delegate = relay
+    }
+}
+
+/// Passes one controller's callbacks to the shared delegate, with the controller as the sender.
+private final class ControllerRelay: ShoplivePlayerDelegate {
+
+    static var associationKey: UInt8 = 0
+
+    private weak var controller: ShoplivePlayerViewController?
+
+    init(controller: ShoplivePlayerViewController) {
+        self.controller = controller
+    }
+
+    func player(_ player: ShoplivePlayerControlling, didReceive event: ShoplivePlayerEvent) {
+        DemoPlayerDelegate.shared.player(controller ?? player, didReceive: event)
+    }
+
+    func player(_ player: ShoplivePlayerControlling, didRequest request: ShoplivePlayerRequest) {
+        DemoPlayerDelegate.shared.player(controller ?? player, didRequest: request)
+    }
+}
+
+// MARK: - Sharing (3.0.4+)
+
+extension DemoPlayerDelegate {
+
+    /// `true` → the share button sends `shareRequested` instead of opening the SDK's share sheet.
+    /// The SDK default is `false`.
+    static func enableCustomShare(_ enabled: Bool, in configuration: inout ShoplivePlayerConfiguration) {
+        configuration.navigation.isCustomShareEnabled = enabled
+    }
+
+    /// Shows the app's own share sheet for `info`. With nothing to share or nowhere to show it, nothing
+    /// is shown and the reason is logged.
+    static func presentShareSheet(for info: ShopliveShareInfo) {
+        guard let url = info.url else {
+            shopliveLog(.error, "shareRequested without a url — share sheet not shown")
+            return
+        }
+        guard let presenter = DeepLinkRouter.topViewController() else {
+            shopliveLog(.error, "shareRequested — no view controller to present the share sheet from")
+            return
+        }
+        var items: [Any] = [url]
+        if let title = info.title { items.insert(title, at: 0) }
+        let sheet = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        // iPad presents this as a popover, which needs an anchor or UIKit raises.
+        if let popover = sheet.popoverPresentationController {
+            popover.sourceView = presenter.view
+            popover.sourceRect = CGRect(x: presenter.view.bounds.midX, y: presenter.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        presenter.present(sheet, animated: true)
+        shopliveLog(.call, "UIActivityViewController(url: \"\(url.absoluteString)\") → present")
     }
 }
 

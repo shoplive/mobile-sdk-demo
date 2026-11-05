@@ -8,7 +8,7 @@ import cloud.shoplive.onboarding.data.LocaleSetting
 import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
 
 /**
- * Mission 2 — the deep-link entry point.
+ * Deep-link mission — the entry point.
  *
  * ## This screen does not play anything
  * It parses and hands over to [MainActivity], for **cold-start safety**.

@@ -1,11 +1,12 @@
 # ShopLive onboarding demo app (Android)
 
-An app for **checking the 8 features of the SDK v3 (Player · Streamer) with a single tap**.
+An app for **checking the 9 missions of the SDK v3 integration guide (Player · Streamer) with a single tap**.
 It is built so that an integrator's developer can see each behavior with their own eyes, then **open the file printed
 on the feature card and paste that code straight into their own app**.
 
 - Integration guide: https://sdk.shoplive.cloud (한국어 / English / 日本語)
-- Card number = the **Mission number** in the guide
+- Card number and title = the **Mission number and title** in the guide's mission map (1–9). The number is the card's
+  position in `data/Missions.kt` (`MISSIONS`) and comes from nowhere else; branching and completion use `MissionId`
 
 ---
 
@@ -44,7 +45,7 @@ If `local.properties` (or the environment) has values, those win. To check thing
 
 > ⚠️ Treat every value in `DemoDefaults.kt` as **already public**. It is for a throwaway demo account only; customer or
 > production credentials must never go there. Replacing a token does not remove it from git history, so invalidation has
-> to happen in the Shoplive console. The stream token in particular is short-lived: when it expires Mission 8 stops
+> to happen in the Shoplive console. The stream token in particular is short-lived: when it expires Mission 9 stops
 > working, and the fix is a new token from the console, entered on both Android and iOS.
 
 ---
@@ -180,9 +181,11 @@ Checking what resolution actually picked, and from where:
 | | Screen | Owner |
 | --- | --- | --- |
 | S1 | Start (take a tour / my account) | demo app |
-| S2 | The 8 feature cards — **tapping a card runs it immediately** | demo app |
+| S2 | The 9 mission cards — **tapping a card runs it immediately** | demo app |
 | S3 | Player · studio | **SDK** (Activity) |
-| S3 | Home feed (Mission 4) | demo app (layout) + `:integration` (player creation and control) |
+| — | Product page with a nudge-style preview (Mission 2) | demo app (page) + `:integration` (`ShopliveNudgePreview`) + SDK (small window) |
+| S3 | Home feed (Mission 7, native) | demo app (layout) + `:integration` (player creation and control) |
+| — | Web list (Mission 7, hybrid) | demo app (WebView, bundled `assets/hybrid/index.html`) + `:integration` (`ShopliveWebBridge`) |
 | V1 | Developer sheet (log / options) | demo app · ModalBottomSheet |
 | V2 | Product detail | demo app · Activity |
 
@@ -193,29 +196,30 @@ copyable it may only reference the SDK and standard frameworks, so this module *
 (`:app`). The dependency direction is one-way, `:app → :integration`, and a single reference in the other direction
 makes `:integration` fail to compile — the same condition as an integrator who copied only the files.
 
-| # | Feature | File (`integration/src/main/java/cloud/shoplive/onboarding/integration/`) | Copy |
+| # | Mission | File (`integration/src/main/java/cloud/shoplive/onboarding/integration/`) | Copy |
 | --- | --- | --- | --- |
-| 1 | Present the player | `ShoplivePlayerLauncher.kt` | ✅ |
-| 2 | Open from a deep link | `ShopliveDeepLinkRouter.kt` | ✅ |
-| 3 | Connect member info | `ShopliveUserSetup.kt` | ✅ |
-| 4 | Embed in a screen | `ShopliveEmbeddedPlayer.kt` | ✅ |
-| 5 | Keep watching in PIP | `ShoplivePipPresets.kt` | ✅ |
-| 6 | Events · products · coupons | `ShoplivePlayerEventLogger.kt` | ✅ |
-| 7 | UI customization | `ShoplivePlayerPresets.kt` | ✅ |
-| 8 | Go live | `ShopliveStudioLauncher.kt` | ✅ |
+| 1 | Launch the Player Directly | `ShoplivePlayerLauncher.kt` | ✅ |
+| 2 | Nudge-Style Preview | `ShopliveNudgePreview.kt` | ✅ |
+| 3 | Keep Watching in PIP | `ShoplivePipPresets.kt` | ✅ |
+| 4 | Launch via Deep Link | `ShopliveDeepLinkRouter.kt` | ✅ |
+| 5 | Connect User Information | `ShopliveUserSetup.kt` | ✅ |
+| 6 | Events · Products · Coupons | `ShoplivePlayerEventLogger.kt` | ✅ |
+| 7 | Add Inline Previews to a List Screen | `ShopliveEmbeddedPlayer.kt` (native) · `ShopliveWebBridge.kt` (hybrid) | ✅ |
+| 8 | UI Customization & Placement | `ShoplivePlayerPresets.kt` | ✅ |
+| 9 | Broadcasting | `ShopliveStudioLauncher.kt` | ✅ |
 | — | Initialization · logout · key format validation | `ShopliveInitializer.kt` | ✅ |
 | — | Runtime control handle (`isMuted`, `resizeMode`, `reload`, PIP) | `ShoplivePlayerSession.kt` | ✅ |
 | — | Log hook (no-op by default) · token masking | `ShopliveLog.kt` | ✅ |
 | — | SDK enum → readable labels · error cause classification | `ShopliveEventLabels.kt` | ✅ |
 
-These 12 files carry KDoc (in English) explaining **why it has to be written that way** — the Activity context
+These 14 files carry KDoc (in English) explaining **why it has to be written that way** — the Activity context
 requirement, the immutable configuration contract, why a missing `respond` is a bug, and measured facts with dates.
 Integrators have to be able to understand it from the comments alone, which is why every code comment in this project is
 in English.
 
 #### What copying involves
 
-1. Copy the 12 files into your source tree and change only the `package` declaration to your own package.
+1. Copy the 14 files into your source tree and change only the `package` declaration to your own package.
    (Nothing else needs editing.)
 2. Add the 2 SDK lines to `build.gradle` — `shoplive-player-sdk`, `shoplive-streamer-sdk`.
    (`shoplive-core`, which holds `Shoplive`, `ShopliveUser`, and `ShopliveError`, comes in transitively.)
@@ -258,7 +262,7 @@ Adding one log line is far too easy to be stopped by review. It is blocked in tw
 | **Boundary scanner** — `python3 scripts/integration_boundary_scanner.py` | Things that compile but hurt integrators: `android.util.Log`, Timber, `@Inject`, `@Composable`, ViewBinding, non-English comments |
 
 The scanner **strips comments** before checking — an explanation like "this value flows into the demo's event log" is not
-a violation. It looks at code only. It is wired into `./gradlew check`, and [CI](.github/workflows/ci.yml) runs both
+a violation. It looks at code only. It is wired into `./gradlew check`, and [CI](../.github/workflows/android-ci.yml) runs both
 layers (the scanner is separated so it runs without building the SDK).
 
 ```bash
@@ -269,7 +273,7 @@ python3 scripts/integration_boundary_scanner.py
 ./gradlew :integration:assembleDebug
 ```
 
-### Deep links (Mission 2)
+### Deep links (Mission 4)
 
 ```
 shoplivedemo://live?campaign={CAMPAIGN_KEY}&ref={REFERRER}
@@ -327,10 +331,17 @@ The "confirmed" badge is not checked off by the user — it is **decided automat
 
 | Evidence | Mission |
 | --- | --- |
-| `Playback.Started` | 1 · 2 · 3 · 4 · 7 |
-| `StateChanged(IN_APP_PIP)` | 5 |
-| `Navigation` / `Coupon` request received | 6 |
-| `StreamerEvent.StateChanged(LIVE)` | 8 |
+| `Playback.Started` **from the player the running mission started** | 1 · 2 · 4 · 5 · 7 · 8 (whichever is running) |
+| `StateChanged(InAppPIP)` — any player except a nudge's (never from the last nudge player, nor while Mission 2 is still starting it) | 3 |
+| `Navigation` / `Coupon` / `CustomWebAction` request received | 6 |
+| `StreamerEvent.StateChanged(LIVE)` | 9 |
+
+Each milestone arrives with the player that raised it (`onMilestone(milestone, player)`), and `MissionProgress` credits
+playback only when that player is the one the running mission started — every start path records it. ⚠️ *Unverified:* that the
+delegate's `player` is the very object `start()` returned ([Known Issues](../docs/known-issues.md#open-sdp-verify-markers-in-the-code) a4). Progress is stored
+as mission identifiers under `demo.completedMissionIds` (same key and values as iOS); a record from the 8-mission
+version (`doneMissions`, numbers) is migrated once and removed. See
+[Demo App Tour § Progress survives the renumbering](../docs/02-demo-app-tour.md#progress-survives-the-renumbering).
 
 ---
 
@@ -343,7 +354,7 @@ The "confirmed" badge is not checked off by the user — it is **decided automat
 | Chat/product overlay on the embedded view | Shown | **Video only** — `overlayUI` is fixed at HIDDEN (the command channel stays) |
 | Embedded view + OS PIP | Mentioned | **Full screen only** — embedded gets in-app PIP alone |
 | `appearance.allowScreenCapture` default | `false` | The implemented default is **`true`** (a documentation correction) |
-| Mission 8 lock | Only in my-account mode | **Always locked without a token** — a broadcast cannot start without one |
+| Broadcasting (Mission 9) lock | Only in my-account mode | **Always locked without a token** — a broadcast cannot start without one |
 | Key pre-validation | "filtered by validation before playback" | The SDK has no pre-validation API → local format check only, plus translating error events into cause-specific sentences |
 | Product detail | Modal sheet | **A separate Activity** — it has to be placed above the SDK player to be visible |
 | Feed list | (unspecified) | `Column + verticalScroll` instead of `LazyColumn` — the embedded view releases resources on detach, so as a lazy item playback would break from scrolling alone |
@@ -392,7 +403,7 @@ Once the SDK delivers `error` properly, this workaround can be deleted.
 - Whether in-app PIP stays **above** the product detail Activity
 - `navigation(url)` → product detail routing
 - Whether `sound.muteOnStart = true` reproduces the PIP bounce
-- Mission 8 broadcast start · camera/microphone permission flow (the emulator's camera limits apply too)
+- Mission 9 broadcast start · camera/microphone permission flow (the emulator's camera limits apply too)
 - How the re-fetch feels when promoting the embedded view to full screen
 
 ---

@@ -45,22 +45,30 @@ import androidx.navigation.compose.rememberNavController
 import cloud.shoplive.onboarding.BuildConfig
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.DemoMode
+import cloud.shoplive.onboarding.data.MISSIONS
 import cloud.shoplive.onboarding.demo.DemoLabels
 import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
 import cloud.shoplive.onboarding.integration.ShopliveUserSetup
 import cloud.shoplive.onboarding.ui.devtools.DevSheet
 import cloud.shoplive.onboarding.ui.feed.FeedScreen
 import cloud.shoplive.onboarding.ui.feed.findActivity
+import cloud.shoplive.onboarding.ui.hybrid.HybridListScreen
 import cloud.shoplive.onboarding.ui.missions.MissionListScreen
 import cloud.shoplive.onboarding.ui.missions.ModeBar
+import cloud.shoplive.onboarding.ui.nudge.NudgeProductScreen
 import cloud.shoplive.onboarding.ui.start.QrScanScreen
 import cloud.shoplive.onboarding.ui.start.StartScreen
 
 private object Routes {
     const val START = "start"
     const val MISSIONS = "missions"
+    const val NUDGE = "nudge"
     const val FEED = "feed"
+    const val HYBRID = "hybrid"
     const val QR = "qr"
+
+    /** Demo-owned screens reached from a card; they show a back arrow. */
+    val CARD_SCREENS = setOf(NUDGE, FEED, HYBRID)
 }
 
 /**
@@ -69,8 +77,9 @@ private object Routes {
  * - S1 [Routes.START] start
  * - S2 [Routes.MISSIONS] feature list
  * - S3 the running screen — the player and studio are **Activities owned by the SDK**,
- *   so they have no route. The only one the app owns is the home feed
- *   ([Routes.FEED], Mission 4).
+ *   so they have no route. The app owns three: the product page the nudge preview
+ *   floats over ([Routes.NUDGE]) and the two inline-preview lists, native
+ *   ([Routes.FEED]) and hybrid ([Routes.HYBRID]).
  *
  * The two overlays are a ModalBottomSheet (developer sheet) and a separate Activity
  * (product detail).
@@ -124,12 +133,12 @@ fun DemoApp(
                 TopAppBar(
                     title = {
                         Text(
-                            stringResource(R.string.topbar_progress, doneMissions.size),
+                            stringResource(R.string.topbar_progress, doneMissions.size, MISSIONS.size),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
                     navigationIcon = {
-                        if (currentRoute == Routes.FEED) {
+                        if (currentRoute in Routes.CARD_SCREENS) {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
@@ -229,23 +238,36 @@ fun DemoApp(
                             lockReasonOf = viewModel::lockReason,
                             onMissionClick = { mission ->
                                 val host = activity ?: return@MissionListScreen
-                                val goToFeed = viewModel.runMission(host, mission.number)
-                                if (goToFeed) navController.navigate(Routes.FEED)
+                                when (viewModel.runMission(host, mission)) {
+                                    MainViewModel.Destination.NUDGE -> navController.navigate(Routes.NUDGE)
+                                    MainViewModel.Destination.FEED -> navController.navigate(Routes.FEED)
+                                    MainViewModel.Destination.HYBRID -> navController.navigate(Routes.HYBRID)
+                                    null -> Unit
+                                }
                             },
                         )
+                    }
+
+                    composable(Routes.NUDGE) {
+                        NudgeProductScreen(mainViewModel = viewModel)
                     }
 
                     composable(Routes.FEED) {
                         FeedScreen(
                             delegate = viewModel.delegateForEmbeddedView(),
                             campaignKey = viewModel.effectiveCampaignKey(),
+                            startEmbedded = viewModel::startInlineEmbed,
                         )
+                    }
+
+                    composable(Routes.HYBRID) {
+                        HybridListScreen(mainViewModel = viewModel)
                     }
                 }
             }
 
-            // Mission 2 — the fake push banner, shown over the list rather than on
-            // a screen of its own.
+            // Deep-link mission — the fake push banner, shown over the list rather
+            // than on a screen of its own.
             if (state.showPushBanner) {
                 PushBanner(
                     campaignKey = viewModel.effectiveCampaignKey(),
@@ -259,11 +281,28 @@ fun DemoApp(
         }
     }
 
-    // Mission 3 — choosing an auth method, asked in a dialog instead of a screen.
+    // User-info mission — choosing an auth method, asked in a dialog instead of a
+    // screen.
     if (state.askAuthMethod) {
         AuthMethodDialog(
             onDismiss = viewModel::dismissAuthSheet,
             onSelect = { method -> activity?.let { viewModel.chooseAuthMethod(it, method) } },
+        )
+    }
+
+    // Inline-preview mission — the guide shows two ways, so the card asks which.
+    if (state.askInlineMode) {
+        InlineModeDialog(
+            onDismiss = viewModel::dismissInlineChoice,
+            onSelect = { destination ->
+                viewModel.dismissInlineChoice()
+                navController.navigate(
+                    when (destination) {
+                        MainViewModel.Destination.HYBRID -> Routes.HYBRID
+                        else -> Routes.FEED
+                    }
+                )
+            },
         )
     }
 
@@ -358,6 +397,49 @@ private fun AuthMethodDialog(
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.auth_dialog_cancel)) }
+        },
+    )
+}
+
+@Composable
+private fun InlineModeDialog(
+    onDismiss: () -> Unit,
+    onSelect: (MainViewModel.Destination) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                stringResource(R.string.inline_choice_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                TextButton(
+                    onClick = { onSelect(MainViewModel.Destination.FEED) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        stringResource(R.string.inline_choice_native),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                TextButton(
+                    onClick = { onSelect(MainViewModel.Destination.HYBRID) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        stringResource(R.string.inline_choice_hybrid),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
         },

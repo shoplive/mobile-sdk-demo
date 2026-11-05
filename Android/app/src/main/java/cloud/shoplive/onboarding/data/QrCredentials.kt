@@ -20,8 +20,8 @@ import java.net.URLDecoder
  * | `ak` | accessKey | Android `CampaignListActivity`, iOS `SLQRReaderViewController` |
  * | `ck` | campaignKey | same |
  * | `title` | label only | same (falls back to "Unknown Title (QR)") |
- * | `userjwt` | user JWT (Mission 3) | iOS PlayerDemo2 `SLQRReaderViewController` |
- * | `st` | stream token (Mission 8) | **new in these demos** — no native test app reads it |
+ * | `userjwt` | user JWT (user-info mission) | iOS PlayerDemo2 `SLQRReaderViewController` |
+ * | `st` | stream token (go-live mission) | **new in these demos** — no native test app reads it |
  *
  * ## Rules — identical in the Flutter and iOS demos
  * - `ak` and `ck` are used together or not at all, so a half-filled pair never

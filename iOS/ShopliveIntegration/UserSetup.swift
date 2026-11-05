@@ -1,6 +1,6 @@
 //
 //  UserSetup.swift
-//  ★ COPY THIS — mission 3 · connecting member information
+//  ★ COPY THIS — mission 5 · connecting user info
 //
 //  Three ways to identify a viewer. These take effect from the next playback onward, so call them
 //  before play.

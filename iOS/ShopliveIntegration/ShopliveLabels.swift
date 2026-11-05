@@ -82,6 +82,17 @@ extension ShopliveConnectionState {
     }
 }
 
+extension ShopliveCloseReason {
+    var logLabel: String {
+        switch self {
+        case .userAction: return "userAction"
+        case .appRequest: return "appRequest"
+        case .accessKeyChanged: return "accessKeyChanged"
+        @unknown default: return "unknown"
+        }
+    }
+}
+
 // `ShopliveBroadcastState` comes from ShopliveStreamerSDK — its label is at the bottom of this file.
 
 extension PlaybackEventType {

@@ -1,12 +1,12 @@
-# Mission 1 — Open the Player
+# Mission 1 — Launch the Player Directly
 
-[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 — Deep links ▶](mission-02-deep-link.md)
+[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 — Nudge-Style Preview ▶](mission-02-nudge-preview.md)
 
-> **Guide cross-reference:** [Mission 1 · Presenting the player directly](https://sdk.shoplive.cloud/#m1) · [Quick start](https://sdk.shoplive.cloud/#quickstart) · [ShopliveConfiguration fields](https://sdk.shoplive.cloud/#f-config)
+> **Guide cross-reference:** [Mission 1 · Launch the Player Directly](https://sdk.shoplive.cloud/#m1) · [Quick start](https://sdk.shoplive.cloud/#quickstart) · [ShopliveConfiguration fields](https://sdk.shoplive.cloud/#f-config)
 >
-> **Source:** [`ShopliveIntegration/PlayerLauncher.swift`](../iOS/ShopliveIntegration/PlayerLauncher.swift) · [`sdk/PlayerLauncher.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerLauncher.kt)
+> **Source:** [`ShopliveIntegration/PlayerLauncher.swift`](../iOS/ShopliveIntegration/PlayerLauncher.swift) · [`integration/…/ShoplivePlayerLauncher.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerLauncher.kt)
 >
-> **In the app:** card ① — *"Open the player"*. Tap it and a full-screen live stream opens.
+> **In the app:** card ① — *"Launch the Player Directly"*. Tap it and a full-screen live stream opens.
 
 ---
 
@@ -64,11 +64,11 @@ Only `accessKey` is required. Two notes on the optional fields:
 - **`allowedWebViewDomains`** whitelists the domains the overlay web view may navigate to. Leaving it empty (`[]`, the default) **disables validation entirely**. The demo leaves it empty for convenience, but in production you should list your product-landing and event-page domains.
 - **`attribution`** is a **full replace** on Android — you can't patch individual UTM fields. Omit it and the previous value is retained.
 
-Switching accounts? Call `initialize` again (the last `accessKey` wins). But if you also need to change *identity*, call `Shoplive.logout()` first to clear the auth slots — see [Mission 3](mission-03-user-identity.md).
+Switching accounts? Call `initialize` again (the last `accessKey` wins). But if you also need to change *identity*, call `Shoplive.logout()` first to clear the auth slots — see [Mission 5](mission-05-user-identity.md).
 
-**Where the demo does this:** [`ShopliveBootstrap.swift`](../iOS/ShopliveIntegration/ShopliveBootstrap.swift) called from [`DemoBootstrap.swift`](../iOS/ShopliveOnboardingDemo/App/DemoBootstrap.swift); [`ShopliveInitializer.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/ShopliveInitializer.kt) called from [`DemoApplication.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/DemoApplication.kt).
+**Where the demo does this:** [`ShopliveBootstrap.swift`](../iOS/ShopliveIntegration/ShopliveBootstrap.swift) called from [`DemoBootstrap.swift`](../iOS/ShopliveOnboardingDemo/App/DemoBootstrap.swift); [`ShopliveInitializer.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveInitializer.kt) called from [`DemoApplication.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/DemoApplication.kt).
 
-> ⚠️ **Present or start before initializing and it fails** with `ShopliveErrorCode.notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (9000). This is the single most common integration error, and it shows up most often on a cold start from a deep link — which is exactly why initialization belongs in `AppDelegate` / `Application.onCreate()`. See [Mission 2](mission-02-deep-link.md).
+> ⚠️ **Present or start before initializing and it fails** with `ShopliveErrorCode.notInitializedAccessKey` / `NOT_INITIALIZED_ACCESS_KEY` (9000). This is the single most common integration error, and it shows up most often on a cold start from a deep link — which is exactly why initialization belongs in `AppDelegate` / `Application.onCreate()`. See [Mission 4](mission-04-deep-link.md).
 
 ---
 
@@ -131,14 +131,14 @@ fun play() {
 }
 ```
 
-The demo keeps the handle in [`PlayerSession`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerSession.kt) on Android and the delegate in a singleton (`DemoPlayerDelegate.shared`) on iOS. Both exist purely to guarantee lifetime.
+The demo keeps the handle in [`ShoplivePlayerSession`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerSession.kt) on Android and the delegate in a singleton (`DemoPlayerDelegate.shared`) on iOS. Both exist purely to guarantee lifetime.
 
 ### ③ Validate keys before you play — because the SDK can't
 
 There is no "is this key valid?" API. `initialize` only stores the value. So the demo does two things:
 
 1. **Local format check only** — non-empty, no whitespace. See `ShopliveInitializer.validate()`.
-2. **Translate the resulting `error` event into a human sentence** per cause. See `describe(error)` in [`DemoPlayerDelegate.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/DemoPlayerDelegate.kt) and the [error code table](api-reference.md#error-codes).
+2. **Translate the resulting `error` event into a human sentence** per cause. See `causeGroup` in [`ShopliveEventLabels.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveEventLabels.kt) (code → cause), `DemoLabels.messageRes` in the app (cause → localized sentence), and the [error code table](api-reference.md#error-codes).
 
 That two-step pattern is worth copying — a bad key, a missing campaign, an auth failure, and a network problem all look identical until the error event arrives.
 
@@ -146,12 +146,12 @@ That two-step pattern is worth copying — a bad key, a missing campaign, an aut
 
 ## How the demo runs this mission
 
-Tapping card ① calls `PlayerLauncher`, which is a thin, deliberately boring wrapper:
+Tapping card ① calls the launcher, which is a thin, deliberately boring wrapper:
 
-- **iOS** — [`PlayerLauncher.present(campaignKey:from:options:configuration:delegate:)`](../iOS/ShopliveIntegration/PlayerLauncher.swift) creates the VC, assigns the delegate, logs the call, and presents. The demo then wraps it in `PlayerHostViewController` so it can put a **‹ List** escape button on top — see [Demo App Tour §2.5](02-demo-app-tour.md#25-the-ios-player-host).
-- **Android** — [`PlayerLauncher.start(...)`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerLauncher.kt) creates the player, assigns the delegate, registers it with `PlayerSession`, and starts. `startWithOptions(...)` is the same thing but sourced from the Options tab, which is the path Missions 5 and 7 use.
+- **iOS** — [`PlayerLauncher.present(campaignKey:from:options:configuration:delegate:)`](../iOS/ShopliveIntegration/PlayerLauncher.swift) creates the VC, assigns the delegate, logs the call, and presents. The demo's cards present `DemoPlayerViewController` the same way — a subclass of the player that adds a **‹ List** escape button on top — see [Demo App Tour §2.5](02-demo-app-tour.md#25-the-ios-player-and-its-demo-controls).
+- **Android** — [`ShoplivePlayerLauncher.start(...)`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerLauncher.kt) creates the player, assigns the delegate, registers it with `ShoplivePlayerSession`, starts, and returns the player. The demo passes a configuration and play options assembled from the Options tab (`DemoConfigurationFactory`) — every card uses that path; a customer app would pass one of the `ShoplivePlayerPresets` instead.
 
-The "done" badge lights up when `playback(started)` arrives — not when `present`/`start` returns.
+The "done" badge lights up when `playback(started)` arrives from **the player this card started** — not when `present`/`start` returns.
 
 ---
 
@@ -166,8 +166,10 @@ The "done" badge lights up when `playback(started)` arrives — not when `presen
 
 ## Next
 
-[Mission 2 — Open from a deep link ▶](mission-02-deep-link.md) takes the same playback call and triggers it from a push notification, where cold-start ordering becomes the whole problem.
+[Mission 2 — Nudge-Style Preview ▶](mission-02-nudge-preview.md) starts the same player muted, in a small window over one of your screens — for a viewer who has not decided to watch yet.
+
+Coming from a push notification instead? [Mission 4 — Launch via Deep Link](mission-04-deep-link.md) takes this same playback call and triggers it from a link, where cold-start ordering becomes the whole problem.
 
 ---
 
-[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 ▶](mission-02-deep-link.md)
+[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 ▶](mission-02-nudge-preview.md)
