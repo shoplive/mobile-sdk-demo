@@ -75,7 +75,7 @@ data class DemoOptions(
     val keepWindowStateOnPlayExecuted: Boolean = false,
 
     // ── Runtime properties (control during playback, not configuration) ──────
-    val resizeMode: ShopliveResizeMode = ShopliveResizeMode.FILL,
+    val resizeMode: ShopliveResizeMode = ShopliveResizeMode.DEFAULT,
 ) {
     /** Whether anything differs from the defaults — used by mission 7 and the UI. */
     val isModified: Boolean get() = this != DEFAULT

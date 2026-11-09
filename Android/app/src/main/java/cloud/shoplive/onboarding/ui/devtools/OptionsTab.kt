@@ -221,7 +221,7 @@ fun OptionsTab(
         )
         CycleOption(
             name = "resizeMode",
-            defaultHint = "FILL",
+            defaultHint = "DEFAULT",
             value = options.resizeMode.name,
             onTap = {
                 onChange { current ->

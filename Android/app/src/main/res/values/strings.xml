@@ -109,7 +109,7 @@
     <string name="tip_control_runtime">Only this group applies mid-playback. configuration is immutable, so assignments after start are ignored.</string>
     <string name="group_play_options">PlayOptions · per playback</string>
     <string name="tip_play_options">Unlike configuration, these can differ on every start()/play() call.</string>
-    <string name="warn_os_pip_leaving_app">OS PIP covers leaving the app (home, recents). PIP requested inside the app (PIP button, back press, product tap) follows isInAppPipEnabled instead. When off, a PIP opened inside the app closes when the app goes to the background.</string>
+    <string name="warn_os_pip_leaving_app">OS PIP covers leaving the app (home, recents). PIP requested inside the app (PIP button, product tap) follows isInAppPipEnabled instead; back press goes to PIP only when backPressEntersPip is also on. When off, a PIP opened inside the app closes when the app goes to the background.</string>
     <string name="warn_back_press_enters_pip">Renamed from enterOSPipOnBackPressed in SDK 3.0.6. Full-screen (Activity) only: when this and isInAppPipEnabled are both on, the system back press goes to PIP instead of closing the player. An open web layer (product detail, Q&amp;A sheet) closes first. When off, back press closes the player.</string>
     <string name="warn_overlay_hidden">HIDDEN only hides the UI. The command channel stays alive, so product and coupon data keeps arriving — watch the log tab. An embedded view is always HIDDEN (video only).</string>
     <string name="warn_mute_on_start">In the current SDK version, enabling this makes playback bounce into PIP (reproduced on a real device). Turn it on for inspection only.</string>
