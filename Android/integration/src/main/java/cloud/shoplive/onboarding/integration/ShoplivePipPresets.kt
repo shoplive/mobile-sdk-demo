@@ -26,8 +26,7 @@ import cloud.shoplive.player.ShoplivePlayerConfiguration
  *   session to the SDK's full-screen player, which enters OS PIP over your screen. The
  *   view stays in your layout; expanding the PIP window opens full screen, not the view.
  * - **The SDK-drawn floating window** now opens only for `presentationStyle = PIP`
- *   (`ShoplivePlayer.startPreview` included). [floating]'s position, scale and padding
- *   style that window.
+ *   (`ShoplivePlayer.startPreview` included). Its position, scale and padding style that window.
  *
  * If the viewer turned PIP off for your app in system settings, full screen reports
  * `ShopliveErrorCode.PIP_DISABLED_BY_USER` (9511) and the request falls back: the PIP
