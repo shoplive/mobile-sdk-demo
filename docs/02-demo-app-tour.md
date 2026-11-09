@@ -87,7 +87,7 @@ You cannot mark a mission complete yourself. The badge appears only when an SDK 
 | Proof | Marks complete |
 |---|---|
 | `playback(started)` — playback actually reached first frame | Missions 1, 2, 3, 4, 7 |
-| `stateChanged(.inAppPIP)` / `IN_APP_PIP` | Mission 5 |
+| `stateChanged(.inAppPIP)` / `IN_APP_PIP`, or (Android 3.0.5) the SDK player Activity entering system PIP | Mission 5 |
 | A `navigation` or `coupon` **request** arrived | Mission 6 |
 | `StreamerEvent.stateChanged(LIVE)` | Mission 8 |
 

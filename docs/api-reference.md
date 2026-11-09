@@ -10,12 +10,15 @@ both demo apps compiled against 3.0.0:
 - **iOS** — `3.0.0`, packaged from `dev` commit `5f0ee781` as local xcframeworks
 - **Android** — `3.0.0`, from `cloud.shoplive:shoplive-{player,streamer}-sdk`
 
-The demos now build against newer versions (iOS `3.0.4`, Android `3.0.4`) and this table has not been re-checked
+The demos now build against newer versions (iOS `3.0.4`, Android `3.0.5`) and this table has not been re-checked
 against them. The Android 3.0.1 additions (in-app PIP options, OS PIP error codes 9510–9514) are in the
 [3.0.1 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.1); for 3.0.3 (`ShopliveError`
-moved to `cloud.shoplive.core.publicsurface`) and 3.0.4 (`ShoplivePlayerState` is a sealed class) see the
-[3.0.3](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3) and
-[3.0.4](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.4) release notes.
+moved to `cloud.shoplive.core.publicsurface`), 3.0.4 (`ShoplivePlayerState` is a sealed class) and 3.0.5
+(`ShoplivePlayer.startPreview`, `ShoplivePlayerAPI.getCampaigns`, full-screen PIP now enters OS PIP and reports 9511
+`PIP_DISABLED_BY_USER` when the viewer turned PIP off) see the
+[3.0.3](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.3),
+[3.0.4](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.4) and
+[3.0.5](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.5) release notes.
 
 Where the two disagree, the difference is called out here and explained in [Platform Differences](platform-differences.md).
 
@@ -136,14 +139,14 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 
 | Field | iOS | Android | Notes |
 |---|---|---|---|
-| `isInAppPipEnabled` | ✅ | ✅ | SDK-drawn floating window |
-| `isOSPipEnabled` | ✅ | ✅ | System PIP. **Full screen only** — no effect on the embedded view |
-| `defaultPosition` | ✅ | ✅ | `ShoplivePipPosition` |
+| `isInAppPipEnabled` | ✅ | ✅ | SDK-drawn floating window. Android 3.0.5: allows PIP requested inside the app (button, back press, product tap, API) |
+| `isOSPipEnabled` | ✅ | ✅ | System PIP. iOS: **full screen only** — no effect on the embedded view. Android 3.0.5: allows PIP when the viewer leaves the app |
+| `defaultPosition` | ✅ | ✅ | `ShoplivePipPosition`. On Android 3.0.5 this, `scale` and `padding` style only the floating window (`presentationStyle = PIP`); `aspectRatio` also sets the system PIP window's shape |
 | `scale` | ✅ | ✅ | Fraction of window width, `0...1`. Default 0.4 |
 | `padding` | ✅ `UIEdgeInsets` | ✅ `ShopliveInsets` | Default 0 pins to the edge and can look clipped |
 | `floatingOffset` | ✅ | ✗ | |
 | `fixedWidth` | ✅ | ✗ | |
-| `enterOSPipOnBackPressed` | ✗ | ✅ | Back-press goes to OS PIP instead of closing |
+| `enterOSPipOnBackPressed` | ✗ | ✅ | **Not read since 3.0.5** — with `isInAppPipEnabled` on, back press goes to PIP when PIP is possible and otherwise closes |
 | `aspectRatio` | ✗ | ✅ | Default 9:16 |
 | `autoEnterOnLeaveScreen` | ✗ **removed** | ✗ | Your app calls `enterPictureInPicture()` instead |
 | `keepWindowStyleOnReturnFromOSPip` | ✗ **removed** | ✗ | |
@@ -215,7 +218,7 @@ Implemented by **both** the full-screen player and the embedded view, so control
 | `resizeMode` | `ShopliveResizeMode` get/set | |
 | `overlayUI` | `ShopliveOverlayUIMode` get/set | iOS: wired. **Android: not yet wired**, and pinned to `HIDDEN` on the embedded view |
 | `state` | `ShoplivePlayerState` get | |
-| `isInPictureInPicture` | `Bool` get | The reliable way to confirm PIP |
+| `isInPictureInPicture` | `Bool` get | The reliable way to confirm PIP. Android 3.0.5: floating window only — false during system PIP |
 | `reload()` | | |
 | `stop()` | | Required when leaving the screen, or audio keeps playing |
 | `send(command:payload:)` | | App → overlay, **send only** (no public receive event) |
@@ -223,6 +226,7 @@ Implemented by **both** the full-screen player and the embedded view, so control
 | `exitPictureInPicture()` | | |
 
 **PIP promotion requires all four:** playback active · `isInAppPipEnabled` · the attach window resolves · no other instance floating. **Failure is silent** — verify via `isInPictureInPicture` or `stateChanged(.inAppPIP)`.
+On Android 3.0.5 full screen enters the system PIP window instead, which neither of those reports, and a PIP already open from another player is closed for you; PIP turned off by the viewer in system settings arrives as error 9511 `PIP_DISABLED_BY_USER`.
 
 Details: [Mission 5](mission-05-pip.md).
 
@@ -234,7 +238,7 @@ Notifications. Handle what you need, ignore the rest.
 
 | iOS `ShoplivePlayerEvent` | Android `ShoplivePlayerEvent` | Payload / use |
 |---|---|---|
-| `.stateChanged(ShoplivePlayerState)` | `StateChanged(state)` | Lifecycle + PIP entry. ⚠️ See [Known Issues](known-issues.md#statechanged-never-fires-ios) |
+| `.stateChanged(ShoplivePlayerState)` | `StateChanged(state)` | Lifecycle + in-app PIP entry (Android 3.0.5: system PIP is not a state). ⚠️ See [Known Issues](known-issues.md#statechanged-never-fires-ios) |
 | `.campaignStatusChanged(ShopliveCampaignStatus)` | `CampaignStatusChanged(status)` | ready / live / ended → your LIVE badge |
 | `.campaignInfoReceived(ShopliveCampaignInfo)` | `CampaignInfoReceived(info)` | `campaignKey`, `title`, `status` |
 | `.playback(PlaybackEvent)` | `Playback(event)` | The reliable playback signal |

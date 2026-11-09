@@ -104,13 +104,14 @@ fun OptionsTab(
             defaultHint = "true",
             checked = options.isOSPipEnabled,
             onChange = { v -> onChange { it.copy(isOSPipEnabled = v) } },
-            warning = stringResource(R.string.warn_os_pip_activity_only),
+            warning = stringResource(R.string.warn_os_pip_leaving_app),
         )
         SwitchOption(
-            name = "pip.enterOSPipOnBackPressed",
+            name = "pip.backPressEntersPip",
             defaultHint = "false",
-            checked = options.enterOSPipOnBackPressed,
-            onChange = { v -> onChange { it.copy(enterOSPipOnBackPressed = v) } },
+            checked = options.backPressEntersPip,
+            onChange = { v -> onChange { it.copy(backPressEntersPip = v) } },
+            warning = stringResource(R.string.warn_back_press_enters_pip),
         )
         CycleOption(
             name = "pip.defaultPosition",
@@ -220,7 +221,7 @@ fun OptionsTab(
         )
         CycleOption(
             name = "resizeMode",
-            defaultHint = "FILL",
+            defaultHint = "DEFAULT",
             value = options.resizeMode.name,
             onTap = {
                 onChange { current ->

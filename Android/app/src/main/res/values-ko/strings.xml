@@ -101,7 +101,8 @@
     <string name="tip_control_runtime">이 그룹만 재생 중에 반영됩니다. configuration 은 불변이라 시작 후 대입이 무시됩니다.</string>
     <string name="group_play_options">PlayOptions · 회차 단위</string>
     <string name="tip_play_options">configuration 과 달리 start()/play() 호출마다 다르게 줄 수 있는 값입니다.</string>
-    <string name="warn_os_pip_activity_only">OS PIP 는 풀스크린(Activity) 전용입니다. 임베드 뷰에서는 켜도 동작하지 않습니다 — host Activity 전체가 축소되는 방식이라 뷰 하나만 띄울 수 없기 때문입니다.</string>
+    <string name="warn_os_pip_leaving_app">OS PIP 는 앱을 떠날 때(홈·최근 앱)의 PIP 입니다. 앱 안에서의 PIP 요청(PIP 버튼·상품 탭)은 isInAppPipEnabled 가 정하고, 뒤로가기는 backPressEntersPip 도 켜져 있을 때만 PIP 로 갑니다. 끄면 앱 안에서 띄운 PIP 도 앱이 백그라운드로 가면 닫힙니다.</string>
+    <string name="warn_back_press_enters_pip">SDK 3.0.6 에서 enterOSPipOnBackPressed 가 이 이름으로 바뀌었습니다. 풀스크린(Activity) 전용입니다 — 이 값과 isInAppPipEnabled 가 모두 켜져 있으면 시스템 뒤로가기가 플레이어를 닫지 않고 PIP 로 전환됩니다. 열린 웹 레이어(상품 상세 · Q&amp;A 시트)가 있으면 먼저 닫습니다. 꺼져 있으면 뒤로가기는 플레이어를 닫습니다.</string>
     <string name="warn_overlay_hidden">HIDDEN 은 표시만 끕니다. 커맨드 채널은 살아 있어 상품·쿠폰 데이터는 계속 들어옵니다 — 로그 탭에서 확인하세요. 임베드 뷰는 항상 HIDDEN 고정입니다(영상 전용).</string>
     <string name="warn_mute_on_start">현재 SDK 버전에서 true 로 켜면 재생이 PIP 로 튕기는 문제가 확인됐습니다(실기기 재현). 확인용으로만 켜세요.</string>
     <string name="warn_allow_screen_capture">false 로 두면 SDK 가 플레이어 창에 FLAG_SECURE 를 걸어 스크린샷·미러링·화면 녹화에서 영상이 검게 나옵니다. (문서에는 기본값이 false 로 적혀 있지만 실제 구현 기본값은 true 입니다.)</string>
@@ -132,7 +133,7 @@
     <string name="feed_card2_title">베스트 셀러</string>
     <string name="feed_card2_desc">스크롤해도 위 재생은 유지됩니다</string>
     <string name="feed_card3_title">신상품</string>
-    <string name="feed_card3_desc">임베드 뷰는 in-App PIP 만 제공합니다 (OS PIP 는 풀스크린 전용)</string>
+    <string name="feed_card3_desc">임베드 뷰의 PIP 는 이 화면 위에 시스템 PIP 창으로 뜹니다</string>
     <string name="feed_card4_title">리뷰 모아보기</string>
     <string name="feed_card4_desc">일반 피드 카드</string>
     <string name="feed_btn_pip">⤡ PIP</string>

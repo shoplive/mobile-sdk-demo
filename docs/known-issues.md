@@ -263,7 +263,7 @@ Honest gaps. Real-device verification is required before these can be called don
 **Android (needs a campaign that plays)**
 
 - Real playback start (2–3 s), chat and LIVE badge
-- in-app PIP staying **above** the product detail Activity
+- Product tap → system PIP (3.0.5) staying over the product detail Activity, and Mission 5 completing from `OsPipWatcher`
 - `navigation(url)` → product detail routing
 - Whether `sound.muteOnStart = true` reproduces the PIP bounce
 - Perceived reload cost when promoting embedded → full screen

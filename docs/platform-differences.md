@@ -16,7 +16,7 @@ The comparison below was taken on these builds:
 | Android | `3.0.0` | Published artifacts | Public Maven |
 
 They reported the same version number but were **not the same build** — which is why the differences below exist at all.
-The demos now build against iOS `3.0.4` / Android `3.0.4` (public Maven at `sdk.shoplive.cloud`); this page has not been
+The demos now build against iOS `3.0.4` / Android `3.0.5` (public Maven at `sdk.shoplive.cloud`); this page has not been
 re-checked against those versions.
 
 Some of the differences below are **snapshot skew** (one platform is simply ahead) rather than deliberate design. Those are marked, since they may resolve on their own.
@@ -81,13 +81,13 @@ Legend: ✅ available · ✗ not available · ⚠️ available but see the note
 | Field | iOS | Android |
 |---|---|---|
 | `isInAppPipEnabled` | ✅ | ✅ |
-| `isOSPipEnabled` | ⚠️ wired, real-device behavior unverified | ✅ (full screen only) |
+| `isOSPipEnabled` | ⚠️ wired, real-device behavior unverified | ✅ (3.0.5: PIP when leaving the app) |
 | `defaultPosition` | ✅ | ✅ |
 | `scale` | ✅ | ✅ |
 | `padding` | ✅ `UIEdgeInsets` | ✅ `ShopliveInsets` |
 | `floatingOffset` | ✅ | ✗ |
 | `fixedWidth` | ✅ | ✗ |
-| `enterOSPipOnBackPressed` | ✗ | ✅ |
+| `enterOSPipOnBackPressed` | ✗ | ✅ field kept, not read since 3.0.5 |
 | `aspectRatio` | ✗ | ✅ |
 | `autoEnterOnLeaveScreen` | ✗ removed | ✗ never shipped |
 | `keepWindowStyleOnReturnFromOSPip` | ✗ removed | ✗ |
@@ -186,7 +186,7 @@ Same class of problem, different symptom. Both measured 2026-07-30 — full deta
 
 | | iOS | Android |
 |---|---|---|
-| `stateChanged` during healthy playback | **Never fires** (fires only on `.inAppPIP` entry) | Fires normally (`LOADING`, `IN_APP_PIP`, `CLOSED`, …) |
+| `stateChanged` during healthy playback | **Never fires** (fires only on `.inAppPIP` entry) | Fires normally (`LOADING`, `IN_APP_PIP`, `CLOSED`, …). Since 3.0.5 full-screen PIP is system PIP, which is not a state |
 | Stream missing / 404 | `error(.unexpectedError, isRecoverable: false)` **twice per second**, no HLS fallback | `playback(failed(404))` every ~5s and **`Error` never fires at all** |
 | `campaignInfoReceived` / `campaignStatusChanged` | Delivered on the current build | **Did not fire** in the 404 case |
 | Silent HLS fallback | Confirmed — WebRTC egress 404 while LL-HLS played, with zero error events | — |

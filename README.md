@@ -146,7 +146,7 @@ and no artifact to commit into your project.
 |---|---|---|
 | **What it is** | 5 xcframeworks (`ios-arm64` + simulator slices), built with `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` | 5 `cloud.shoplive` AARs with POM metadata (2 declared + 3 transitive) |
 | **Distribution repo** | [shoplive/shoplive-sdk-ios](https://github.com/shoplive/shoplive-sdk-ios) — a `Package.swift` of binary targets, no source | [shoplive/shoplive-sdk-android](https://github.com/shoplive/shoplive-sdk-android) — release notes and AAR/POM release assets, no source |
-| **Where the bytes are** | XCFramework zips attached to [release `3.0.4`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.4), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.4`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.4) |
+| **Where the bytes are** | XCFramework zips attached to [release `3.0.4`](https://github.com/shoplive/shoplive-sdk-ios/releases/tag/3.0.4), checksum-pinned in `Package.swift` | Static Maven repository at `https://sdk.shoplive.cloud/maven-repo` — that is what Gradle resolves from. Release notes: [`3.0.5`](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.5) |
 | **How you integrate** | Swift Package Manager | Gradle |
 | **You declare** | 2 products | 2 coordinates |
 | **Auth** | none — public | none — public |
@@ -208,8 +208,8 @@ Your app module:
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.4")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.4")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.5")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.5")   // broadcasting
 }
 ```
 
@@ -217,13 +217,13 @@ Those two lines resolve five `cloud.shoplive` artifacts, plus AndroidX / Kotlin 
 
 | Artifact | Download (AAR) | You declare it |
 |---|---|---|
-| `shoplive-player-sdk:3.0.4` | 1.7 MB | ✅ watching |
-| `shoplive-streamer-sdk:3.0.4` | 870 KB | ✅ broadcasting |
-| `shoplive-core:3.0.4` | 923 KB | no — transitive from both |
-| `shoplive-android-webrtc:3.0.4` | 21.5 MB | no — transitive from both, and what forces API 23 |
-| `shoplive-rootencoder:3.0.4` | 1.3 MB | no — transitive (streamer encoding) |
+| `shoplive-player-sdk:3.0.5` | 1.9 MB | ✅ watching |
+| `shoplive-streamer-sdk:3.0.5` | 870 KB | ✅ broadcasting |
+| `shoplive-core:3.0.5` | 957 KB | no — transitive from both |
+| `shoplive-android-webrtc:3.0.5` | 21.5 MB | no — transitive from both, and what forces API 23 |
+| `shoplive-rootencoder:3.0.5` | 1.3 MB | no — transitive (streamer encoding) |
 
-Sizes measured 2026-10-29 from `sdk.shoplive.cloud`. The player depends on AndroidX Media3 directly (`[1.6.0, 1.12)`, resolves to 1.10.1), which requires **compileSdk 36**. Since 3.0.3 the separate WebRTC, RTMP, ExoPlayer and media3 artifacts are no longer published, and ExoPlayer 2 is no longer supported.
+Sizes measured 2026-11-09 from `sdk.shoplive.cloud`. The player depends on AndroidX Media3 directly (`[1.6.0, 1.12)`, resolves to 1.10.1), which requires **compileSdk 36**. Since 3.0.3 the separate WebRTC, RTMP, ExoPlayer and media3 artifacts are no longer published, and ExoPlayer 2 is no longer supported.
 
 **These are download sizes, not what your app grows by.** Both platforms strip and split at packaging time — for the
 numbers that matter to your users, see the next section. This demo's own wiring:
@@ -327,12 +327,12 @@ the version its behavior was measured on:
 | | Configured in this repo | Delivery | Behavior measured on |
 |---|---|---|---|
 | iOS | `3.0.4` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.4 | `3.0.0` |
-| Android | `3.0.4` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.4` from `sdk.shoplive.cloud` | `3.0.0` |
+| Android | `3.0.5` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.5` from `sdk.shoplive.cloud` | `3.0.0` |
 | Flutter | `3.0.2` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.2 (wraps Android 3.0.2 / iOS 3.0.2) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15) — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
 
 A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 
-Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 against SDK 3.0.0 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. The Android move to 3.0.4 has been verified to **build** (2026-10-29), not re-run on a device. Where something is unverified, it says so.
+Behavioral notes in these docs were **measured by running the apps** on 2026-07-30 against SDK 3.0.0 (iOS Simulator / Xcode 26.6; Android `sdk_gphone16k_arm64` API 37), not inferred from documentation. The Android move to 3.0.5 has been verified to **build** (2026-11-09), not re-run on a device. Where something is unverified, it says so.
 
 ---
 

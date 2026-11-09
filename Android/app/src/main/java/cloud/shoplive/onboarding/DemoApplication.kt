@@ -11,6 +11,7 @@ import cloud.shoplive.onboarding.data.LocaleSetting
 import cloud.shoplive.onboarding.data.MissionProgress
 import cloud.shoplive.onboarding.demo.DemoDefaults
 import cloud.shoplive.onboarding.demo.DemoLogBridge
+import cloud.shoplive.onboarding.demo.OsPipWatcher
 import cloud.shoplive.onboarding.integration.ShopliveInitializer
 import java.lang.ref.WeakReference
 
@@ -36,6 +37,8 @@ class DemoApplication : Application() {
 
         DemoContainer.install(this)
         ProductRouter.install(this)
+        // Mission 5 on SDK 3.0.5+: full-screen PIP is OS PIP, which no delegate event reports.
+        OsPipWatcher.install(this) { DemoContainer.progress.markPipEntered() }
 
         // On relaunch, skip the start screen and go straight in with the last mode.
         val credentials = DemoContainer.credentials

@@ -4,7 +4,7 @@
 
 > **Guide cross-reference:** [Mission 5 · Applying PIP](https://sdk.shoplive.cloud/#m5) · [PlayerConfiguration fields](https://sdk.shoplive.cloud/#f-playerconfig)
 >
-> **Source:** [`ShopliveIntegration/PipOptions.swift`](../iOS/ShopliveIntegration/PipOptions.swift) · [`sdk/PipOptions.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PipOptions.kt)
+> **Source:** [`ShopliveIntegration/PipOptions.swift`](../iOS/ShopliveIntegration/PipOptions.swift) · [`ShoplivePipPresets.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePipPresets.kt)
 >
 > **In the app:** card ⑤ — *"Keep watching in PIP"*. During playback, tap a product and the stream continues in a small window.
 
@@ -28,7 +28,18 @@ Playback that survives the user going somewhere else — a product page, another
 | Works with embedded view | Yes | **No** |
 | Scope | Within your app | Over the home screen and other apps |
 
-**Why OS PIP can't work with the embedded view:** OS PIP shrinks the *entire host Activity*. That has no meaning for a view sitting inside your layout. So on Android, setting `isOSPipEnabled = true` on an embedded view simply has no effect.
+**Why OS PIP can't work with the embedded view:** OS PIP shrinks the *entire host Activity*. That has no meaning for a view sitting inside your layout. So on Android before 3.0.5, setting `isOSPipEnabled = true` on an embedded view simply had no effect.
+
+> **Android 3.0.5 changed this table.** The two toggles now decide *where* PIP is allowed, not which window opens:
+> `isInAppPipEnabled` covers PIP requested while your app is on screen (PIP button, back press, product tap,
+> `enterPictureInPicture()`), and `isOSPipEnabled` covers the viewer leaving the app (home, recents). Neither disables the other.
+>
+> - **Full screen** always opens the **system** PIP window. The SDK's floating window now opens only for `presentationStyle = PIP` (`ShoplivePlayer.startPreview` included).
+> - **Embedded view**: a PIP request hands the session to the SDK's full-screen player, which enters system PIP over your screen.
+>   The view stays in your layout, and expanding the PIP window opens full screen, not the view.
+> - With `isOSPipEnabled = false`, a PIP opened inside the app closes with the session when the app goes to the background.
+>
+> Source: the [3.0.5 release notes](https://github.com/shoplive/shoplive-sdk-android/releases/tag/3.0.5) and the SDK's `PipOptions` documentation. Not yet re-run on a device.
 
 ---
 
@@ -55,7 +66,7 @@ static func configuration(position: ShoplivePipPosition = .bottomRight,
 ShoplivePlayerConfiguration.PipOptions(
     isInAppPipEnabled = true,
     isOSPipEnabled = true,
-    enterOSPipOnBackPressed = true,          // Android only
+    enterOSPipOnBackPressed = true,          // Android only — not read since 3.0.5
     defaultPosition = ShoplivePipPosition.BOTTOM_RIGHT,
     scale = 0.4f,
     aspectRatio = …,                         // Android only
@@ -99,6 +110,13 @@ PlayerSession.exitPictureInPicture()
 
 If any condition fails, the call is **ignored with no error**. Confirm success by reading `isInPictureInPicture` or by waiting for `stateChanged(.inAppPIP)`.
 
+> **Android 3.0.5, full screen:** neither check works any more. System PIP is not a player state (it stays `Playing` / `Paused`),
+> and `isInPictureInPicture` reflects only the floating window. The gate is `isInAppPipEnabled`, and turning it off is still silent.
+> A PIP already open from another player is closed for you (that player gets `Closed(APP_REQUEST)`).
+> If the viewer turned PIP off for your app in system settings, full screen reports `ShopliveErrorCode.PIP_DISABLED_BY_USER` (9511)
+> and the request falls back: the PIP button leaves full screen as it is, back press closes the player, a product tap brings
+> your app's screen up. An embedded view keeps playing and gets `PIP_ENTER_FAILED`.
+
 ---
 
 ## Automatic PIP on navigation
@@ -115,7 +133,7 @@ navigation = ShoplivePlayerConfiguration.NavigationOptions(
 )
 ```
 
-With `.pip`, the SDK performs `enterPictureInPicture()` internally when a product tap navigates away. **That is the behavior card ⑤ demonstrates** — "tap a product → small window" is this one field, not app code.
+With `.pip`, the SDK performs `enterPictureInPicture()` internally when a product tap navigates away (on Android 3.0.5 full screen, that is the system PIP window). **That is the behavior card ⑤ demonstrates** — "tap a product → small window" is this one field, not app code.
 
 ---
 
@@ -166,7 +184,8 @@ Some PIP fields exist on one platform only. Reaching for the wrong one is a comp
 | `isInAppPipEnabled`, `isOSPipEnabled`, `defaultPosition`, `scale` | ✅ | ✅ |
 | `padding` | ✅ `UIEdgeInsets` | ✅ `ShopliveInsets` |
 | `floatingOffset`, `fixedWidth` | ✅ | ✗ |
-| `enterOSPipOnBackPressed`, `aspectRatio` | ✗ | ✅ |
+| `enterOSPipOnBackPressed` | ✗ | ✅ field kept, **not read since 3.0.5** |
+| `aspectRatio` | ✗ | ✅ |
 | `autoEnterOnLeaveScreen` | ✗ removed | ✗ |
 | `keepWindowStyleOnReturnFromOSPip` | ✗ removed | ✗ |
 
@@ -183,7 +202,8 @@ Full list: [Platform Differences](platform-differences.md).
 
 **Android**
 
-- `enterOSPipOnBackPressed` sends the player to OS PIP on back-press instead of closing it. Nice touch for retention, worth enabling deliberately rather than by accident.
+- Since 3.0.5 the SDK no longer reads `enterOSPipOnBackPressed`. Back press is an in-app PIP request: with `isInAppPipEnabled = true` (the default) it goes to PIP when PIP is possible and closes the player when entry fails; with `false` it closes the player.
+- `defaultPosition`, `scale` and `padding` style the SDK's floating window, which on 3.0.5 opens only for `presentationStyle = PIP`. They do not change the system PIP window that full screen opens; `aspectRatio` does set that window's shape.
 
 ---
 
@@ -193,7 +213,12 @@ Card ⑤ starts full-screen playback with the Options tab's PIP settings applied
 
 The "done" badge lights up on `stateChanged(.inAppPIP)` / `IN_APP_PIP` — one of the two missions not gated on `playback(started)`.
 
-**Worth trying:** in the Options tab, set `pipPadding` to 0 and replay to see the clipping problem, then set `scale` very small and replay. Both are one-field changes that visibly matter.
+On Android 3.0.5 full-screen PIP is the system window, which no delegate event reports, so the demo also watches the SDK player
+Activity enter PIP mode through the standard AndroidX `addOnPictureInPictureModeChangedListener`
+([`OsPipWatcher.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/demo/OsPipWatcher.kt)). That is demo harness: it relies on the SDK
+player being a `ComponentActivity`, which is true for 3.0.5 but is not a documented contract.
+
+**Worth trying (iOS):** in the Options tab, set `pipPadding` to 0 and replay to see the clipping problem, then set `scale` very small and replay. Both are one-field changes that visibly matter. On Android 3.0.5 they style only the floating window, not the system PIP window.
 
 ---
 

@@ -26,10 +26,10 @@ A live player inside your own layout — a home feed, a product page, a tab. **Y
 | Overlay UI (chat, products, coupons) | Yes | **No — video only** |
 | Controls, events, PIP | `ShoplivePlayerControlling` | **The same `ShoplivePlayerControlling`** |
 | Playback start | Automatic on present | **You call `play()`** |
-| in-app PIP | Yes | Yes |
-| OS PIP | Yes | **No** (Android: full screen only) |
+| in-app PIP | Yes (Android 3.0.5: only for `presentationStyle = PIP`) | iOS: Yes · Android 3.0.5: no |
+| OS PIP | Yes | iOS: **No** · Android 3.0.5: hands the session to full screen, which enters OS PIP ([Mission 5](mission-05-pip.md)) |
 
-The third row is the good news: mute, resize, reload, `send()`, and PIP enter/exit are literally the same code on both paths. Only present/dismiss/close differ.
+The third row is the good news: mute, resize, reload, `send()`, and PIP enter/exit are literally the same code on both paths. Only present/dismiss/close differ. (On Android 3.0.5 the embedded view's `exitPictureInPicture()` does nothing: its PIP has already been handed to full screen.)
 
 ---
 
