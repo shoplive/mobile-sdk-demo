@@ -107,11 +107,11 @@ fun OptionsTab(
             warning = stringResource(R.string.warn_os_pip_leaving_app),
         )
         SwitchOption(
-            name = "pip.enterOSPipOnBackPressed",
+            name = "pip.backPressEntersPip",
             defaultHint = "false",
-            checked = options.enterOSPipOnBackPressed,
-            onChange = { v -> onChange { it.copy(enterOSPipOnBackPressed = v) } },
-            warning = stringResource(R.string.warn_back_pressed_unread),
+            checked = options.backPressEntersPip,
+            onChange = { v -> onChange { it.copy(backPressEntersPip = v) } },
+            warning = stringResource(R.string.warn_back_press_enters_pip),
         )
         CycleOption(
             name = "pip.defaultPosition",

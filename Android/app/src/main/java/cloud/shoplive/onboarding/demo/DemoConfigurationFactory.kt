@@ -80,7 +80,7 @@ object DemoConfigurationFactory {
         ShoplivePlayerConfiguration.PipOptions(
             isInAppPipEnabled = options.isInAppPipEnabled,
             isOSPipEnabled = options.isOSPipEnabled,
-            enterOSPipOnBackPressed = options.enterOSPipOnBackPressed,
+            backPressEntersPip = options.backPressEntersPip,
             defaultPosition = options.pipPosition,
             scale = options.pipScale,
             aspectRatio = options.pipAspectRatio,

@@ -51,10 +51,11 @@ import cloud.shoplive.player.ShoplivePlayerConfiguration
  * that value, not something you implement.
  *
  * ## Back press
- * Back press is an in-app request: with `isInAppPipEnabled = true` (the default) it
- * goes to PIP when PIP is possible, and closes the player as before when entry fails.
- * `PipOptions.enterOSPipOnBackPressed` is kept for 3.0.x compatibility but the SDK no
- * longer reads it.
+ * Since SDK 3.0.6 `PipOptions.backPressEntersPip` (renamed from `enterOSPipOnBackPressed`,
+ * which remains as a read-only deprecated property) decides it, full screen only: when it
+ * and `isInAppPipEnabled` are both true, the system back press goes to PIP instead of
+ * closing the player. An open web layer (product detail, Q&A sheet) closes first, and the
+ * player closes as before when PIP entry fails. The default is `false` — back press closes.
  */
 object ShoplivePipPresets {
 

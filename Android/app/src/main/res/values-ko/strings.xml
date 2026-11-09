@@ -102,7 +102,7 @@
     <string name="group_play_options">PlayOptions · 회차 단위</string>
     <string name="tip_play_options">configuration 과 달리 start()/play() 호출마다 다르게 줄 수 있는 값입니다.</string>
     <string name="warn_os_pip_leaving_app">OS PIP 는 앱을 떠날 때(홈·최근 앱)의 PIP 입니다. 앱 안에서의 PIP 요청(PIP 버튼·뒤로가기·상품 탭)은 isInAppPipEnabled 가 정합니다. 끄면 앱 안에서 띄운 PIP 도 앱이 백그라운드로 가면 닫힙니다.</string>
-    <string name="warn_back_pressed_unread">SDK 3.0.5 는 이 값을 읽지 않습니다. 뒤로가기는 isInAppPipEnabled 를 따릅니다 — 켜져 있으면 PIP 가 가능할 때 PIP 로 전환되고, 아니면 플레이어를 닫습니다.</string>
+    <string name="warn_back_press_enters_pip">SDK 3.0.6 에서 enterOSPipOnBackPressed 가 이 이름으로 바뀌었습니다. 풀스크린(Activity) 전용입니다 — 이 값과 isInAppPipEnabled 가 모두 켜져 있으면 시스템 뒤로가기가 플레이어를 닫지 않고 PIP 로 전환됩니다. 열린 웹 레이어(상품 상세 · Q&amp;A 시트)가 있으면 먼저 닫습니다. 꺼져 있으면 뒤로가기는 플레이어를 닫습니다.</string>
     <string name="warn_overlay_hidden">HIDDEN 은 표시만 끕니다. 커맨드 채널은 살아 있어 상품·쿠폰 데이터는 계속 들어옵니다 — 로그 탭에서 확인하세요. 임베드 뷰는 항상 HIDDEN 고정입니다(영상 전용).</string>
     <string name="warn_mute_on_start">현재 SDK 버전에서 true 로 켜면 재생이 PIP 로 튕기는 문제가 확인됐습니다(실기기 재현). 확인용으로만 켜세요.</string>
     <string name="warn_allow_screen_capture">false 로 두면 SDK 가 플레이어 창에 FLAG_SECURE 를 걸어 스크린샷·미러링·화면 녹화에서 영상이 검게 나옵니다. (문서에는 기본값이 false 로 적혀 있지만 실제 구현 기본값은 true 입니다.)</string>

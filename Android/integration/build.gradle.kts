@@ -53,8 +53,8 @@ dependencies {
     // The Shoplive SDK, and nothing that belongs to the demo.
     // `api` because the public surface of this module hands SDK types back to
     // the caller (configurations, delegates, player handles).
-    api("cloud.shoplive:shoplive-player-sdk:3.0.5")
-    api("cloud.shoplive:shoplive-streamer-sdk:3.0.5")
+    api("cloud.shoplive:shoplive-player-sdk:3.0.6")
+    api("cloud.shoplive:shoplive-streamer-sdk:3.0.6")
 
     // Nothing else is declared: shoplive-core (Shoplive, ShopliveUser,
     // ShopliveConfiguration, ShopliveError) and the other SDK modules arrive as

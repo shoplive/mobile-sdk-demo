@@ -34,7 +34,7 @@ data class DemoOptions(
     // ── pip ──────────────────────────────────────────────────────────────────
     val isInAppPipEnabled: Boolean = true,
     val isOSPipEnabled: Boolean = true,
-    val enterOSPipOnBackPressed: Boolean = false,
+    val backPressEntersPip: Boolean = false,
     val pipPosition: ShoplivePipPosition = ShoplivePipPosition.BOTTOM_RIGHT,
     val pipScale: Float = 0.4f,
     val pipAspectRatio: ShoplivePipRatio = ShoplivePipRatio.RATIO_9X16,

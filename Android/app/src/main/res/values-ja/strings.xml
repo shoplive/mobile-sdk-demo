@@ -102,7 +102,7 @@
     <string name="group_play_options">PlayOptions · 再生ごと</string>
     <string name="tip_play_options">configuration と違い、start()/play() の呼び出しごとに変えられる値です。</string>
     <string name="warn_os_pip_leaving_app">OS PIP はアプリを離れるとき(ホーム・最近のアプリ)の PIP です。アプリ内での PIP 要求(PIP ボタン・戻る・商品タップ)は isInAppPipEnabled が決めます。オフにすると、アプリ内で開いた PIP もアプリがバックグラウンドに移ると閉じます。</string>
-    <string name="warn_back_pressed_unread">SDK 3.0.5 はこの値を読みません。戻る操作は isInAppPipEnabled に従います — オンなら PIP が可能なときに PIP に切り替わり、できなければプレーヤーを閉じます。</string>
+    <string name="warn_back_press_enters_pip">SDK 3.0.6 で enterOSPipOnBackPressed からこの名前に変わりました。フルスクリーン(Activity)専用です — この値と isInAppPipEnabled が両方オンなら、システムの戻る操作はプレーヤーを閉じずに PIP に切り替わります。開いている Web レイヤー(商品詳細・Q&amp;A シート)があれば先に閉じます。オフなら戻る操作でプレーヤーを閉じます。</string>
     <string name="warn_overlay_hidden">HIDDEN は表示だけを止めます。コマンドチャネルは生きているため商品・クーポンのデータは届き続けます — ログタブで確認してください。埋め込みビューは常に HIDDEN 固定です(映像のみ)。</string>
     <string name="warn_mute_on_start">現行の SDK バージョンでは true にすると再生が PIP に切り替わる問題が確認されています(実機で再現)。確認目的でのみ有効にしてください。</string>
     <string name="warn_allow_screen_capture">false にすると SDK がプレイヤーのウィンドウに FLAG_SECURE を設定するため、スクリーンショット・ミラーリング・画面録画で映像が黒くなります。(ドキュメントには既定値 false と記載されていますが、実装の既定値は true です。)</string>
