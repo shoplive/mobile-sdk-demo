@@ -95,8 +95,8 @@ dependencies {
     // declare them — and the overlap between the two entry points is de-duplicated
     // by version. Keep both lines on the same version: the SDK is obfuscated, so
     // mixed versions fail at runtime with NoSuchMethodError.
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.4")
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.4")
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.5")
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.5")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -8,15 +8,37 @@ import cloud.shoplive.player.ShoplivePlayerConfiguration
 /**
  * Keeping the stream visible after the viewer leaves the player.
  *
- * There are two kinds of PIP and they behave **differently**:
+ * ## The two toggles choose *where* PIP is allowed, not which window
+ * Since SDK 3.0.5:
  *
- * | | in-App PIP | OS PIP |
+ * | | `isInAppPipEnabled` | `isOSPipEnabled` |
  * | --- | --- | --- |
- * | Owner | a floating window drawn by the SDK | `Activity.enterPictureInPictureMode()` |
- * | Works with | full screen ([cloud.shoplive.player.ShoplivePlayer]) **and** embedded ([cloud.shoplive.player.ShoplivePlayerView]) | full screen **only** |
- * | Why | the SDK re-parents its own container | the whole host Activity shrinks, which cannot work for a view inside your layout |
+ * | Covers | PIP requested **while your app is on screen**: the PIP button, back press, a product tap, [cloud.shoplive.player.ShoplivePlayerControlling.enterPictureInPicture] | PIP when the viewer **leaves your app** (home, recents) |
+ * | When false | those requests do nothing (no error) | leaving the app does not open PIP, and a PIP opened inside the app closes with the session when the app goes to the background |
  *
- * So in an embedded view, turning `isOSPipEnabled` on does nothing.
+ * Neither toggle disables the other.
+ *
+ * ## Which window opens is up to the SDK
+ * - **Full screen ([cloud.shoplive.player.ShoplivePlayer])** — every PIP is the
+ *   system (OS) PIP window, shown over your app's screen. The SDK's own floating
+ *   window is no longer used here.
+ * - **Embedded ([cloud.shoplive.player.ShoplivePlayerView])** — a PIP request hands the
+ *   session to the SDK's full-screen player, which enters OS PIP over your screen. The
+ *   view stays in your layout; expanding the PIP window opens full screen, not the view.
+ * - **The SDK-drawn floating window** now opens only for `presentationStyle = PIP`
+ *   (`ShoplivePlayer.startPreview` included). [floating]'s position, scale and padding
+ *   style that window.
+ *
+ * If the viewer turned PIP off for your app in system settings, full screen reports
+ * `ShopliveErrorCode.PIP_DISABLED_BY_USER` (9511) and the request falls back: the PIP
+ * button leaves full screen as it is, back press closes the player, and a product tap
+ * brings your app's screen up. An embedded view keeps playing and gets
+ * `PIP_ENTER_FAILED`.
+ *
+ * ## OS PIP is not a player state
+ * `ShoplivePlayerState.InAppPIP` is emitted only for the floating window. While the
+ * player is in OS PIP the state stays `Playing` / `Paused`, and there is no delegate
+ * callback for entering it.
  *
  * ## Automatic PIP on scroll-away is the app's job
  * The public surface has no "PIP when the view leaves the screen" option. If you
@@ -24,21 +46,31 @@ import cloud.shoplive.player.ShoplivePlayerConfiguration
  * [cloud.shoplive.player.ShoplivePlayerControlling.enterPictureInPicture].
  *
  * ## Relationship with product landing
- * With `navigation.actionOnNavigation = PIP`, the SDK switches to PIP by itself
- * when a product tap navigates away. "Tap a product, video shrinks into a corner"
- * is that value, not something you implement.
+ * With `navigation.actionOnNavigation = PIP` (the default), the SDK enters PIP by itself
+ * when a product tap navigates away. "Tap a product, video shrinks into a corner" is
+ * that value, not something you implement.
+ *
+ * ## Back press
+ * Back press is an in-app request: with `isInAppPipEnabled = true` (the default) it
+ * goes to PIP when PIP is possible, and closes the player as before when entry fails.
+ * `PipOptions.enterOSPipOnBackPressed` is kept for 3.0.x compatibility but the SDK no
+ * longer reads it.
  */
 object ShoplivePipPresets {
 
     /**
-     * SDK defaults, which already work: both PIP kinds enabled, bottom-right,
-     * 9:16, 40% of the screen width.
+     * SDK defaults, which already work: PIP allowed both inside and outside your app;
+     * the floating window at bottom-right, 9:16, 40% of the screen width.
      */
     val DEFAULT = ShoplivePlayerConfiguration.PipOptions()
 
     /**
-     * A small floating window inset from the screen edges — the usual choice when
-     * your app has a bottom navigation bar the window should not sit on top of.
+     * Styles the SDK's floating window — inset from the screen edges, the usual choice
+     * when your app has a bottom navigation bar the window should not sit on top of.
+     *
+     * Since 3.0.5 that window opens only for `presentationStyle = PIP` (the preview
+     * included). The system PIP window that full screen opens ignores position, scale
+     * and padding, but takes its shape from [aspectRatio].
      *
      * @param paddingDp applied to all four sides. `ShopliveInsets(left, top, right,
      *   bottom)` lets you set them individually.
@@ -58,35 +90,20 @@ object ShoplivePipPresets {
     )
 
     /**
-     * in-App PIP only — the SDK-drawn window, never the OS one.
+     * PIP only while the viewer is in your app.
      *
-     * Use this when you do not want the whole app to shrink into an OS PIP window
-     * (which also hides the rest of your UI), or for an embedded view where OS PIP
-     * would not work anyway.
+     * PIP requests inside the app still open PIP, but leaving the app (home, recents)
+     * does not — and a PIP already open closes with the session when the app goes to
+     * the background. Use this when playback should not follow the viewer out of your
+     * app.
      */
-    fun inAppOnly(
-        position: ShoplivePipPosition = ShoplivePipPosition.BOTTOM_RIGHT,
-        scale: Float = 0.4f,
-    ): ShoplivePlayerConfiguration.PipOptions = ShoplivePlayerConfiguration.PipOptions(
-        isInAppPipEnabled = true,
-        isOSPipEnabled = false,
-        defaultPosition = position,
-        scale = scale,
-    )
-
-    /**
-     * Back press shrinks to OS PIP instead of closing the player.
-     *
-     * Requires `android:supportsPictureInPicture="true"` on the SDK player Activity
-     * to be merged in from the AAR manifest — it is, but check if you override it.
-     */
-    fun osPipOnBackPressed(): ShoplivePlayerConfiguration.PipOptions =
+    fun inAppOnly(): ShoplivePlayerConfiguration.PipOptions =
         ShoplivePlayerConfiguration.PipOptions(
-            isOSPipEnabled = true,
-            enterOSPipOnBackPressed = true,
+            isInAppPipEnabled = true,
+            isOSPipEnabled = false,
         )
 
-    /** No PIP at all — playback ends when the viewer leaves. */
+    /** No PIP at all — back press closes the player, and leaving the app does not open PIP. */
     fun disabled(): ShoplivePlayerConfiguration.PipOptions =
         ShoplivePlayerConfiguration.PipOptions(
             isInAppPipEnabled = false,

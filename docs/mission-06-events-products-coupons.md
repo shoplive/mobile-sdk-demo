@@ -91,6 +91,7 @@ override fun onEvent(player: ShoplivePlayerControlling, event: ShoplivePlayerEve
     when (event) {
         is ShoplivePlayerEvent.StateChanged -> when (event.state) {
             ShoplivePlayerState.Loading     -> { /* new session — reset your counters here */ }
+            // Floating window only — since 3.0.5 full-screen PIP is system PIP, which is not a state.
             ShoplivePlayerState.InAppPIP    -> progress.markPipEntered()
             // Session over — drop the control handle so you don't command a dead player.
             is ShoplivePlayerState.Closed   -> PlayerSession.detach(player)

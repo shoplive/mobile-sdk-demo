@@ -109,7 +109,8 @@
     <string name="tip_control_runtime">Only this group applies mid-playback. configuration is immutable, so assignments after start are ignored.</string>
     <string name="group_play_options">PlayOptions · per playback</string>
     <string name="tip_play_options">Unlike configuration, these can differ on every start()/play() call.</string>
-    <string name="warn_os_pip_activity_only">OS PIP is full-screen (Activity) only. Enabling it has no effect on an embedded view — the whole host Activity is what shrinks, so a single view cannot be shown alone.</string>
+    <string name="warn_os_pip_leaving_app">OS PIP covers leaving the app (home, recents). PIP requested inside the app (PIP button, back press, product tap) follows isInAppPipEnabled instead. When off, a PIP opened inside the app closes when the app goes to the background.</string>
+    <string name="warn_back_pressed_unread">SDK 3.0.5 does not read this value. Back press follows isInAppPipEnabled: when on, it goes to PIP if PIP is possible and otherwise closes the player.</string>
     <string name="warn_overlay_hidden">HIDDEN only hides the UI. The command channel stays alive, so product and coupon data keeps arriving — watch the log tab. An embedded view is always HIDDEN (video only).</string>
     <string name="warn_mute_on_start">In the current SDK version, enabling this makes playback bounce into PIP (reproduced on a real device). Turn it on for inspection only.</string>
     <string name="warn_allow_screen_capture">Setting this to false makes the SDK apply FLAG_SECURE to the player window, so video shows up black in screenshots, mirroring, and screen recordings. (The docs list false as the default, but the implementation default is true.)</string>
@@ -140,7 +141,7 @@
     <string name="feed_card2_title">Best sellers</string>
     <string name="feed_card2_desc">Playback above survives scrolling</string>
     <string name="feed_card3_title">New arrivals</string>
-    <string name="feed_card3_desc">An embedded view offers in-App PIP only (OS PIP is full-screen only)</string>
+    <string name="feed_card3_desc">PIP from an embedded view opens the system PIP window over this screen</string>
     <string name="feed_card4_title">All reviews</string>
     <string name="feed_card4_desc">An ordinary feed card</string>
     <string name="feed_btn_pip">⤡ PIP</string>
