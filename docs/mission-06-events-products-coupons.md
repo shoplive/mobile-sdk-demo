@@ -50,8 +50,8 @@ func player(_ player: ShoplivePlayerControlling, didReceive event: ShoplivePlaye
     case .stateChanged(let state):
         // Playback lifecycle. Entering/leaving .inAppPIP also arrives here.
         // `.closed` is session end, NOT a return from PIP — keep the two apart.
-        if state == .closed {
-            publish(.closed(reason: player.closeReason), from: player)   // 3.0.4+ — see "Why the player closed"
+        if case .closed(let reason) = state {
+            publish(.closed(reason: reason), from: player)   // see "Why the player closed"
         } else {
             publish(.pipStateChanged(isActive: state == .inAppPIP), from: player)
         }
@@ -369,10 +369,9 @@ Since 3.0.4 a closed session says **why** it closed — `ShopliveCloseReason`:
 Use it to decide what to do next — most of all whether to show a small window again. The guide's recommendation, which the [nudge-style preview](mission-02-nudge-preview.md) follows: if the viewer closed it (`userAction`), do not show it again right away on the same screen.
 
 ```swift
-// iOS — DemoPlayerDelegate.swift. The reason is a property of the player, not of the state.
+// iOS — DemoPlayerDelegate.swift. The state carries the reason (3.0.5+).
 case .stateChanged(let state):
-    if state == .closed {
-        let reason = player.closeReason          // ShopliveCloseReason? — nil = no reason given
+    if case .closed(let reason) = state {        // .userAction / .appRequest / .accessKeyChanged
         publish(.closed(reason: reason), from: player)
     }
 ```
@@ -385,9 +384,7 @@ fun stateLabel(state: ShoplivePlayerState): String = when (state) {
 }
 ```
 
-> ⚠️ **iOS differs from the guide.** The guide's iOS example reads the reason from the state (`if case .closed(let reason) = s`). In the 3.0.4 binary `.closed` has **no associated value** (`case idle, loading, playing, paused, inAppPIP, closed`) — the reason is `closeReason: ShopliveCloseReason?` on the player (`ShoplivePlayerControlling`, the view controller, and the view). The guide's form does not compile against 3.0.4; read `player.closeReason` when `.closed` arrives. Android matches the guide: `ShoplivePlayerState.Closed(reason)`.
->
-> ⚠️ **Unverified:** whether `closeReason` is already set at the moment `.closed` arrives on iOS. If it is nil there, the log says "no reason"; the nudge screen reads it again later, when it decides whether to show itself, so its decision does not depend on that timing.
+> **iOS 3.0.5 changed this.** In 3.0.4 `.closed` had no associated value and the reason was the player's `closeReason` property. Since 3.0.5 the state carries it, as in the guide (`case closed(ShopliveCloseReason)`), and `closeReason` is gone — so `state == .closed` no longer compiles; match with `if case .closed = state`. Android has always matched the guide: `ShoplivePlayerState.Closed(reason)`.
 
 After an access-key change, a token-signed-in viewer must be set again with `Shoplive.setUser` ([Mission 5](mission-05-user-identity.md)).
 
@@ -460,7 +457,7 @@ Pairing them makes a missing `respond` visible at a glance — which is the whol
 
 The "done" badge appears as soon as **any** `navigation`, `coupon` or `customWebAction` request arrives, from any player, since receiving one proves the channel works.
 
-The 3.0.4 items show up in the same log: every close is logged with its reason (`stateChanged(.closed) — closeReason: .userAction` / `stateChanged(closed(reason: USER_ACTION))`), and the Options tab's `navigation.isCustomShareEnabled` switch (off by default, like the SDK) routes the share button to the app's own share sheet.
+The 3.0.4 items show up in the same log: every close is logged with its reason (`stateChanged(.closed(.userAction))` / `stateChanged(closed(reason: USER_ACTION))`), and the Options tab's `navigation.isCustomShareEnabled` switch (off by default, like the SDK) routes the share button to the app's own share sheet.
 
 ---
 

@@ -300,8 +300,8 @@ Details: [Mission 6](mission-06-events-products-coupons.md).
 
 | Type | Values |
 |---|---|
-| `ShoplivePlayerState` | `idle` · `loading` · `playing` · `paused` · `inAppPIP` · `closed` (iOS 3.0.4: no associated value) / Android `Closed(reason)` |
-| `ShopliveCloseReason` (3.0.4+) | `userAction` · `appRequest` · `accessKeyChanged` / `USER_ACTION` · `APP_REQUEST` · `ACCESS_KEY_CHANGED`. iOS reads it from the player's `closeReason` property (optional); Android from `Closed.reason`. See [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304) |
+| `ShoplivePlayerState` | `idle` · `loading` · `playing` · `paused` · `inAppPIP` · `closed(reason)` / Android `Closed(reason)` |
+| `ShopliveCloseReason` (3.0.4+) | `userAction` · `appRequest` · `accessKeyChanged` / `USER_ACTION` · `APP_REQUEST` · `ACCESS_KEY_CHANGED`. iOS reads it from `.closed(reason)` (3.0.5+; the `closeReason` property is gone); Android from `Closed.reason`. See [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304) |
 | `ShoplivePlayerPresentationStyle` (3.0.4+) | `fullScreen` (default) · `pip` / `FULLSCREEN` · `PIP` |
 | `ShopliveCampaignStatus` | `ready` · `live` · `ended` |
 | `ShopliveConnectionState` | `connecting` · `connected` · `reconnecting` … |

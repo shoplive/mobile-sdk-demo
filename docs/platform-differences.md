@@ -199,7 +199,7 @@ Checked against the 3.0.4 iOS `.swiftinterface` and Android AAR on 2026-11-04; r
 
 | | iOS | Android |
 |---|---|---|
-| Why the player closed | `stateChanged(.closed)` has **no associated value**; read `player.closeReason` (`ShopliveCloseReason?`) — the guide's `if case .closed(let reason)` does not compile | `ShoplivePlayerState.Closed(reason)` — as in the guide |
+| Why the player closed | `.closed(reason)` — as in the guide (3.0.5+; 3.0.4 had `player.closeReason`) | `ShoplivePlayerState.Closed(reason)` — as in the guide |
 | A second session while one is open | **Not closed for you.** The demo closes the current player and waits for it to go before presenting the next, going ahead once after 1.0 s if no signal arrives ("one session at a time" is documented for Android only). ⚠️ *Unverified:* the timeout path, whether `stop()` ends a session, and when a closed nudge's window is gone ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i4) | `start()` closes the open full-screen or PIP session |
 | Start in PIP with `pip.isInAppPipEnabled = false` | Plays full screen, silently (guide) | Undocumented — *unverified*. `intent()` always opens full screen |
 | PIP close-button image | `UIImage?` | drawable resource id `Int?` |

@@ -108,7 +108,7 @@ The guide's prerequisite for this mission is `pip.isInAppPipEnabled = true`. If 
 
 ## Tapping the window — nothing for you to call
 
-Expanding to full screen is the SDK's job. On iOS 3.0.4+ the expanded nudge also unmutes, and turns on OS PIP if `pip.isOSPipEnabled` is on. Do **not** call `isMuted = false`, `exitPictureInPicture()`, or start a second player on tap — the window you already have *is* the viewing session now.
+Expanding to full screen is the SDK's job. On iOS 3.0.5+ the expanded nudge reloads as the live stream with the overlay, unmutes (unless `sound.muteOnFullScreen`, 3.0.6+) and turns on OS PIP; the small-window values (position, padding, size) stay as you set them. To change that after expansion, set `configuration` on the player — `overlay.ui`, `sound.muteOnStart` and `appearance.resizeMode` apply immediately. Do **not** call `isMuted = false`, `exitPictureInPicture()`, or start a second player on tap — the window you already have *is* the viewing session now.
 
 ---
 
@@ -151,7 +151,7 @@ fun onHostLeft(session: Session) {
 }
 ```
 
-On iOS the screen reads the same facts straight from its nudge (`closeReason`, `state`, `isInPictureInPicture`) — see [`NudgeProductViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift). Why a nudge closed is the 3.0.4 close reason described in [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304).
+On iOS the screen reads the same facts straight from its nudge (`state` — `.closed(reason)` —, `isInPictureInPicture`) — see [`NudgeProductViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift). Why a nudge closed is the 3.0.4 close reason described in [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304).
 
 ---
 

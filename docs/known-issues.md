@@ -243,7 +243,6 @@ These integration-guide examples **do not compile** against the current binaries
 | `ShopLiveAnalyticsInfo` / `ShopLivePlayerCampaign` | `ShopliveAnalyticsInfo` / `ShopliveCampaign` (lowercase `l`) |
 | `playerView.expandToFullScreen()` | **Does not exist on iOS** (Android only) |
 | `appearance.allowScreenCapture` default `false` | Implementation default is **`true`** — the guide is the item to correct |
-| `if case .closed(let reason) = state` — the 3.0.4 close reason (iOS) | In the **3.0.4 iOS binary** `.closed` has **no associated value**; the reason is `player.closeReason` (`ShopliveCloseReason?`). Android matches the guide: `ShoplivePlayerState.Closed(reason)`. See [Mission 6](mission-06-events-products-coupons.md#why-the-player-closed-304) |
 | `postMessage(campaignKey: String)` in the hybrid bridge (Android) | Works, but takes no precautions: the demo declares `String?`, rejects blank values, and hands over to the main thread with the Activity held weakly ([Mission 7](mission-07-embed-in-your-screen.md#what-the-bridge-has-to-defend-against)) |
 | Broadcasting locked only in own-account mode (earlier guide revision; not in the 3.0.4 guide) | **Locked whenever no stream token is present** — you can't broadcast without one |
 
@@ -280,7 +279,7 @@ Each row is one `TODO(SDP-VERIFY)` left in the source (SMV-1922, 2026-11-04) —
 
 | # | Marker in | What is unverified | Docs that rely on it |
 |---|---|---|---|
-| i1 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `.stateChanged(.closed)` | Whether `closeReason` is already set when `stateChanged(.closed)` arrives (if not, the log says "no reason") | [Mission 6 § Why the player closed](mission-06-events-products-coupons.md#why-the-player-closed-304) |
+| i1 | — | Resolved in 3.0.5: `.closed` carries the reason, so there is no timing to verify | [Mission 6 § Why the player closed](mission-06-events-products-coupons.md#why-the-player-closed-304) |
 | i2 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `observeMilestones(of:)` | For the **feed embed**: whether the callback's `player` is the very `ShoplivePlayerView` that `EmbeddedPlayerView.player` returns — the `===` filter and the inline mission's owner check rest on it. It matches on the 3.0.4 simulator; no device run yet. View controller sessions are out of this question: they [go through `adopt(_:)`](#the-delegates-player-is-not-your-view-controller-ios) | [Demo App Tour § done badge](02-demo-app-tour.md#the-done-badge-is-not-a-checkbox), [Mission 7](mission-07-embed-in-your-screen.md) |
 | i3 | iOS `ShopliveIntegration/DemoPlayerDelegate.swift` — `publish(_:from:)` | Whether the SDK always calls the delegate on the main thread — the 3.0.4 interface declares no `@MainActor`. The demo moves an off-main callback to the main thread and logs it | [Mission 6](mission-06-events-products-coupons.md), [API Reference § Delegate: events](api-reference.md#delegate-events) |
 | i4 | iOS `ShopliveOnboardingDemo/Screens/DevSheetViewController.swift` — `replaceCurrentSession` timeout | The fallback that goes ahead once after `sessionCloseTimeout` (1.0 s) when neither the dismissal nor `.closed` arrives; whether `stop()` ends a session; when a nudge's PIP window is gone after `close()` | [Platform Differences § 3.0.4](platform-differences.md#sdk-304-additions), [Mission 4](mission-04-deep-link.md) |

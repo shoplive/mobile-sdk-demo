@@ -97,7 +97,7 @@ final class DemoConfigStore {
     // MARK: - Runtime controls (applied immediately via properties, not through config)
 
     var isMuted = false
-    var resizeMode: ShopliveResizeMode = .fill
+    var resizeMode: ShopliveResizeMode = .default
 
     // MARK: - Cycling helpers (tap a value in the options tab → next value)
 

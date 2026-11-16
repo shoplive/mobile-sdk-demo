@@ -48,8 +48,20 @@ extension ShopliveOverlayUIMode {
 }
 
 extension ShopliveResizeMode {
-    var logLabel: String { self == .fill ? "fill" : "fit" }
-    var toggled: ShopliveResizeMode { self == .fill ? .fit : .fill }
+    var logLabel: String {
+        switch self {
+        case .default: return "default"; case .fill: return "fill"; case .fit: return "fit"
+        @unknown default: return "unknown"
+        }
+    }
+    /// default → fill → fit → default
+    var toggled: ShopliveResizeMode {
+        switch self {
+        case .default: return .fill
+        case .fill: return .fit
+        default: return .default
+        }
+    }
 }
 
 extension ShoplivePlayerState {

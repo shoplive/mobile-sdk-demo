@@ -219,7 +219,7 @@ final class DevSheetViewController: UIViewController {
             Self.activePlayer?.isMuted = store.isMuted
             EventLog.shared.log(.sdk, "isMuted = \(store.isMuted)")
         })
-        contentStack.addArrangedSubview(row("resizeMode", "fill", store.resizeMode.logLabel) {
+        contentStack.addArrangedSubview(row("resizeMode", "default", store.resizeMode.logLabel) {
             store.resizeMode = store.resizeMode.toggled
             Self.activePlayer?.resizeMode = store.resizeMode
             EventLog.shared.log(.sdk, "resizeMode = .\(store.resizeMode.logLabel)")
@@ -235,8 +235,7 @@ final class DevSheetViewController: UIViewController {
                 return
             }
             player.reload()
-            // reload() is stop + play, and the stop reports `.closed` — which clears this record while
-            // the session lives on. Without it the gate would see no session and open a second one.
+            // 3.0.6+: reload() keeps the session (no `.closed`); keeping the record is harmless either way.
             Self.activePlayer = player
             EventLog.shared.log(.sdk, "reload() — restart the current campaign (stop→play)")
         })
