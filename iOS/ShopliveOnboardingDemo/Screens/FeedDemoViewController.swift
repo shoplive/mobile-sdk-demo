@@ -43,7 +43,7 @@ final class FeedDemoViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if embedded.state == .idle || embedded.state == .closed {
+        if embedded.state == .idle || embedded.state.isClosed {
             embedded.play(campaignKey: campaignKey,
                           options: DemoConfigBuilder.makePlayOptions())
         }

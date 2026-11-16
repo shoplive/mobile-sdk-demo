@@ -168,7 +168,7 @@ final class MissionListViewController: UIViewController {
             guard host.viewIfLoaded?.window != nil || host.isViewLoaded else { return }
             // The session ended while in PIP (the PIP window was closed). Stop watching — restoring
             // now is what produced the full-screen black flash.
-            if host.isSessionClosed || host.isBeingDismissed || player.state == .closed { return }
+            if host.isSessionClosed || host.isBeingDismissed || player.state.isClosed { return }
 
             if player.isInPictureInPicture {
                 watchPipExit(host: host, player: player)      // still in PIP — keep watching
