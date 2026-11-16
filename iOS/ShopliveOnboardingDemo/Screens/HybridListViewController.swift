@@ -47,7 +47,7 @@ final class HybridListViewController: UIViewController {
     // MARK: - Bridge → player
 
     private func open(campaignKey: String) {
-        if let openedPlayer, openedPlayer.state != .closed {
+        if let openedPlayer, !openedPlayer.state.isClosed {
             EventLog.shared.log(.sdk, "demo: bridge message ignored — the player this screen opened is still open")
             return
         }

@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shoplive/shoplive-sdk-ios",
       "state" : {
-        "revision" : "43ae6e0e66fb186b88b91bb6d73980fef37ed59a",
-        "version" : "3.0.4"
+        "revision" : "f51084ea7ead351a7b469fa93d679543573c8651",
+        "version" : "3.0.6"
       }
     }
   ],

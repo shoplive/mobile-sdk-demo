@@ -45,7 +45,7 @@ final class FeedDemoViewController: UIViewController {
         // Whenever the feed is visible again its embed is the inline mission's player (owner) — also when
         // it kept playing behind another screen, so a mission run meanwhile does not keep the slot (M3 · I7).
         MissionProgress.shared.startMission(.inline, owner: embedded.player)
-        if embedded.state == .idle || embedded.state == .closed {
+        if embedded.state == .idle || embedded.state.isClosed {
             embedded.play(campaignKey: campaignKey,
                           options: DemoConfigBuilder.makePlayOptions())
         }

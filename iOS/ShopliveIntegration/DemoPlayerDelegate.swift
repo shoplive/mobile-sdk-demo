@@ -33,8 +33,8 @@ enum PlayerMilestone {
     case pipStateChanged(isActive: Bool)
     /// A request arrived. coupon/customWebAction are already answered here; navigation must be routed.
     case requestReceived(PlayerRequestKind)
-    /// The session ended. `reason` is the player's `closeReason` at that moment (3.0.4+).
-    case closed(reason: ShopliveCloseReason?)
+    /// The session ended, with the reason carried by the state.
+    case closed(reason: ShopliveCloseReason)
     /// `.ready` / `.live` / `.ended` — e.g. close a preview that is not live (guide "Tip").
     case campaignStatusChanged(ShopliveCampaignStatus)
     /// An unrecoverable error (`isRecoverable == false`).
@@ -64,13 +64,8 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             // ★ `.closed` is session end, NOT a return from PIP — closing the PIP window lands here.
             //   Keep the two apart: after `.closed` the render surface is gone, so a host that un-hides
             //   on "PIP ended" covers the screen with its own background until it is dismissed.
-            if state == .closed {
-                // 3.0.4: the reason is a property of the player, not of the state — `.closed` has no
-                // associated value in this build (the guide's `if case .closed(let reason)` does not
-                // compile on iOS 3.0.4).
-                let reason = player.closeReason
-                // TODO(SDP-VERIFY): 요확인 — .closed 수신 시점에 closeReason 이 이미 채워져 있는지(nil 이면 아래 로그가 '이유 없음'), 실기기 3종(✕·앱 close·accessKey 변경) 확인 · 근거 SMV-1922 S16
-                shopliveLog(.event, "stateChanged(.closed) — closeReason: \(reason.map { ".\($0.logLabel)" } ?? "nil (no reason)")")
+            if case .closed(let reason) = state {
+                shopliveLog(.event, "stateChanged(.closed(.\(reason.logLabel)))")
                 publish(.closed(reason: reason), from: player)
             } else {
                 shopliveLog(.event, "stateChanged(.\(state.logLabel))")

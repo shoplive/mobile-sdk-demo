@@ -53,6 +53,12 @@ extension ShopliveResizeMode {
 }
 
 extension ShoplivePlayerState {
+    /// `.closed` carries a reason, so `state == .closed` does not compile — match the case instead.
+    var isClosed: Bool {
+        if case .closed = self { return true }
+        return false
+    }
+
     var logLabel: String {
         switch self {
         case .idle: return "idle";       case .loading: return "loading"

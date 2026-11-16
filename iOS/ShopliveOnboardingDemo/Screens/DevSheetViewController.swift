@@ -567,10 +567,10 @@ extension DevSheetViewController {
                     // Same order as the '‹ List' button: end the session, then take the screen down. The
                     // dismiss completion is the "gone" signal (`.closed` is not — by then the SDK may
                     // already be dismissing on its own).
-                    if current.state != .closed { current.stop() }
+                    if !current.state.isClosed { current.stop() }
                     current.presentingViewController?.dismiss(animated: false) { proceed("dismissed") }
                 }
-            } else if current.state != .closed {
+            } else if !current.state.isClosed {
                 // Floating with no modal (a player in PIP, the nudge's small window): close() it and wait for its
                 // own `.closed` — the PIP window has to be gone before the next session can promote (R3-1).
                 closedObserver = DemoPlayerDelegate.observeMilestones(of: current) { _, milestone in

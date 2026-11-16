@@ -10,7 +10,7 @@
 //  host (SMV-1922 design ③).
 //
 //  What this screen decides (the guide's recommendations, "Tip" ①⑤):
-//    · when it shows again — not after the viewer closed it here (closeReason .userAction); yes after
+//    · when it shows again — not after the viewer closed it here (close reason .userAction); yes after
 //      an app close, an accessKey change, or no reason; a new visit of this screen starts fresh (S04)
 //    · leaving — a nudge still small is closed (.appRequest); one the viewer expanded keeps playing (S05)
 //    · not live — optional close, behind a developer-sheet switch that is off by default (S38)
@@ -82,20 +82,20 @@ final class NudgeProductViewController: UIViewController {
             return
         }
         if let nudge {
-            guard nudge.state == .closed else { return }      // still up — never a second one
-            if nudge.closeReason == .userAction {
+            guard case .closed(let reason) = nudge.state else { return }      // still up — never a second one
+            if reason == .userAction {
                 // Guide "Tip" ⑤ (recommended): the viewer closed it on this screen — do not bring it back.
                 EventLog.shared.log(.sdk, "demo: nudge was closed by the viewer on this screen — not shown again")
                 return
             }
-            // .appRequest / .accessKeyChanged / nil → show again.
+            // .appRequest / .accessKeyChanged → show again.
         }
 
         // A later appearance is automatic: a session the viewer is still watching (another player
         // open or in PIP) is left alone. The first appearance follows the card tap and replaces it like
         // any card does (same rule as Android X2).
         let current = DevSheetViewController.activePlayer
-        let otherSessionInProgress = current.map { $0 !== nudge && ($0.state != .closed || $0.isInPictureInPicture) } ?? false
+        let otherSessionInProgress = current.map { $0 !== nudge && (!$0.state.isClosed || $0.isInPictureInPicture) } ?? false
         guard MissionID.nudgeMayStart(isFirstAppearance: isFirstAppearance,
                                       otherSessionInProgress: otherSessionInProgress) else {
             EventLog.shared.log(.sdk, "demo: another session is in progress — automatic nudge not started")
@@ -145,7 +145,7 @@ final class NudgeProductViewController: UIViewController {
         case .pipStateChanged(let isActive):
             if isActive {
                 sawSmallWindow = true
-            } else if sawSmallWindow, !nudge.isInPictureInPicture, nudge.state != .closed, !sawExpanded {
+            } else if sawSmallWindow, !nudge.isInPictureInPicture, !nudge.state.isClosed, !sawExpanded {
                 sawExpanded = true
                 EventLog.shared.log(.sdk, "demo: nudge expanded to full screen — it keeps playing if you leave this screen")
             }
@@ -172,18 +172,18 @@ final class NudgeProductViewController: UIViewController {
     /// signal — it was small once and is now out of the small window but alive. No timer (CG-7.1).
     private var hasBeenExpanded: Bool {
         guard let nudge else { return false }
-        return sawExpanded || (sawSmallWindow && !nudge.isInPictureInPicture && nudge.state != .closed)
+        return sawExpanded || (sawSmallWindow && !nudge.isInPictureInPicture && !nudge.state.isClosed)
     }
 
     private func leave() {
-        guard let nudge, nudge.state != .closed else { return }
+        guard let nudge, !nudge.state.isClosed else { return }
         if hasBeenExpanded {
             // TODO(SDP-VERIFY): 요확인 — 이 화면이 해제된 뒤 키운 넛지 VC 를 누가 보유하는지(SDK 가 키울 때 present 하는지). 보유자가 없으면 세션이 함께 끝난다 · 근거 SMV-1922 S52
             EventLog.shared.log(.sdk, "demo: leaving with the nudge expanded — the viewing session is kept")
             return
         }
         // A preview the viewer never opened should not follow them around the app (E2).
-        EventLog.shared.log(.sdk, "demo: leaving while the nudge is still a preview — close() (closeReason .appRequest)")
+        EventLog.shared.log(.sdk, "demo: leaving while the nudge is still a preview — close() (close reason .appRequest)")
         nudge.close()
     }
 
