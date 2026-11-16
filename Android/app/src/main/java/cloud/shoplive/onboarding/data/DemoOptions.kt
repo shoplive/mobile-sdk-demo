@@ -37,12 +37,14 @@ data class DemoOptions(
     val backPressEntersPip: Boolean = false,
     val pipPosition: ShoplivePipPosition = ShoplivePipPosition.BOTTOM_RIGHT,
     val pipScale: Float = 0.4f,
-    val pipAspectRatio: ShoplivePipRatio = ShoplivePipRatio.RATIO_9X16,
+    val pipAspectRatio: ShoplivePipRatio = ShoplivePipRatio.AUTO,
     /** The same value on all four sides. `ShopliveInsets` can set them separately. */
     val pipPaddingDp: Int = 0,
 
     // ── sound ────────────────────────────────────────────────────────────────
     val muteOnStart: Boolean = false,
+    /** SDK 3.0.7: mute after a preview started as in-App PIP expands to full screen. */
+    val muteOnFullScreen: Boolean = false,
     val mixWithOthers: Boolean = false,
     val autoResumeOnFocusGained: Boolean = true,
     /** null follows the default the type sets (LIVE=true, PREVIEW=false). */

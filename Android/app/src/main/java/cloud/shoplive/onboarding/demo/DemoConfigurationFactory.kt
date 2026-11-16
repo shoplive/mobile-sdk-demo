@@ -39,6 +39,7 @@ object DemoConfigurationFactory {
 
             sound = ShoplivePlayerConfiguration.SoundOptions(
                 muteOnStart = options.muteOnStart,
+                muteOnFullScreen = options.muteOnFullScreen,
                 mixWithOthers = options.mixWithOthers,
                 autoResumeOnFocusGained = options.autoResumeOnFocusGained,
                 // null follows the type default (LIVE=true, PREVIEW=false).

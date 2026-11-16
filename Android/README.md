@@ -95,8 +95,8 @@ error — the repository belongs in `settings.gradle.kts` only.
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.5")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.5")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.7")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.7")   // broadcasting
 }
 ```
 
@@ -126,18 +126,18 @@ This project declares them the same way, as plain coordinates — see
 
 ### What the two lines actually pull in
 
-Resolved for 3.0.5 on the published channel — the two declared entry points plus three `cloud.shoplive` transitives
+Resolved for 3.0.7 on the published channel — the two declared entry points plus three `cloud.shoplive` transitives
 (AndroidX/Kotlin/Media3 libraries come on top, from Google/Central). Sizes are the AAR download sizes from
-`sdk.shoplive.cloud` (measured 2026-11-09), not what
+`sdk.shoplive.cloud` (measured 2026-11-16), not what
 they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
 
 | Artifact | AAR | You declare it | Comes from |
 |---|---|---|---|
-| `shoplive-player-sdk:3.0.5` | 1.9 MB | ✅ watching | — |
-| `shoplive-streamer-sdk:3.0.5` | 870 KB | ✅ broadcasting | — |
-| `shoplive-core:3.0.5` | 957 KB | no | both entry points |
-| `shoplive-android-webrtc:3.0.5` | 21.5 MB | no | both entry points — **this is what forces minSdk 23** |
-| `shoplive-rootencoder:3.0.5` | 1.3 MB | no | streamer-sdk (encoding) |
+| `shoplive-player-sdk:3.0.7` | 1.9 MB | ✅ watching | — |
+| `shoplive-streamer-sdk:3.0.7` | 870 KB | ✅ broadcasting | — |
+| `shoplive-core:3.0.7` | 958 KB | no | both entry points |
+| `shoplive-android-webrtc:3.0.7` | 21.5 MB | no | both entry points — **this is what forces minSdk 23** |
+| `shoplive-rootencoder:3.0.7` | 1.3 MB | no | streamer-sdk (encoding) |
 
 Checking what resolution actually picked, and from where:
 
@@ -170,7 +170,7 @@ Checking what resolution actually picked, and from where:
 ## Composition
 
 - **Jetpack Compose + Material 3**, single Activity + Navigation Compose, ViewModel + StateFlow
-- compileSdk 36 (required by SDK 3.0.5's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
+- compileSdk 36 (required by SDK 3.0.7's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
 - Two modules — `:app` (the demo harness) and `:integration` (**the integration code you copy verbatim**, see below)
 - applicationId `cloud.shoplive.onboarding` — it can be installed alongside the SDK's internal demo app
   (`cloud.shoplive.demo`) on one device.

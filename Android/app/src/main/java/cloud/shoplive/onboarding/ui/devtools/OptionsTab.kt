@@ -131,7 +131,7 @@ fun OptionsTab(
         )
         CycleOption(
             name = "pip.aspectRatio",
-            defaultHint = "RATIO_9X16",
+            defaultHint = "AUTO",
             value = options.pipAspectRatio.name,
             onTap = {
                 onChange {
@@ -205,6 +205,12 @@ fun OptionsTab(
             checked = options.muteOnStart,
             onChange = { v -> onChange { it.copy(muteOnStart = v) } },
             warning = stringResource(R.string.warn_mute_on_start),
+        )
+        SwitchOption(
+            name = "sound.muteOnFullScreen",
+            defaultHint = "false",
+            checked = options.muteOnFullScreen,
+            onChange = { v -> onChange { it.copy(muteOnFullScreen = v) } },
         )
 
         // ── Control (runtime properties) ─────────────────────────────────────

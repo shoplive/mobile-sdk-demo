@@ -61,7 +61,8 @@ object ShoplivePipPresets {
 
     /**
      * SDK defaults, which already work: PIP allowed both inside and outside your app;
-     * the floating window at bottom-right, 9:16, 40% of the screen width.
+     * the floating window at bottom-right, 40% of the screen width, shaped by the
+     * broadcast ([ShoplivePipRatio.AUTO], the default since 3.0.7 — 9:16 before).
      */
     val DEFAULT = ShoplivePlayerConfiguration.PipOptions()
 
@@ -73,13 +74,17 @@ object ShoplivePipPresets {
      * included). The system PIP window that full screen opens ignores position, scale
      * and padding, but takes its shape from [aspectRatio].
      *
+     * [aspectRatio] `AUTO` (3.0.7) follows the broadcast: a landscape broadcast gets a
+     * landscape window, and [scale] then sets that window's height instead of its width.
+     * A fixed ratio behaves as before.
+     *
      * @param paddingDp applied to all four sides. `ShopliveInsets(left, top, right,
      *   bottom)` lets you set them individually.
      */
     fun floating(
         position: ShoplivePipPosition = ShoplivePipPosition.BOTTOM_RIGHT,
         scale: Float = 0.4f,
-        aspectRatio: ShoplivePipRatio = ShoplivePipRatio.RATIO_9X16,
+        aspectRatio: ShoplivePipRatio = ShoplivePipRatio.AUTO,
         paddingDp: Int = 16,
     ): ShoplivePlayerConfiguration.PipOptions = ShoplivePlayerConfiguration.PipOptions(
         isInAppPipEnabled = true,
