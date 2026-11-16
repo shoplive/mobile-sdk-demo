@@ -69,7 +69,7 @@ final class DemoPlayerDelegate: NSObject, ShoplivePlayerDelegate {
             //   Do not fold it into onPipStateChanged(false): the render surface is already gone, so a
             //   host that un-hides on it covers the screen with its own background until it is
             //   dismissed. Route the two apart.
-            if state == .closed {
+            if state.isClosed {
                 onSessionClosed?()
             } else {
                 onPipStateChanged?(state == .inAppPIP)
