@@ -95,8 +95,8 @@ error — the repository belongs in `settings.gradle.kts` only.
 
 ```kotlin
 dependencies {
-    implementation("cloud.shoplive:shoplive-player-sdk:3.0.4")     // watching
-    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.4")   // broadcasting
+    implementation("cloud.shoplive:shoplive-player-sdk:3.0.5")     // watching
+    implementation("cloud.shoplive:shoplive-streamer-sdk:3.0.5")   // broadcasting
 }
 ```
 
@@ -126,18 +126,18 @@ This project declares them the same way, as plain coordinates — see
 
 ### What the two lines actually pull in
 
-Resolved for 3.0.4 on the published channel — the two declared entry points plus three `cloud.shoplive` transitives
+Resolved for 3.0.5 on the published channel — the two declared entry points plus three `cloud.shoplive` transitives
 (AndroidX/Kotlin/Media3 libraries come on top, from Google/Central). Sizes are the AAR download sizes from
-`sdk.shoplive.cloud` (measured 2026-10-29), not what
+`sdk.shoplive.cloud` (measured 2026-11-09), not what
 they add to your app (for that see [Cost of integration](../README.md#cost-of-integration--app-size-minimum-os-build-dependencies)).
 
 | Artifact | AAR | You declare it | Comes from |
 |---|---|---|---|
-| `shoplive-player-sdk:3.0.4` | 1.7 MB | ✅ watching | — |
-| `shoplive-streamer-sdk:3.0.4` | 870 KB | ✅ broadcasting | — |
-| `shoplive-core:3.0.4` | 923 KB | no | both entry points |
-| `shoplive-android-webrtc:3.0.4` | 21.5 MB | no | both entry points — **this is what forces minSdk 23** |
-| `shoplive-rootencoder:3.0.4` | 1.3 MB | no | streamer-sdk (encoding) |
+| `shoplive-player-sdk:3.0.5` | 1.9 MB | ✅ watching | — |
+| `shoplive-streamer-sdk:3.0.5` | 870 KB | ✅ broadcasting | — |
+| `shoplive-core:3.0.5` | 957 KB | no | both entry points |
+| `shoplive-android-webrtc:3.0.5` | 21.5 MB | no | both entry points — **this is what forces minSdk 23** |
+| `shoplive-rootencoder:3.0.5` | 1.3 MB | no | streamer-sdk (encoding) |
 
 Checking what resolution actually picked, and from where:
 
@@ -170,7 +170,7 @@ Checking what resolution actually picked, and from where:
 ## Composition
 
 - **Jetpack Compose + Material 3**, single Activity + Navigation Compose, ViewModel + StateFlow
-- compileSdk 36 (required by SDK 3.0.4's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
+- compileSdk 36 (required by SDK 3.0.5's media3 1.10.1) / minSdk 24 (`:integration` is 23) / Java 17 / Kotlin 2.0.21 / AGP 8.10.1
 - Two modules — `:app` (the demo harness) and `:integration` (**the integration code you copy verbatim**, see below)
 - applicationId `cloud.shoplive.onboarding` — it can be installed alongside the SDK's internal demo app
   (`cloud.shoplive.demo`) on one device.
@@ -328,7 +328,7 @@ The "confirmed" badge is not checked off by the user — it is **decided automat
 | Evidence | Mission |
 | --- | --- |
 | `Playback.Started` | 1 · 2 · 3 · 4 · 7 |
-| `StateChanged(IN_APP_PIP)` | 5 |
+| `StateChanged(IN_APP_PIP)`, or the SDK player Activity entering system PIP ([`OsPipWatcher.kt`](app/src/main/java/cloud/shoplive/onboarding/demo/OsPipWatcher.kt)) | 5 |
 | `Navigation` / `Coupon` request received | 6 |
 | `StreamerEvent.StateChanged(LIVE)` | 8 |
 
@@ -341,7 +341,7 @@ The "confirmed" badge is not checked off by the user — it is **decided automat
 | Log FAB and terminology-number toggle over the player screen | Shown over the player | **Not possible** — the player and studio are SDK-owned Activities. Logs accumulate and are read after returning to the app |
 | `pip.autoEnterOnLeaveScreen` option | Present in options | **Not in the public surface** — on leaving the screen the app handles PIP itself via `enterPictureInPicture()` |
 | Chat/product overlay on the embedded view | Shown | **Video only** — `overlayUI` is fixed at HIDDEN (the command channel stays) |
-| Embedded view + OS PIP | Mentioned | **Full screen only** — embedded gets in-app PIP alone |
+| Embedded view + OS PIP | Mentioned | Since 3.0.5 a PIP request from the embedded view hands the session to full screen, which enters OS PIP over the app |
 | `appearance.allowScreenCapture` default | `false` | The implemented default is **`true`** (a documentation correction) |
 | Mission 8 lock | Only in my-account mode | **Always locked without a token** — a broadcast cannot start without one |
 | Key pre-validation | "filtered by validation before playback" | The SDK has no pre-validation API → local format check only, plus translating error events into cause-specific sentences |
@@ -389,7 +389,7 @@ Once the SDK delivers `error` properly, this workaround can be deleted.
 ### Not yet confirmed (needs a campaign that plays)
 
 - Actual playback start (2–3s) · chat and the LIVE badge
-- Whether in-app PIP stays **above** the product detail Activity
+- Whether the system PIP window (3.0.5) stays over the product detail Activity, and Mission 5 completes from it
 - `navigation(url)` → product detail routing
 - Whether `sound.muteOnStart = true` reproduces the PIP bounce
 - Mission 8 broadcast start · camera/microphone permission flow (the emulator's camera limits apply too)

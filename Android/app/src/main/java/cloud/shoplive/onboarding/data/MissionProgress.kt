@@ -48,7 +48,13 @@ class MissionProgress(context: Context) {
         if (active in setOf(1, 2, 3, 4, 7)) complete(active)
     }
 
-    /** Entered in-app PIP — mission 5. Seeing PIP counts even during another mission. */
+    /**
+     * Entered PIP — mission 5. Seeing PIP counts even during another mission.
+     *
+     * Two sources: `IN_APP_PIP_ENTERED` from the delegate (the in-app floating window)
+     * and `OsPipWatcher` (the OS PIP window, which is what full screen uses since SDK
+     * 3.0.5 and which no delegate event reports).
+     */
     fun markPipEntered() {
         complete(5)
     }

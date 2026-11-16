@@ -34,7 +34,7 @@ data class DemoOptions(
     // ── pip ──────────────────────────────────────────────────────────────────
     val isInAppPipEnabled: Boolean = true,
     val isOSPipEnabled: Boolean = true,
-    val enterOSPipOnBackPressed: Boolean = false,
+    val backPressEntersPip: Boolean = false,
     val pipPosition: ShoplivePipPosition = ShoplivePipPosition.BOTTOM_RIGHT,
     val pipScale: Float = 0.4f,
     val pipAspectRatio: ShoplivePipRatio = ShoplivePipRatio.RATIO_9X16,
@@ -75,7 +75,7 @@ data class DemoOptions(
     val keepWindowStateOnPlayExecuted: Boolean = false,
 
     // ── Runtime properties (control during playback, not configuration) ──────
-    val resizeMode: ShopliveResizeMode = ShopliveResizeMode.FILL,
+    val resizeMode: ShopliveResizeMode = ShopliveResizeMode.DEFAULT,
 ) {
     /** Whether anything differs from the defaults — used by mission 7 and the UI. */
     val isModified: Boolean get() = this != DEFAULT
