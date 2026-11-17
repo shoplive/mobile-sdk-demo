@@ -16,7 +16,7 @@ import 'package:shoplive_player/shoplive_player.dart';
 ///
 /// ## What the Flutter API does not have
 /// Native-only appearance fields — loading animation, chat fonts, iOS
-/// `allowScreenCapture` — are not exposed in 3.0.2; the SDK defaults apply.
+/// `allowScreenCapture` — are not exposed in 3.0.4; the SDK defaults apply.
 /// `android:` options are accepted on iOS and ignored.
 ///
 /// ## What `overlay.ui = hidden` means
@@ -76,7 +76,7 @@ abstract final class ShoplivePlayerPresets {
   );
 
   /// Screenshots and screen mirroring blacked out — **Android only** (`FLAG_SECURE`).
-  /// The iOS SDK option is not exposed by the Flutter plugin 3.0.2.
+  /// The iOS SDK option is not exposed by the Flutter plugin 3.0.4.
   static const ShoplivePlayerConfiguration captureProtected = ShoplivePlayerConfiguration(
     android: ShopliveAndroidPlayerOptions(allowScreenCapture: false),
   );

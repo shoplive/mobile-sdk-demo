@@ -9,7 +9,7 @@ import 'mission_list_screen.dart';
 /// Mission 4 — the demo's own home feed, with the stream shown inside it.
 ///
 /// The native demos embed a `ShoplivePlayerView` between the cards. Flutter SDK
-/// 3.0.2 has no embeddable widget, so this screen starts the player directly in
+/// 3.0.4 has no embeddable widget, so this screen starts the player directly in
 /// in-app PIP — a muted preview floating over the feed — and promotes it to full
 /// screen on demand. See `shoplive_integration/shoplive_feed_preview.dart`.
 class FeedScreen extends StatefulWidget {

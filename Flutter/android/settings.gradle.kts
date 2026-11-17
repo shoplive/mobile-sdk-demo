@@ -18,9 +18,12 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.7.3" apply false
-    // Kotlin 1.9.25 = the kotlin-stdlib version in the Shoplive SDK 3.0.2 POMs.
-    id("org.jetbrains.kotlin.android") version "1.9.25" apply false
+    // 8.9.1: mobile_scanner 7.4.2 pulls androidx.camera 1.6.1, whose AAR metadata requires AGP 8.9.1+.
+    id("com.android.application") version "8.9.1" apply false
+    // 2.2.20: mobile_scanner 7.4.2 depends on libraries built with Kotlin 2.2 (kotlinx-coroutines 1.11,
+    // CameraX 1.6), which a 1.9 compiler cannot read. The Shoplive SDK POMs still name kotlin-stdlib 1.9.25,
+    // which a 2.2 compiler reads fine.
+    id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
 
 include(":app")

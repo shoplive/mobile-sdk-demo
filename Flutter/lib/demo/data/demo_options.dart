@@ -4,8 +4,10 @@ import 'package:shoplive_player/shoplive_player.dart';
 /// The state edited by the developer sheet's "options" tab.
 ///
 /// **Every field of the Flutter `ShoplivePlayerConfiguration` has one control
-/// here** — including fields no mission uses, so all of them can be tried. The
-/// conversion into a configuration is [DemoConfigurationFactory]'s job.
+/// here** — including fields no mission uses, so all of them can be tried — except
+/// `pip.closeButton` / `restoreButton` (3.0.4), whose images must be native
+/// resources the demo does not ship. The conversion into a configuration is
+/// [DemoConfigurationFactory]'s job.
 ///
 /// The defaults are **kept identical to the SDK defaults**, so running without
 /// touching anything demonstrates "you do not have to specify anything".
@@ -18,11 +20,12 @@ class DemoOptions {
     this.type = ShoplivePlayerType.live,
     this.isInAppPipEnabled = true,
     this.isOSPipEnabled = true,
-    this.enterOSPipOnBackPressed = false,
+    this.backPressEntersPip = false,
     this.pipPosition = ShoplivePipPosition.bottomRight,
     this.pipScale = 0.4,
     this.pipAspectRatio = ShoplivePipRatio.ratio9x16,
     this.pipPaddingPx = 0,
+    this.isDragOutToCloseEnabled = true,
     this.muteOnStart = false,
     this.mixWithOthers = false,
     this.autoResumeOnFocusGained = true,
@@ -33,11 +36,12 @@ class DemoOptions {
     this.closeWhenAppDestroyed = true,
     this.actionOnNavigation = ShopliveNavigationAction.pip,
     this.shareScheme = '',
+    this.isCustomShareEnabled = false,
     this.overlayUI = ShopliveOverlayUIMode.builtIn,
     this.customParameters = const {},
     this.referrer = '',
     this.keepWindowStateOnPlayExecuted = false,
-    this.resizeMode = ShopliveResizeMode.fill,
+    this.resizeMode = ShopliveResizeMode.auto,
   });
 
   // ── type ────────────────────────────────────────────────────────────────────
@@ -47,8 +51,9 @@ class DemoOptions {
   final bool isInAppPipEnabled;
   final bool isOSPipEnabled;
 
-  /// configuration.android.enterOSPipOnBackPressed (Android only).
-  final bool enterOSPipOnBackPressed;
+  /// configuration.android.backPressEntersPip (Android only, 3.0.4). Back enters
+  /// PIP only when this and [isInAppPipEnabled] are both true; otherwise it closes.
+  final bool backPressEntersPip;
   final ShoplivePipPosition pipPosition;
   final double pipScale;
 
@@ -57,6 +62,9 @@ class DemoOptions {
 
   /// The same value on all four sides, in **pixels**.
   final int pipPaddingPx;
+
+  /// pip.isDragOutToCloseEnabled (3.0.3+). Dragging the window off screen closes it.
+  final bool isDragOutToCloseEnabled;
 
   // ── sound ───────────────────────────────────────────────────────────────────
   final bool muteOnStart;
@@ -81,6 +89,10 @@ class DemoOptions {
   final ShopliveNavigationAction actionOnNavigation;
   final String shareScheme;
 
+  /// navigation.isCustomShareEnabled (3.0.4+). True: no SDK share sheet; the app
+  /// gets `shareRequested` on `events` instead.
+  final bool isCustomShareEnabled;
+
   /// configuration.android.closeWhenAppDestroyed (Android only).
   final bool closeWhenAppDestroyed;
 
@@ -95,6 +107,8 @@ class DemoOptions {
   final bool keepWindowStateOnPlayExecuted;
 
   // ── Runtime (applied during playback, not configuration) ────────────────────
+  /// `auto` is the Android default of a new player since 3.0.4 (SDK 3.0.6). iOS
+  /// applies it as `fill`.
   final ShopliveResizeMode resizeMode;
 
   static const DemoOptions defaults = DemoOptions();
@@ -105,11 +119,12 @@ class DemoOptions {
     ShoplivePlayerType? type,
     bool? isInAppPipEnabled,
     bool? isOSPipEnabled,
-    bool? enterOSPipOnBackPressed,
+    bool? backPressEntersPip,
     ShoplivePipPosition? pipPosition,
     double? pipScale,
     ShoplivePipRatio? pipAspectRatio,
     int? pipPaddingPx,
+    bool? isDragOutToCloseEnabled,
     bool? muteOnStart,
     bool? mixWithOthers,
     bool? autoResumeOnFocusGained,
@@ -120,6 +135,7 @@ class DemoOptions {
     bool? closeWhenAppDestroyed,
     ShopliveNavigationAction? actionOnNavigation,
     String? shareScheme,
+    bool? isCustomShareEnabled,
     ShopliveOverlayUIMode? overlayUI,
     Map<String, String>? customParameters,
     String? referrer,
@@ -129,11 +145,12 @@ class DemoOptions {
     type: type ?? this.type,
     isInAppPipEnabled: isInAppPipEnabled ?? this.isInAppPipEnabled,
     isOSPipEnabled: isOSPipEnabled ?? this.isOSPipEnabled,
-    enterOSPipOnBackPressed: enterOSPipOnBackPressed ?? this.enterOSPipOnBackPressed,
+    backPressEntersPip: backPressEntersPip ?? this.backPressEntersPip,
     pipPosition: pipPosition ?? this.pipPosition,
     pipScale: pipScale ?? this.pipScale,
     pipAspectRatio: pipAspectRatio ?? this.pipAspectRatio,
     pipPaddingPx: pipPaddingPx ?? this.pipPaddingPx,
+    isDragOutToCloseEnabled: isDragOutToCloseEnabled ?? this.isDragOutToCloseEnabled,
     muteOnStart: muteOnStart ?? this.muteOnStart,
     mixWithOthers: mixWithOthers ?? this.mixWithOthers,
     autoResumeOnFocusGained: autoResumeOnFocusGained ?? this.autoResumeOnFocusGained,
@@ -144,6 +161,7 @@ class DemoOptions {
     closeWhenAppDestroyed: closeWhenAppDestroyed ?? this.closeWhenAppDestroyed,
     actionOnNavigation: actionOnNavigation ?? this.actionOnNavigation,
     shareScheme: shareScheme ?? this.shareScheme,
+    isCustomShareEnabled: isCustomShareEnabled ?? this.isCustomShareEnabled,
     overlayUI: overlayUI ?? this.overlayUI,
     customParameters: customParameters ?? this.customParameters,
     referrer: referrer ?? this.referrer,
@@ -157,11 +175,12 @@ class DemoOptions {
       other.type == type &&
       other.isInAppPipEnabled == isInAppPipEnabled &&
       other.isOSPipEnabled == isOSPipEnabled &&
-      other.enterOSPipOnBackPressed == enterOSPipOnBackPressed &&
+      other.backPressEntersPip == backPressEntersPip &&
       other.pipPosition == pipPosition &&
       other.pipScale == pipScale &&
       other.pipAspectRatio == pipAspectRatio &&
       other.pipPaddingPx == pipPaddingPx &&
+      other.isDragOutToCloseEnabled == isDragOutToCloseEnabled &&
       other.muteOnStart == muteOnStart &&
       other.mixWithOthers == mixWithOthers &&
       other.autoResumeOnFocusGained == autoResumeOnFocusGained &&
@@ -172,6 +191,7 @@ class DemoOptions {
       other.closeWhenAppDestroyed == closeWhenAppDestroyed &&
       other.actionOnNavigation == actionOnNavigation &&
       other.shareScheme == shareScheme &&
+      other.isCustomShareEnabled == isCustomShareEnabled &&
       other.overlayUI == overlayUI &&
       mapEquals(other.customParameters, customParameters) &&
       other.referrer == referrer &&
@@ -180,10 +200,10 @@ class DemoOptions {
 
   @override
   int get hashCode => Object.hashAll([
-    type, isInAppPipEnabled, isOSPipEnabled, enterOSPipOnBackPressed, pipPosition, pipScale, //
-    pipAspectRatio, pipPaddingPx, muteOnStart, mixWithOthers, autoResumeOnFocusGained,
+    type, isInAppPipEnabled, isOSPipEnabled, backPressEntersPip, pipPosition, pipScale, //
+    pipAspectRatio, pipPaddingPx, isDragOutToCloseEnabled, muteOnStart, mixWithOthers, autoResumeOnFocusGained,
     isVolumeKeyEnabled, indicatorColor, isStatusBarVisible, allowScreenCapture,
-    closeWhenAppDestroyed, actionOnNavigation, shareScheme, overlayUI,
+    closeWhenAppDestroyed, actionOnNavigation, shareScheme, isCustomShareEnabled, overlayUI,
     Object.hashAllUnordered(customParameters.entries.map((e) => '${e.key}=${e.value}')),
     referrer, keepWindowStateOnPlayExecuted, resizeMode,
   ]);
@@ -230,6 +250,7 @@ abstract final class DemoConfigurationFactory {
       scale: o.pipScale,
       aspectRatio: o.pipAspectRatio,
       padding: ShopliveInsets(left: o.pipPaddingPx, top: o.pipPaddingPx, right: o.pipPaddingPx, bottom: o.pipPaddingPx),
+      isDragOutToCloseEnabled: o.isDragOutToCloseEnabled,
     ),
     sound: ShopliveSoundOptions(muteOnStart: o.muteOnStart, mixWithOthers: o.mixWithOthers),
     appearance: ShopliveAppearanceOptions(indicatorColor: o.indicatorColor.argb),
@@ -238,11 +259,12 @@ abstract final class DemoConfigurationFactory {
       // Limitation of the Flutter API: a shareScheme cannot be reset to null
       // once set. An empty string is sent as "not set" only on the first start.
       shareScheme: o.shareScheme.trim().isEmpty ? null : o.shareScheme.trim(),
+      isCustomShareEnabled: o.isCustomShareEnabled,
     ),
     overlay: ShopliveOverlayOptions(ui: o.overlayUI),
     customParameters: o.customParameters,
     android: ShopliveAndroidPlayerOptions(
-      enterOSPipOnBackPressed: o.enterOSPipOnBackPressed,
+      backPressEntersPip: o.backPressEntersPip,
       isVolumeKeyEnabled: o.isVolumeKeyEnabled,
       autoResumeOnFocusGained: o.autoResumeOnFocusGained,
       isStatusBarVisible: o.isStatusBarVisible,

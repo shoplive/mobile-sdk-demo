@@ -106,7 +106,7 @@ mobile-sdk-demo/
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
 │   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.6
 │   └── scripts/                   boundary scanner
-├── Flutter/                     same 8 missions on the Flutter SDK 3.0.2 → Flutter/README.md
+├── Flutter/                     same 8 missions on the Flutter SDK 3.0.4 → Flutter/README.md
 │   ├── lib/shoplive_integration/ ★ COPY THIS — SDK calls only, boundary enforced by flutter test
 │   └── lib/demo/                  demo harness (screens · developer sheet · strings)
 └── Android/
@@ -328,7 +328,7 @@ the version its behavior was measured on:
 |---|---|---|---|
 | iOS | `3.0.6` | SPM (public) — `github.com/shoplive/shoplive-sdk-ios`, Exact 3.0.6 | `3.0.0` |
 | Android | `3.0.4` | Gradle (public) — `cloud.shoplive:shoplive-{player,streamer}-sdk:3.0.4` from `sdk.shoplive.cloud` | `3.0.0` |
-| Flutter | `3.0.2` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.2 (wraps Android 3.0.2 / iOS 3.0.2) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15) — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
+| Flutter | `3.0.4` | pub.dev (public) — `shoplive_player` / `shoplive_streamer` 3.0.4 (wraps Android 3.0.6 / iOS 3.0.5) | `3.0.2` (iOS Simulator + Android Emulator, 2026-10-15); 3.0.4 is built, not run — see [Flutter/README.md](Flutter/README.md#4-verification-status) |
 
 A handful of fields exist on one platform and not the other — all of them are listed in [Platform Differences](docs/platform-differences.md).
 

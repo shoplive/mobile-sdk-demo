@@ -99,6 +99,12 @@ class _OptionsTabState extends State<OptionsTab> {
               (v) => _set((o) => o.copyWith(pipPaddingPx: v)),
               defaultValue: '0',
             ),
+            _toggle(
+              'pip.isDragOutToCloseEnabled',
+              o.isDragOutToCloseEnabled,
+              (v) => _set((o) => o.copyWith(isDragOutToCloseEnabled: v)),
+              defaultValue: true,
+            ),
 
             // ── overlay · appearance ──────────────────────────────────────────
             GroupLabel(tr('group_overlay_appearance')),
@@ -131,10 +137,17 @@ class _OptionsTabState extends State<OptionsTab> {
             Tip(tr('tip_control_runtime'), tone: TipTone.ok),
             _action('setMuted(true)', tr('action_call'), () => ShoplivePlayerSession.setMuted(true)),
             _action('setMuted(false)', tr('action_call'), () => ShoplivePlayerSession.setMuted(false)),
-            _cycle('setResizeMode', o.resizeMode, const [ShopliveResizeMode.fill, ShopliveResizeMode.fit], (v) {
-              _set((o) => o.copyWith(resizeMode: v));
-              ShoplivePlayerSession.setResizeMode(v);
-            }, defaultValue: 'fill'),
+            _cycle(
+              'setResizeMode',
+              o.resizeMode,
+              const [ShopliveResizeMode.auto, ShopliveResizeMode.fill, ShopliveResizeMode.fit],
+              (v) {
+                _set((o) => o.copyWith(resizeMode: v));
+                ShoplivePlayerSession.setResizeMode(v);
+              },
+              // Android default since 3.0.4; iOS applies auto as fill.
+              defaultValue: 'auto',
+            ),
             _action(
               'setOverlayUI(hidden)',
               tr('action_call'),
@@ -201,6 +214,12 @@ class _OptionsTabState extends State<OptionsTab> {
       label: (v) => v.isEmpty ? tr('value_null_sdk_default') : v,
       defaultValue: 'null',
     ),
+    _toggle(
+      'navigation.isCustomShareEnabled',
+      o.isCustomShareEnabled,
+      (v) => _set((o) => o.copyWith(isCustomShareEnabled: v)),
+      defaultValue: false,
+    ),
     GroupLabel('customParameters'),
     _cycle<Map<String, String>>(
       'customParameters',
@@ -215,9 +234,9 @@ class _OptionsTabState extends State<OptionsTab> {
     ),
     GroupLabel('android (ignored on iOS)'),
     _toggle(
-      'android.enterOSPipOnBackPressed',
-      o.enterOSPipOnBackPressed,
-      (v) => _set((o) => o.copyWith(enterOSPipOnBackPressed: v)),
+      'android.backPressEntersPip',
+      o.backPressEntersPip,
+      (v) => _set((o) => o.copyWith(backPressEntersPip: v)),
       defaultValue: false,
     ),
     _cycle<bool?>(

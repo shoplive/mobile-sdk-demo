@@ -95,8 +95,14 @@ class ShoplivePlayerEventLogger {
 
   void _onEvent(ShoplivePlayerEvent event) {
     switch (event) {
-      case ShoplivePlayerStateChanged(:final state):
-        logEvent('stateChanged(${state.name})');
+      case ShoplivePlayerStateChanged(:final state, :final closeReason):
+        // closeReason (3.0.4+) is set only when state is closed: userAction (the
+        // viewer closed it), appRequest (your app or the SDK), accessKeyChanged.
+        logEvent(
+          closeReason == null
+              ? 'stateChanged(${state.name})'
+              : 'stateChanged(${state.name}, reason: ${closeReason.name})',
+        );
         switch (state) {
           // A new session starts here. This logger is reused across sessions, so
           // the failure counters reset at this point.
@@ -140,6 +146,10 @@ class ShoplivePlayerEventLogger {
         logEvent('webCommandReceived(name: "$name", payload: $payload)');
       case ShopliveUserNameUpdateRequested(:final payload):
         logEvent('userNameUpdateRequested($payload)');
+      // Arrives only with navigation.isCustomShareEnabled: true (3.0.4+). The SDK
+      // share sheet is then not shown — open your own share UI with info.url.
+      case ShoplivePlayerShareRequested(:final info):
+        logEvent('shareRequested(url: ${info.url}, campaignKey: ${info.campaignKey}, title: ${info.title})');
       case ShoplivePlayerErrorEvent(:final error):
         _onError(error);
       case ShoplivePlayerUnknownEvent(:final rawType):

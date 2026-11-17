@@ -2,25 +2,27 @@
 
 The Flutter version of the onboarding demo: **the same 8 missions, the same screens and the same verification rules as
 the [Android](../Android/README.md) and [iOS](../iOS/README.md) demos**, built on the ShopLive Flutter SDK
-**3.0.2** (`shoplive_player` / `shoplive_streamer` from pub.dev).
+**3.0.4** (`shoplive_player` / `shoplive_streamer` from pub.dev, built on Android SDK 3.0.6 and iOS SDK 3.0.5).
 
 Tap a card, the real SDK feature runs, and the card names the file under `lib/shoplive_integration/` that did it.
 
 - Integration guide: https://sdk.shoplive.cloud
-- Flutter SDK release: https://github.com/shoplive/shoplive-sdk-flutter/releases/tag/3.0.2
+- Flutter SDK release: https://github.com/shoplive/shoplive-sdk-flutter/releases/tag/3.0.4
 - Card number = the **Mission number** in the guide
 
 ---
 
 ## 1. Run it
 
-| | Minimum (SDK 3.0.2) | Used here |
+| | Minimum (SDK 3.0.4) | Used here |
 |---|---|---|
 | Flutter / Dart | 3.22 / 3.4 | 3.29.3 / 3.7.2 |
-| Android | minSdk 23 · compileSdk 36 · AGP 8.7 · Gradle 8.9 · JDK 17 | minSdk 24 · AGP 8.7.3 · Gradle 8.11.1 · Kotlin 1.9.25 |
+| Android | minSdk 23 · compileSdk 36 · AGP 8.7 · Gradle 8.9 · JDK 17 | minSdk 24 · AGP 8.9.1 · Gradle 8.11.1 · Kotlin 2.2.20 |
 | iOS | 15.0 | 15.0 |
 
 The demo's own `pubspec.yaml` asks for Dart ^3.7.2 (Flutter 3.29); the SDK itself works from Flutter 3.22.
+AGP 8.9.1 and Kotlin 2.2.20 are for `mobile_scanner` 7.4.2 (QR input: CameraX 1.6 needs AGP 8.9.1+, and its
+libraries are built with Kotlin 2.2), not for the Shoplive SDK.
 
 ```bash
 cd Flutter
@@ -110,7 +112,7 @@ Shared helpers: `shoplive_log.dart` (the one log sink), `shoplive_event_labels.d
 
 Read these before porting native code. Each one changed how a mission is built.
 
-| Topic | Native SDK | Flutter SDK 3.0.2 | What the demo does |
+| Topic | Native SDK | Flutter SDK 3.0.4 | What the demo does |
 |---|---|---|---|
 | **Embedding (Mission 4)** | `ShoplivePlayerView` inside your layout | **No embeddable widget** — the player is always a native screen over Flutter | Starts the player directly in in-app PIP (`presentationStyle: pip`, `type: preview`, muted) floating over the feed; full screen is `exitPictureInPicture()` |
 | **Configuration** | a new immutable object per `start` | **merged** onto the current settings; null fields keep the last value | the options tab sends every field on every start |
@@ -125,9 +127,27 @@ Read these before porting native code. Each one changed how a mission is built.
 
 Full list: the [shoplive_player README](https://pub.dev/packages/shoplive_player), "iOS differences".
 
+### What 3.0.4 changed for this demo
+
+From the plugin [CHANGELOG](https://pub.dev/packages/shoplive_player/changelog) (3.0.3 and 3.0.4):
+
+| Change | What the demo does |
+|---|---|
+| `ShoplivePlayerEvent` has a new subtype, `ShoplivePlayerShareRequested` (breaking for an exhaustive `switch`) | the event logger handles it and logs `shareRequested(url: …)` |
+| `stateChanged(closed)` carries `closeReason` (`userAction` / `appRequest` / `accessKeyChanged`) | logged as `stateChanged(closed, reason: …)` |
+| `ShopliveResizeMode.auto` (Android default of a new player; iOS applies it as `fill`) | `setResizeMode` cycles `auto · fill · fit` |
+| `android.enterOSPipOnBackPressed` is deprecated → `android.backPressEntersPip`; Android back now **closes** the player unless it and `pip.isInAppPipEnabled` are both on | renamed in the options tab and in `ShoplivePipPresets.pipOnBackPressed` |
+| New options `pip.isDragOutToCloseEnabled` (3.0.3), `navigation.isCustomShareEnabled` (3.0.4) | one toggle each in the options tab |
+| `start` while a session is open now closes it and opens a new player on both platforms (3.0.3) | doc comment in `shoplive_player_launcher.dart` updated |
+| `pip.closeButton` / `restoreButton` take native image names | not in the options tab — the demo ships no native button images |
+
 ---
 
 ## 4. Verification status
+
+**SDK 3.0.4 has not been run yet.** On 2026-11-17 it was only built (`flutter build apk --debug`,
+`flutter build ios --simulator --no-codesign`) and checked with `flutter analyze` / `flutter test`. Everything below
+was measured on 3.0.2.
 
 Measured **2026-10-15**, Flutter 3.29.3, SDK 3.0.2, tour mode, on the iOS Simulator (iPhone 17 Pro, Xcode 26.6) and the
 Android Emulator (Pixel 10 image, API 37, arm64). The demo campaign had **no live stream** at the time, so

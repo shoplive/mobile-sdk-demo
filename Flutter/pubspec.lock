@@ -316,26 +316,26 @@ packages:
     dependency: transitive
     description:
       name: shoplive_core
-      sha256: c8e5298c227547e0df51c304d4ec9f84fe6b72660381dd6333550863dd95301c
+      sha256: b8d2ed3929ef0a7cc966077239d2f992b397406f0e87b3d6af16a4a505d11ff7
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.4"
   shoplive_player:
     dependency: "direct main"
     description:
       name: shoplive_player
-      sha256: ac1a68f3cf60188fe421459e2c1b88abd72e6d8f2e9fdee66fa6ab232e6006a8
+      sha256: d18cecfc9aba36bc6ab15dee114b5b6ef001719cf7100548a43e957e7ecf2168
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.4"
   shoplive_streamer:
     dependency: "direct main"
     description:
       name: shoplive_streamer
-      sha256: "4303610ed7078d630d771c8f5571b9f7f763a3c5a4f728effb871047cda93796"
+      sha256: "6bc03eb3a378ce552695f833e0e52e221ef68a2a62ab4e592d22aeb677f44e9d"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
