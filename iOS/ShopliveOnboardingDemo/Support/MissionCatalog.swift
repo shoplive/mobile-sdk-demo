@@ -95,7 +95,8 @@ enum MissionCatalog {
         case .inline:
             // E3: one card, two ways — the tap asks native or hybrid, so the card names both files.
             return Mission(id: id, sourceFiles: ["ShopliveIntegration/EmbeddedPlayerView.swift",
-                                                 "ShopliveIntegration/WebBridge.swift"],
+                                                 "ShopliveIntegration/WebBridge.swift",
+                                                 "ShopliveIntegration/WebBridgeInput.swift"],
                            run: .inline, autoSheet: nil, needsStreamToken: false,
                            titleKey: "mission.inline.title", summaryKey: "mission.inline.summary",
                            checkKey: "mission.inline.check")
