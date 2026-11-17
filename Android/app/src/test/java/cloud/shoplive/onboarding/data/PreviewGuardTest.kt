@@ -1,7 +1,7 @@
 package cloud.shoplive.onboarding.data
 
-import cloud.shoplive.onboarding.integration.ShopliveNudgePreview
-import cloud.shoplive.onboarding.integration.ShopliveNudgePreview.HostVisit
+import cloud.shoplive.onboarding.integration.ShoplivePreviewWindow
+import cloud.shoplive.onboarding.integration.ShoplivePreviewWindow.HostVisit
 import cloud.shoplive.onboarding.integration.isOngoing
 import cloud.shoplive.player.ShopliveCampaignStatus
 import cloud.shoplive.player.ShopliveCloseReason
@@ -17,59 +17,59 @@ import org.junit.Test
 import java.lang.reflect.Proxy
 
 /**
- * The nudge preview's guards (SMV-1922 cases S04 / S05 / S38 / U08): when the host
+ * The preview's guards (SMV-1922 cases S04 / S05 / S38 / U08): when the host
  * screen shows again, and what a session remembers about itself.
  */
-class NudgeGuardTest {
+class PreviewGuardTest {
 
     // ── Re-show guard: the four close reasons (three + none) ─────────────────
 
     @Test
     fun closedByTheViewerIsNotShownAgainOnTheSameScreen() {
-        assertEquals(HostVisit.CLOSED_BY_VIEWER, ShopliveNudgePreview.onHostVisible(false, ShopliveCloseReason.USER_ACTION, otherSessionOngoing = false, isFirstVisit = false))
+        assertEquals(HostVisit.CLOSED_BY_VIEWER, ShoplivePreviewWindow.onHostVisible(false, ShopliveCloseReason.USER_ACTION, otherSessionOngoing = false, isFirstVisit = false))
     }
 
     @Test
     fun closedByTheAppIsShownAgain() {
-        assertEquals(HostVisit.START, ShopliveNudgePreview.onHostVisible(false, ShopliveCloseReason.APP_REQUEST, otherSessionOngoing = false, isFirstVisit = false))
+        assertEquals(HostVisit.START, ShoplivePreviewWindow.onHostVisible(false, ShopliveCloseReason.APP_REQUEST, otherSessionOngoing = false, isFirstVisit = false))
     }
 
     @Test
     fun closedByAnAccessKeyChangeIsShownAgain() {
-        assertEquals(HostVisit.START, ShopliveNudgePreview.onHostVisible(false, ShopliveCloseReason.ACCESS_KEY_CHANGED, otherSessionOngoing = false, isFirstVisit = false))
+        assertEquals(HostVisit.START, ShoplivePreviewWindow.onHostVisible(false, ShopliveCloseReason.ACCESS_KEY_CHANGED, otherSessionOngoing = false, isFirstVisit = false))
     }
 
     /** Nothing known (first visit, or no reason recorded) never blocks. */
     @Test
     fun noReasonIsShownAgain() {
-        assertEquals(HostVisit.START, ShopliveNudgePreview.onHostVisible(false, null, otherSessionOngoing = false, isFirstVisit = false))
+        assertEquals(HostVisit.START, ShoplivePreviewWindow.onHostVisible(false, null, otherSessionOngoing = false, isFirstVisit = false))
     }
 
     /** Coming back (rotation, returning from full screen) must not start a second one. */
     @Test
-    fun aRunningNudgeIsNotStartedAgain() {
+    fun aRunningPreviewIsNotStartedAgain() {
         ShopliveCloseReason.entries.forEach { reason ->
-            assertEquals(HostVisit.ALREADY_SHOWING, ShopliveNudgePreview.onHostVisible(true, reason, otherSessionOngoing = false, isFirstVisit = false))
+            assertEquals(HostVisit.ALREADY_SHOWING, ShoplivePreviewWindow.onHostVisible(true, reason, otherSessionOngoing = false, isFirstVisit = false))
         }
-        assertEquals(HostVisit.ALREADY_SHOWING, ShopliveNudgePreview.onHostVisible(true, null, otherSessionOngoing = false, isFirstVisit = false))
+        assertEquals(HostVisit.ALREADY_SHOWING, ShoplivePreviewWindow.onHostVisible(true, null, otherSessionOngoing = false, isFirstVisit = false))
     }
 
     /**
      * Another session is playing (a PIP from the options-tab replay, say): starting a
-     * nudge would close it, so the page only logs (S54, code cross-check R1 X2).
+     * preview would close it, so the page only logs (S54, code cross-check R1 X2).
      */
     @Test
     fun anotherOngoingSessionIsNotReplaced() {
         listOf(null, ShopliveCloseReason.APP_REQUEST, ShopliveCloseReason.ACCESS_KEY_CHANGED).forEach { reason ->
             assertEquals(
                 HostVisit.OTHER_SESSION_ONGOING,
-                ShopliveNudgePreview.onHostVisible(false, reason, otherSessionOngoing = true, isFirstVisit = false),
+                ShoplivePreviewWindow.onHostVisible(false, reason, otherSessionOngoing = true, isFirstVisit = false),
             )
         }
-        // This page's own nudge still showing wins: nothing to do either way.
+        // This page's own preview still showing wins: nothing to do either way.
         assertEquals(
             HostVisit.ALREADY_SHOWING,
-            ShopliveNudgePreview.onHostVisible(true, null, otherSessionOngoing = true, isFirstVisit = false),
+            ShoplivePreviewWindow.onHostVisible(true, null, otherSessionOngoing = true, isFirstVisit = false),
         )
     }
 
@@ -81,7 +81,7 @@ class NudgeGuardTest {
     fun firstVisitStartsEvenWhileAnotherSessionIsOngoing() {
         assertEquals(
             HostVisit.START,
-            ShopliveNudgePreview.onHostVisible(false, null, otherSessionOngoing = true, isFirstVisit = true),
+            ShoplivePreviewWindow.onHostVisible(false, null, otherSessionOngoing = true, isFirstVisit = true),
         )
     }
 
@@ -89,7 +89,7 @@ class NudgeGuardTest {
     fun revisitSkipsWhileAnotherSessionIsOngoing() {
         assertEquals(
             HostVisit.OTHER_SESSION_ONGOING,
-            ShopliveNudgePreview.onHostVisible(false, null, otherSessionOngoing = true, isFirstVisit = false),
+            ShoplivePreviewWindow.onHostVisible(false, null, otherSessionOngoing = true, isFirstVisit = false),
         )
     }
 
@@ -142,7 +142,7 @@ class NudgeGuardTest {
     fun startingInTheSmallWindowIsNotExpanding() {
         val fake = FakePlayer(inPip = true)
         val p = player(fake)
-        val session = ShopliveNudgePreview.Session(inner)
+        val session = ShoplivePreviewWindow.Session(inner)
         session.onEvent(p, state(ShoplivePlayerState.Loading))
         session.onEvent(p, state(ShoplivePlayerState.InAppPIP))
         // Still in the small window while the stream starts playing.
@@ -154,7 +154,7 @@ class NudgeGuardTest {
     fun leavingTheSmallWindowForPlaybackIsExpanding() {
         val fake = FakePlayer(inPip = true)
         val p = player(fake)
-        val session = ShopliveNudgePreview.Session(inner)
+        val session = ShoplivePreviewWindow.Session(inner)
         session.onEvent(p, state(ShoplivePlayerState.InAppPIP))
         fake.inPip = false
         session.onEvent(p, state(ShoplivePlayerState.Loading))
@@ -165,7 +165,7 @@ class NudgeGuardTest {
     @Test
     fun theCloseReasonIsRemembered() {
         val p = player(FakePlayer(inPip = true))
-        val session = ShopliveNudgePreview.Session(inner)
+        val session = ShoplivePreviewWindow.Session(inner)
         assertNull(session.closeReason)
         session.onEvent(p, state(ShoplivePlayerState.Closed(ShopliveCloseReason.USER_ACTION)))
         assertEquals(ShopliveCloseReason.USER_ACTION, session.closeReason)
@@ -174,7 +174,7 @@ class NudgeGuardTest {
     @Test
     fun everyEventStillReachesTheWrappedDelegate() {
         val p = player(FakePlayer(inPip = true))
-        val session = ShopliveNudgePreview.Session(inner)
+        val session = ShoplivePreviewWindow.Session(inner)
         val events = listOf(
             state(ShoplivePlayerState.InAppPIP),
             ShoplivePlayerEvent.CampaignStatusChanged(ShopliveCampaignStatus.READY),

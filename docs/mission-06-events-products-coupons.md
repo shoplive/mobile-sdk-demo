@@ -35,7 +35,7 @@ Both callbacks are meant to arrive **on the main thread**; the demo's delegate i
 
 **Memory:** the delegate is weakly held on iOS and instance-owned on Android. If nothing owns it, events stop arriving with no warning. That's why the iOS demo holds it in a singleton (`DemoPlayerDelegate.shared`); on Android the player keeps the delegate it was given, and the demo builds one `ShoplivePlayerEventLogger` in its ViewModel and reuses it.
 
-**One delegate, many players.** A single delegate object usually serves every player in the app — a feed view, a full-screen player, a nudge. Every callback hands you the `player` that raised it, so anything you derive from an event should carry that player along. The demo does exactly that: iOS re-publishes what the rest of the app needs as one `PlayerMilestone` channel (`DemoPlayerDelegate.observeMilestones(of:)`), and Android reports `onMilestone(milestone, player)`. On iOS a view controller session needs one extra step: 3.0.4 names the inner `ShoplivePlayerView` as `player`, not the view controller (measured on the simulator), so comparing it with your controller never matches. The demo registers each controller with `DemoPlayerDelegate.adopt(_:)`, a relay that puts the controller back as the sender — [Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios).
+**One delegate, many players.** A single delegate object usually serves every player in the app — a feed view, a full-screen player, the Mission 2 preview window. Every callback hands you the `player` that raised it, so anything you derive from an event should carry that player along. The demo does exactly that: iOS re-publishes what the rest of the app needs as one `PlayerMilestone` channel (`DemoPlayerDelegate.observeMilestones(of:)`), and Android reports `onMilestone(milestone, player)`. On iOS a view controller session needs one extra step: 3.0.4 names the inner `ShoplivePlayerView` as `player`, not the view controller (measured on the simulator), so comparing it with your controller never matches. The demo registers each controller with `DemoPlayerDelegate.adopt(_:)`, a relay that puts the controller back as the sender — [Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios).
 
 ---
 
@@ -366,7 +366,7 @@ Since 3.0.4 a closed session says **why** it closed — `ShopliveCloseReason`:
 | `.appRequest` | `APP_REQUEST` | Your app closed it (`close()`, or another session started) |
 | `.accessKeyChanged` | `ACCESS_KEY_CHANGED` | `Shoplive.initialize` ran again with a different access key, which closes players opened with the old key |
 
-Use it to decide what to do next — most of all whether to show a small window again. The guide's recommendation, which the [nudge-style preview](mission-02-nudge-preview.md) follows: if the viewer closed it (`userAction`), do not show it again right away on the same screen.
+Use it to decide what to do next — most of all whether to show a small window again. The guide's recommendation, which the [preview](mission-02-preview.md) follows: if the viewer closed it (`userAction`), do not show it again right away on the same screen.
 
 ```swift
 // iOS — DemoPlayerDelegate.swift. The state carries the reason (3.0.5+).

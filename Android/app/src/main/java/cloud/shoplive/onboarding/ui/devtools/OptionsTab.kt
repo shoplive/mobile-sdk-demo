@@ -181,14 +181,14 @@ fun OptionsTab(
             },
         )
 
-        // ── Nudge preview (nudge mission) — demo policy ──────────────────────
-        GroupLabel(stringResource(R.string.group_nudge, MissionId.NUDGE.displayNumber))
+        // ── Preview (preview mission) — demo policy ──────────────────────
+        GroupLabel(stringResource(R.string.group_preview, MissionId.PREVIEW.displayNumber))
         SwitchOption(
-            name = "closeNudgeWhenNotLive",
+            name = "closePreviewWhenNotLive",
             defaultHint = "false",
-            checked = options.closeNudgeWhenNotLive,
-            onChange = { v -> onChange { it.copy(closeNudgeWhenNotLive = v) } },
-            warning = stringResource(R.string.tip_nudge_close_not_live),
+            checked = options.closePreviewWhenNotLive,
+            onChange = { v -> onChange { it.copy(closePreviewWhenNotLive = v) } },
+            warning = stringResource(R.string.tip_preview_close_not_live),
         )
 
         // ── Overlay and appearance (UI mission) ──────────────────────────────

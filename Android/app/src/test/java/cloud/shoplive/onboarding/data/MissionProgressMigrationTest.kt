@@ -39,12 +39,12 @@ class MissionProgressMigrationTest {
     }
 
     @Test
-    fun nudgeIsNeverMigratedAndStartsUndone() {
+    fun previewIsNeverMigratedAndStartsUndone() {
         val result = MissionProgress.migrate(
             legacy = (0..20).map(Int::toString).toSet(),
             stored = null,
         )
-        assertFalse(MissionId.NUDGE in result.ids)
+        assertFalse(MissionId.PREVIEW in result.ids)
     }
 
     /** Running it again over its own output changes nothing (structurally idempotent). */
@@ -62,8 +62,42 @@ class MissionProgressMigrationTest {
         val interrupted = MissionProgress.migrate(legacy = setOf("1", "5"), stored = setOf("player", "pip"))
         assertEquals(ids("player", "pip"), interrupted.ids)
 
-        val mixed = MissionProgress.migrate(legacy = setOf("3"), stored = setOf("nudge"))
-        assertEquals(ids("user", "nudge"), mixed.ids)
+        val mixed = MissionProgress.migrate(legacy = setOf("3"), stored = setOf("preview"))
+        assertEquals(ids("user", "preview"), mixed.ids)
+    }
+
+    /**
+     * Mission 2's raw value was renamed (SMV-1922, 2026-11-17). A record that still has
+     * the old value keeps its tick, is rewritten under "preview", and the rewrite is a no-op
+     * the second time.
+     */
+    @Test
+    fun renamedPreviewRawCarriesOverAndIsRewritten() {
+        val result = MissionProgress.migrate(
+            legacy = null,
+            stored = setOf(MissionProgress.LEGACY_PREVIEW_RAW, "pip"),
+        )
+        assertEquals(ids("preview", "pip"), result.ids)
+        assertTrue(result.dropped.isEmpty())
+        assertEquals(listOf(MissionProgress.LEGACY_PREVIEW_RAW), result.renamed)
+        assertTrue(result.needsWrite)
+        assertEquals(setOf("preview", "pip"), result.storedValues)
+
+        val again = MissionProgress.migrate(legacy = null, stored = result.storedValues)
+        assertEquals(result.ids, again.ids)
+        assertFalse(again.needsWrite)
+    }
+
+    /** Old raw value, current raw value and legacy numbers together: one set, no duplicates. */
+    @Test
+    fun renamedRawWithCurrentRawAndLegacyNumbersConverges() {
+        val result = MissionProgress.migrate(
+            legacy = setOf("1"),
+            stored = setOf(MissionProgress.LEGACY_PREVIEW_RAW, "preview"),
+        )
+        assertEquals(ids("player", "preview"), result.ids)
+        assertTrue(result.dropped.isEmpty())
+        assertTrue(result.needsWrite)
     }
 
     @Test

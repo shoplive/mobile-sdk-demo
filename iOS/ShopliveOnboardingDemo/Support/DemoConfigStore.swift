@@ -46,7 +46,7 @@ final class DemoConfigStore {
     var pipScale: CGFloat = 0.4
     /// The spec default is `.zero`, but at 0 the PIP window sits flush against the right/bottom edge
     /// and runs into the home indicator area, where it looks clipped (measured). Only the demo's
-    /// default is nudged to 12 — you can set it back to 0 from the options tab.
+    /// default is raised to 12 — you can set it back to 0 from the options tab.
     var pipPadding: CGFloat = 12
     var pipFloatingOffset: CGFloat = 0
     var pipFixedWidth: CGFloat? = nil
@@ -88,11 +88,11 @@ final class DemoConfigStore {
     var referrer: String? = nil
     var keepWindowStateOnPlayExecuted = false
 
-    // MARK: - Nudge preview (demo behavior, not an SDK field)
+    // MARK: - Preview (demo behavior, not an SDK field)
 
-    /// Close a nudge the viewer has not expanded when its campaign is not live (the guide's recommended
+    /// Close a preview the viewer has not expanded when its campaign is not live (the guide's recommended
     /// practice). Off by default so VOD and scheduled campaigns can still be demoed (S38).
-    var closeNudgeWhenNotLive = false
+    var closePreviewWhenNotLive = false
 
     // MARK: - Runtime controls (applied immediately via properties, not through config)
 

@@ -78,7 +78,7 @@ The order and titles are the integration guide's mission map. A card's number is
 |---|---|---|---|
 | — | Initialization (once per app) | `Integration/ShopliveBootstrap.swift` | [Getting Started](../docs/01-getting-started.md) |
 | 1 | Launch the Player Directly | `Integration/PlayerLauncher.swift` | [mission-01](../docs/mission-01-open-the-player.md) |
-| 2 | Nudge-Style Preview | `Integration/NudgePreview.swift` (host screen: `Screens/NudgeProductViewController.swift`) | [mission-02](../docs/mission-02-nudge-preview.md) |
+| 2 | Preview | `Integration/PreviewWindow.swift` (host screen: `Screens/PreviewProductViewController.swift`) | [mission-02](../docs/mission-02-preview.md) |
 | 3 | Keep Watching in PIP | `Integration/PipOptions.swift` | [mission-03](../docs/mission-03-pip.md) |
 | 4 | Launch via Deep Link | `Integration/DeepLinkRouter.swift` + `App/SceneDelegate.swift` | [mission-04](../docs/mission-04-deep-link.md) |
 | 5 | Connect User Information | `Integration/UserSetup.swift` | [mission-05](../docs/mission-05-user-identity.md) |
@@ -465,7 +465,7 @@ written against the actual API.
 | **S1** start | `Screens/StartViewController.swift` |
 | **S2** mission list | `Screens/MissionListViewController.swift` |
 | **S3** playback screen | drawn by the SDK + `Screens/PlayerHostOverlay.swift` (demo controls) · `Screens/FeedDemoViewController.swift` (feed variant) |
-| Mission 2 host | `Screens/NudgeProductViewController.swift` — a product page the nudge floats over |
+| Mission 2 host | `Screens/PreviewProductViewController.swift` — a product page the preview floats over |
 | Mission 7 hybrid | `Screens/HybridListViewController.swift` — a bundled web list (`Resources/hybrid/index.html`) in a `WKWebView` |
 | **V1** developer sheet | `Screens/DevSheetViewController.swift` (log / options tabs) |
 | **V2** product detail | `Screens/ProductDetailViewController.swift` |

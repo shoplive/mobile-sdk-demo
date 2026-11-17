@@ -48,9 +48,9 @@
     <string name="mission_player_title">プレーヤーを直接表示する</string>
     <string name="mission_player_desc">タップすると全画面のライブがすぐに開きます。</string>
     <string name="mission_player_check">2〜3秒以内に再生 · ライブならチャットと LIVE バッジ</string>
-    <string name="mission_nudge_title">ナッジ型プレビュー</string>
-    <string name="mission_nudge_desc">商品詳細の上に音のない小窓で配信を表示し、視聴を促します。タップすると全画面に広がります。</string>
-    <string name="mission_nudge_check">無音・オーバーレイなしの小窓 · タップで全画面</string>
+    <string name="mission_preview_title">プレビュー</string>
+    <string name="mission_preview_desc">商品詳細の上に音のない小窓で配信を表示し、視聴を促します。タップすると全画面に広がります。</string>
+    <string name="mission_preview_check">無音・オーバーレイなしの小窓 · タップで全画面</string>
     <string name="mission_pip_title">PIP で視聴を続ける</string>
     <string name="mission_pip_desc">再生後に商品をタップすると、小さなウィンドウで継続します。オプションで小窓から開始することもできます。</string>
     <string name="mission_pip_check">小窓が維持される · タップで途切れず復帰</string>
@@ -203,17 +203,17 @@
     <string name="inline_choice_native">ネイティブ — アプリのフィード内に ShoplivePlayerView を置きます</string>
     <string name="inline_choice_hybrid">ハイブリッド — WebView の Web 一覧が campaignKey をアプリへ渡します</string>
 
-    <!-- ── SMV-1922 · 3.0.4 options and the nudge policy toggle ───────────── -->
+    <!-- ── SMV-1922 · 3.0.4 options and the preview policy toggle ───────────── -->
     <string name="tip_pip_start">presentationStyle = PIP にすると、次の再生が最初から小窓で開きます(3.0.4+)。pip.isInAppPipEnabled が必要です。</string>
     <string name="warn_custom_share">true: SDK の共有シートの代わりに shareRequested が届き、アプリが独自の共有画面(ACTION_SEND)を開きます。false(既定): SDK の共有シートが開き、アプリにはイベントが届きません。</string>
-    <string name="group_nudge">ナッジ型プレビュー · ミッション%1$d</string>
-    <string name="tip_nudge_close_not_live">SDK のオプションではなくアプリのポリシーです。オン: 一度も拡大していないナッジは、ライブ中でなければ自動で閉じます(ガイド推奨)。オフ(既定): 表示を続け、VOD や予定キャンペーンでもデモできます。</string>
+    <string name="group_preview">プレビュー · ミッション%1$d</string>
+    <string name="tip_preview_close_not_live">SDK のオプションではなくアプリのポリシーです。オン: 一度も拡大していないプレビューは、ライブ中でなければ自動で閉じます(ガイド推奨)。オフ(既定): 表示を続け、VOD や予定キャンペーンでもデモできます。</string>
 
-    <!-- ── SMV-1922 · nudge-preview product page ─────────────────────────── -->
-    <string name="nudge_product_desc">毎日着られるやわらかなコットンシャツ。デモ用の文言です — 主役は上に浮かぶ小さなライブ窓です。</string>
-    <string name="nudge_tip_page">アプリ自身の商品詳細画面です。ナッジ型プレビューが無音・オーバーレイなしでその上に浮かび、画面はそのまま使えます。</string>
-    <string name="nudge_tip_reshow">小窓をタップすると全画面に広がります。✕ で閉じるとこの画面では再表示されません — カードを開き直すと新しい画面です。</string>
-    <string name="nudge_tip_leave">一度も拡大していないナッジは、この画面を離れると閉じます。拡大したナッジは再生を続けます。</string>
+    <!-- ── SMV-1922 · preview product page ─────────────────────────── -->
+    <string name="preview_product_desc">毎日着られるやわらかなコットンシャツ。デモ用の文言です — 主役は上に浮かぶ小さなライブ窓です。</string>
+    <string name="preview_tip_page">アプリ自身の商品詳細画面です。プレビューが無音・オーバーレイなしでその上に浮かび、画面はそのまま使えます。</string>
+    <string name="preview_tip_reshow">小窓をタップすると全画面に広がります。✕ で閉じるとこの画面では再表示されません — カードを開き直すと新しい画面です。</string>
+    <string name="preview_tip_leave">一度も拡大していないプレビューは、この画面を離れると閉じます。拡大したプレビューは再生を続けます。</string>
 
     <!-- ── SMV-1922 · hybrid inline preview (web list) ──────────────────── -->
     <string name="hybrid_tip_bridge">下は WebView 内の Web 一覧(アプリ同梱のページ)です。カードをタップすると ShopLiveAppInterface で campaignKey がひとつ届き、アプリがネイティブの全画面プレイヤーを開きます。他サイトへのリンクはブラウザで開きます。</string>

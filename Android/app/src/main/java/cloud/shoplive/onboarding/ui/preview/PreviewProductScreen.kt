@@ -1,4 +1,4 @@
-package cloud.shoplive.onboarding.ui.nudge
+package cloud.shoplive.onboarding.ui.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +27,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.DemoLog
-import cloud.shoplive.onboarding.integration.ShopliveNudgePreview
-import cloud.shoplive.onboarding.integration.ShopliveNudgePreview.HostVisit
+import cloud.shoplive.onboarding.integration.ShoplivePreviewWindow
+import cloud.shoplive.onboarding.integration.ShoplivePreviewWindow.HostVisit
 import cloud.shoplive.onboarding.integration.ShoplivePlayerSession
 import cloud.shoplive.onboarding.integration.isOngoing
 import cloud.shoplive.onboarding.ui.MainViewModel
@@ -38,24 +38,24 @@ import cloud.shoplive.onboarding.ui.feed.findActivity
 import cloud.shoplive.player.ShoplivePlayer
 
 /**
- * Nudge-preview mission — the app's own product page with a nudge floating over it.
+ * Preview mission — the app's own product page with a preview floating over it.
  *
  * A dedicated screen rather than the product-detail screen, which already has two
  * other jobs: it is where a product tap lands (events mission), and its "exit PIP"
- * button ends the current session. Sharing it would make the nudge collide with both
+ * button ends the current session. Sharing it would make the preview collide with both
  * (SMV-1922 contract, hidden responsibility 3).
  *
- * The SDK-facing part is `ShopliveNudgePreview` in `:integration`. What stays here
+ * The SDK-facing part is `ShoplivePreviewWindow` in `:integration`. What stays here
  * is when to call it: when the page shows ([Lifecycle.Event.ON_RESUME]) and when the
- * page is gone for good ([NudgeViewModel.onCleared]).
+ * page is gone for good ([PreviewViewModel.onCleared]).
  */
 @Composable
-fun NudgeProductScreen(
+fun PreviewProductScreen(
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
     // Scoped to this screen's back-stack entry: it survives rotation and is cleared
     // only when the page is popped, which is exactly "the host left".
-    nudgeViewModel: NudgeViewModel = viewModel(),
+    previewViewModel: PreviewViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
@@ -64,9 +64,9 @@ fun NudgeProductScreen(
     // back from another app, after rotation.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         val host = activity ?: return@LifecycleEventEffect
-        nudgeViewModel.onHostVisible(
-            start = { session -> mainViewModel.startNudge(host, session) },
-            newSession = mainViewModel::newNudgeSession,
+        previewViewModel.onHostVisible(
+            start = { session -> mainViewModel.startPreview(host, session) },
+            newSession = mainViewModel::newPreviewSession,
         )
     }
 
@@ -91,7 +91,7 @@ fun NudgeProductScreen(
         Text(stringResource(R.string.product_name), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.product_price), style = MaterialTheme.typography.titleSmall)
         Text(
-            stringResource(R.string.nudge_product_desc),
+            stringResource(R.string.preview_product_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -99,21 +99,21 @@ fun NudgeProductScreen(
         if (activity == null) {
             Tip(stringResource(R.string.feed_warn_activity_context), TipTone.WARN)
         }
-        Tip(stringResource(R.string.nudge_tip_page), TipTone.OK)
-        Tip(stringResource(R.string.nudge_tip_reshow))
-        Tip(stringResource(R.string.nudge_tip_leave), TipTone.WARN)
+        Tip(stringResource(R.string.preview_tip_page), TipTone.OK)
+        Tip(stringResource(R.string.preview_tip_reshow))
+        Tip(stringResource(R.string.preview_tip_leave), TipTone.WARN)
     }
 }
 
 /**
- * The nudge state of **one** product page: the current [ShopliveNudgePreview.Session]
+ * The preview state of **one** product page: the current [ShoplivePreviewWindow.Session]
  * and nothing else. The session holds the player until it closes (only as long as
  * the SDK does anyway) and records the facts the decisions need, so there is one
  * place to read them.
  */
-class NudgeViewModel : ViewModel() {
+class PreviewViewModel : ViewModel() {
 
-    private var session: ShopliveNudgePreview.Session? = null
+    private var session: ShoplivePreviewWindow.Session? = null
 
     /**
      * False until the page has shown once. This holder lives as long as the page's
@@ -122,20 +122,20 @@ class NudgeViewModel : ViewModel() {
     private var hasShown = false
 
     fun onHostVisible(
-        start: (ShopliveNudgePreview.Session) -> ShoplivePlayer,
-        newSession: () -> ShopliveNudgePreview.Session,
+        start: (ShoplivePreviewWindow.Session) -> ShoplivePlayer,
+        newSession: () -> ShoplivePreviewWindow.Session,
     ) {
         val current = session
         val own = current?.player
         val isShowing = own?.state?.isOngoing == true
         // Someone else's session (a PIP from the options-tab replay, say) would be
-        // closed by re-showing a nudge. Opening the page from its card still starts one.
+        // closed by re-showing a preview. Opening the page from its card still starts one.
         val other = ShoplivePlayerSession.current
         val otherSessionOngoing = other != null && other !== own && other.state.isOngoing
         val isFirstVisit = !hasShown
         hasShown = true
 
-        when (ShopliveNudgePreview.onHostVisible(isShowing, current?.closeReason, otherSessionOngoing, isFirstVisit)) {
+        when (ShoplivePreviewWindow.onHostVisible(isShowing, current?.closeReason, otherSessionOngoing, isFirstVisit)) {
             HostVisit.START -> {
                 val next = newSession()
                 session = next
@@ -143,18 +143,18 @@ class NudgeViewModel : ViewModel() {
             }
 
             HostVisit.ALREADY_SHOWING ->
-                DemoLog.event("nudge: still showing on this page — not started again")
+                DemoLog.event("preview: still showing on this page — not started again")
 
             HostVisit.OTHER_SESSION_ONGOING ->
-                DemoLog.event("nudge: another session is up (${other?.state}) — not started, it would close that session")
+                DemoLog.event("preview: another session is up (${other?.state}) — not started, it would close that session")
 
             HostVisit.CLOSED_BY_VIEWER ->
-                DemoLog.event("nudge: closed by the viewer (USER_ACTION) on this page — not shown again")
+                DemoLog.event("preview: closed by the viewer (USER_ACTION) on this page — not shown again")
         }
     }
 
     /** The page was popped (rotation does not get here). */
     override fun onCleared() {
-        session?.let(ShopliveNudgePreview::onHostLeft)
+        session?.let(ShoplivePreviewWindow::onHostLeft)
     }
 }

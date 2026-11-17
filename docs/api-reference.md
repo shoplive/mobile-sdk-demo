@@ -130,9 +130,9 @@ Policy for a playback session. **Immutable once playback starts** — later assi
 | | iOS | Android |
 |---|---|---|
 | Full-screen live | `ShoplivePlayerConfiguration.default` (equals `.init()`) | `ShoplivePlayerConfiguration.DEFAULT` · `type = ShoplivePlayerType.LIVE` |
-| Preview (inline, nudge) | `ShoplivePlayerConfiguration.preview` | `ShoplivePlayerConfiguration.PREVIEW` · `type = ShoplivePlayerType.PREVIEW` |
+| Preview (inline, Mission 2 small window) | `ShoplivePlayerConfiguration.preview` | `ShoplivePlayerConfiguration.PREVIEW` · `type = ShoplivePlayerType.PREVIEW` |
 
-The 3.0.4 guide describes the preview preset as **preview stream · muted · overlay hidden · in-App PIP**, with `type = preview` selecting the preview stream (iOS 3.0.4 has `configuration.type` too). On SDK 3.0.0, iOS `.preview` measured differently — PIP off and the live stream; the 3.0.4 values have not been re-measured. ⚠️ *Unverified:* the iOS 3.0.4 preset's `pip.isInAppPipEnabled` and `resizeMode` are not in the SDK interface ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i8). Details and what the demo does about the PIP value: [Mission 7](mission-07-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot), [Mission 2](mission-02-nudge-preview.md).
+The 3.0.4 guide describes the preview preset as **preview stream · muted · overlay hidden · in-App PIP**, with `type = preview` selecting the preview stream (iOS 3.0.4 has `configuration.type` too). On SDK 3.0.0, iOS `.preview` measured differently — PIP off and the live stream; the 3.0.4 values have not been re-measured. ⚠️ *Unverified:* the iOS 3.0.4 preset's `pip.isInAppPipEnabled` and `resizeMode` are not in the SDK interface ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i8). Details and what the demo does about the PIP value: [Mission 7](mission-07-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot), [Mission 2](mission-02-preview.md).
 
 ### `pip`
 
@@ -207,7 +207,7 @@ Per-`play`/`start` values. Distinct from configuration precisely because these d
 | `keepWindowStateOnPlayExecuted` | `Bool` | Preserve window state across a `play` call |
 | `presentationStyle` | `ShoplivePlayerPresentationStyle` | 3.0.4+ — `.fullScreen` / `FULLSCREEN` (default) or `.pip` / `PIP`: start in the in-App PIP window. Needs `pip.isInAppPipEnabled`; iOS silently plays full screen without it; Android needs `start()` (an `intent()` ignores it) |
 
-Presets: `ShoplivePlayOptions.preview` / `ShoplivePlayOptions.PREVIEW` = `presentationStyle` PIP — half of the nudge-style preview pair ([Mission 2](mission-02-nudge-preview.md)).
+Presets: `ShoplivePlayOptions.preview` / `ShoplivePlayOptions.PREVIEW` = `presentationStyle` PIP — half of the preview pair ([Mission 2](mission-02-preview.md)).
 
 Details: [Mission 4](mission-04-deep-link.md), [Mission 3](mission-03-pip.md#starting-directly-in-pip-304).
 

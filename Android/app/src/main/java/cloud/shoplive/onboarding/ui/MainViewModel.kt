@@ -22,7 +22,7 @@ import cloud.shoplive.onboarding.demo.DemoLabels
 import cloud.shoplive.onboarding.integration.ShopliveDeepLinkRouter
 import cloud.shoplive.onboarding.integration.ShopliveFailure
 import cloud.shoplive.onboarding.integration.ShopliveInitializer
-import cloud.shoplive.onboarding.integration.ShopliveNudgePreview
+import cloud.shoplive.onboarding.integration.ShoplivePreviewWindow
 import cloud.shoplive.onboarding.integration.ShoplivePlayerEventLogger
 import cloud.shoplive.onboarding.integration.ShoplivePlayerLauncher
 import cloud.shoplive.onboarding.integration.ShopliveStudioLauncher
@@ -86,7 +86,7 @@ class MainViewModel : ViewModel() {
     private val playerDelegate = newPlayerDelegate()
 
     /**
-     * The nudge gets its own instance per session (see [newNudgeSession]): the SDK
+     * The preview gets its own instance per session (see [newPreviewSession]): the SDK
      * keeps the delegate it was given, and the failure counters inside are per
      * session. Same callbacks, so the log and progress see one stream either way.
      */
@@ -251,7 +251,7 @@ class MainViewModel : ViewModel() {
     // ── Running a mission ────────────────────────────────────────────────────
 
     /** The demo-owned screens a card can lead to. The SDK's own screens have no route. */
-    enum class Destination { NUDGE, FEED, HYBRID }
+    enum class Destination { PREVIEW, FEED, HYBRID }
 
     /**
      * Runs a card. Every path that starts a player goes through
@@ -274,10 +274,10 @@ class MainViewModel : ViewModel() {
                 null
             }
 
-            // The nudge starts on its own screen, once that screen is showing.
-            MissionRun.NUDGE -> {
+            // The preview starts on its own screen, once that screen is showing.
+            MissionRun.PREVIEW -> {
                 _state.update { it.copy(devSheetTab = null) }
-                Destination.NUDGE
+                Destination.PREVIEW
             }
 
             MissionRun.DEEP_LINK -> {
@@ -350,21 +350,21 @@ class MainViewModel : ViewModel() {
         if (!started) showMessage(DemoContainer.string(R.string.msg_studio_not_started))
     }
 
-    // ── Nudge preview ────────────────────────────────────────────────────────
+    // ── Preview ────────────────────────────────────────────────────────
 
-    /** One nudge session's delegate: a fresh logger wrapped in the session recorder. */
-    fun newNudgeSession(): ShopliveNudgePreview.Session = ShopliveNudgePreview.Session(
+    /** One preview session's delegate: a fresh logger wrapped in the session recorder. */
+    fun newPreviewSession(): ShoplivePreviewWindow.Session = ShoplivePreviewWindow.Session(
         delegate = newPlayerDelegate(),
-        closeWhenNotLive = DemoOptionsStore.current.closeNudgeWhenNotLive,
+        closeWhenNotLive = DemoOptionsStore.current.closePreviewWhenNotLive,
     )
 
     /**
-     * Starts the nudge with the two PREVIEW presets — not the options tab, whose
+     * Starts the preview with the two PREVIEW presets — not the options tab, whose
      * values are for full-screen playback.
      */
-    fun startNudge(activity: Activity, session: ShopliveNudgePreview.Session): ShoplivePlayer =
-        progress.startMission(MissionId.NUDGE) {
-            ShopliveNudgePreview.start(
+    fun startPreview(activity: Activity, session: ShoplivePreviewWindow.Session): ShoplivePlayer =
+        progress.startMission(MissionId.PREVIEW) {
+            ShoplivePreviewWindow.start(
                 activity = activity,
                 campaignKey = effectiveCampaignKey(),
                 session = session,

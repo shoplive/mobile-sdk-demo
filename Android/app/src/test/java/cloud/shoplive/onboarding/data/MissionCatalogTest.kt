@@ -16,7 +16,7 @@ class MissionCatalogTest {
         assertEquals(
             listOf(
                 MissionId.PLAYER,
-                MissionId.NUDGE,
+                MissionId.PREVIEW,
                 MissionId.PIP,
                 MissionId.DEEPLINK,
                 MissionId.USER,
@@ -39,7 +39,7 @@ class MissionCatalogTest {
     @Test
     fun rawValuesAreFixed() {
         assertEquals(
-            listOf("player", "nudge", "pip", "deeplink", "user", "events", "inline", "ui", "studio"),
+            listOf("player", "preview", "pip", "deeplink", "user", "events", "inline", "ui", "studio"),
             MissionId.entries.map { it.raw },
         )
     }
@@ -47,7 +47,7 @@ class MissionCatalogTest {
     @Test
     fun displayNumberIsCatalogPositionPlusOne() {
         assertEquals(1, MissionId.PLAYER.displayNumber)
-        assertEquals(2, MissionId.NUDGE.displayNumber)
+        assertEquals(2, MissionId.PREVIEW.displayNumber)
         assertEquals(3, MissionId.PIP.displayNumber)
         assertEquals(4, MissionId.DEEPLINK.displayNumber)
         assertEquals(5, MissionId.USER.displayNumber)

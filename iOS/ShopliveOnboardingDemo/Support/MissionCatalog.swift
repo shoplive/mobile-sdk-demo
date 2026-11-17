@@ -16,7 +16,7 @@ struct Mission {
 
     enum Run {
         case player         // S3 · full-screen player (host VC)
-        case nudge          // product screen → nudge preview over it
+        case preview          // product screen → preview over it
         case deeplink       // fake push banner → deep link playback
         case auth           // auth-mode action sheet → playback
         case inline         // choose native (feed embed) or hybrid (web list)
@@ -67,11 +67,11 @@ enum MissionCatalog {
                            run: .player, autoSheet: nil, needsStreamToken: false,
                            titleKey: "mission.player.title", summaryKey: "mission.player.summary",
                            checkKey: "mission.player.check")
-        case .nudge:
-            return Mission(id: id, sourceFiles: ["ShopliveIntegration/NudgePreview.swift"],
-                           run: .nudge, autoSheet: nil, needsStreamToken: false,
-                           titleKey: "mission.nudge.title", summaryKey: "mission.nudge.summary",
-                           checkKey: "mission.nudge.check")
+        case .preview:
+            return Mission(id: id, sourceFiles: ["ShopliveIntegration/PreviewWindow.swift"],
+                           run: .preview, autoSheet: nil, needsStreamToken: false,
+                           titleKey: "mission.preview.title", summaryKey: "mission.preview.summary",
+                           checkKey: "mission.preview.check")
         case .pip:
             return Mission(id: id, sourceFiles: ["ShopliveIntegration/PipOptions.swift"],
                            run: .player, autoSheet: nil, needsStreamToken: false,
@@ -131,7 +131,7 @@ final class MissionProgress {
     /// Before SMV-1922: mission numbers [Int]. Folded into `key` once, then deleted.
     private static let legacyKey = "demo.completedMissions"
     /// Missions that complete when their own player reaches playback (H1 — same as Android).
-    private static let completesOnPlayback: Set<MissionID> = [.player, .nudge, .deeplink, .user, .inline, .ui]
+    private static let completesOnPlayback: Set<MissionID> = [.player, .preview, .deeplink, .user, .inline, .ui]
 
     private let defaults = UserDefaults.standard
     private var completed: Set<MissionID> = []
@@ -140,9 +140,9 @@ final class MissionProgress {
 
     private(set) var activeMission: MissionID?
     private weak var owner: AnyObject?
-    /// The last nudge's player. Its PIP entries are never "keep watching in PIP", even after another
+    /// The last preview's player. Its PIP entries are never "keep watching in PIP", even after another
     /// mission started (X4 — §1 ⑤ is about the session, not the running mission).
-    private weak var nudgePlayer: AnyObject?
+    private weak var previewPlayer: AnyObject?
     /// One "ignored" line per started mission — playback signals repeat (rendering), the log must not.
     private var didLogIgnoredSignal = false
     private var milestoneObserver: NSObjectProtocol?
@@ -168,16 +168,16 @@ final class MissionProgress {
     // MARK: Deciding
 
     /// Every start path calls this right before playback can begin (U07): the card host, the deep link,
-    /// the nudge, the hybrid list and the feed. `owner` is the player that path created.
+    /// the preview, the hybrid list and the feed. `owner` is the player that path created.
     func startMission(_ id: MissionID, owner: AnyObject?) {
         activeMission = id
         self.owner = owner
-        if id == .nudge, let owner { nudgePlayer = owner }
+        if id == .preview, let owner { previewPlayer = owner }
         didLogIgnoredSignal = false
         log("mission \(id.rawValue) started — owner: \(owner.map { "\(type(of: $0))" } ?? "none")")
     }
 
-    /// Registers the player of a mission that was started before its player existed (the nudge:
+    /// Registers the player of a mission that was started before its player existed (the preview:
     /// active → start → owner, the same order as Android).
     func attachOwner(_ owner: AnyObject, to id: MissionID) {
         guard activeMission == id else {
@@ -185,7 +185,7 @@ final class MissionProgress {
             return
         }
         self.owner = owner
-        if id == .nudge { nudgePlayer = owner }
+        if id == .preview { previewPlayer = owner }
         log("mission \(id.rawValue) owner: \(type(of: owner))")
     }
 
@@ -207,9 +207,9 @@ final class MissionProgress {
 
         case .pipStateChanged(let isActive):
             guard isActive else { return }
-            // E1: the nudge's own small window is the nudge, not "keep watching in PIP" (S26).
+            // E1: the preview's own small window is the preview, not "keep watching in PIP" (S26).
             guard MissionID.pipEntryCompletesPip(activeMission: activeMission, owner: owner, player: player,
-                                                 isNudgePlayer: nudgePlayer.map { $0 === player } ?? false) else { return }
+                                                 isPreviewPlayer: previewPlayer.map { $0 === player } ?? false) else { return }
             complete(.pip, because: "in-App PIP entered")
 
         case .requestReceived:
@@ -239,6 +239,12 @@ final class MissionProgress {
         let stored = MissionID.decodeStored(defaults.object(forKey: Self.key))
         if !stored.dropped.isEmpty {
             log("stored values \(stored.dropped) name no mission — ignored")
+        }
+        if !stored.renamed.isEmpty {
+            // Old raw values (MissionID.renamedRawValues): rewrite the record under the current ones so
+            // the next launch reads them directly. Re-running this is a no-op.
+            defaults.set(stored.ids.map(\.rawValue).sorted(), forKey: Self.key)
+            log("renamed values \(stored.renamed) carried over → \(stored.ids.map(\.rawValue).sorted())")
         }
 
         switch MissionID.migrateLegacy(defaults.object(forKey: Self.legacyKey), into: stored.ids) {

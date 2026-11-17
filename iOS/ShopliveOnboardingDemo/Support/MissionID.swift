@@ -12,12 +12,13 @@
 import Foundation
 
 /// - `rawValue` is the **stored format**, shared with Android (`demo.completedMissionIds`). Never
-///   rename a raw value — a renamed value reads back as unknown and the completion is dropped.
+///   rename a raw value without adding the old one to `renamedRawValues` — otherwise it reads back as
+///   unknown and the completion is dropped.
 /// - Declaration order **is** the display order: `MissionCatalog` numbers cards `index + 1`, matching
 ///   the guide's mission map (guide L127-143). To renumber, reorder the cases — nothing else.
 enum MissionID: String, CaseIterable {
     case player      // 1 · full-screen player
-    case nudge       // 2 · nudge preview
+    case preview       // 2 · preview
     case pip         // 3 · PIP
     case deeplink    // 4 · deep link
     case user        // 5 · user info
@@ -32,29 +33,45 @@ enum MissionID: String, CaseIterable {
 extension MissionID {
 
     /// Before SMV-1922 the record stored mission **numbers** 1…8. Each maps to the mission with the
-    /// same feature. `nudge` is new and has no old number, so it starts not-done (AC-3).
+    /// same feature. `preview` is new and has no old number, so it starts not-done (AC-3).
     static let legacyNumbers: [Int: MissionID] = [
         1: .player, 2: .deeplink, 3: .user, 4: .inline, 5: .pip, 6: .events, 7: .ui, 8: .studio,
     ]
 
+    /// Mission 2's raw value before SMV-1922 renamed it to `preview` (2026-11-17).
+    /// Old key: kept only so `decodeStored` can read what earlier builds wrote.
+    static let legacyPreviewRawValue = "nudge"
+
+    /// Raw values earlier builds stored that were renamed since → the mission today. Same table as
+    /// Android `MissionProgress.RENAMED_RAWS`.
+    static let renamedRawValues: [String: MissionID] = [
+        legacyPreviewRawValue: .preview,
+    ]
+
     /// Decodes the value stored under the identifier key.
     ///
-    /// Anything that names no mission is returned in `dropped` for the caller to log — it is never
-    /// attached to a mission (a wrong ✓ is worse than a missing one, AC-2).
-    static func decodeStored(_ stored: Any?) -> (ids: Set<MissionID>, dropped: [String]) {
-        guard let stored else { return ([], []) }
-        guard let values = stored as? [Any] else { return ([], [String(describing: stored)]) }
+    /// A renamed raw value (`renamedRawValues`) is read as its mission and returned in `renamed` too, so
+    /// the caller rewrites the record under the current raw values. Anything that names no mission is
+    /// returned in `dropped` for the caller to log — it is never attached to a mission (a wrong ✓ is
+    /// worse than a missing one, AC-2).
+    static func decodeStored(_ stored: Any?) -> (ids: Set<MissionID>, dropped: [String], renamed: [String]) {
+        guard let stored else { return ([], [], []) }
+        guard let values = stored as? [Any] else { return ([], [String(describing: stored)], []) }
 
         var ids = Set<MissionID>()
         var dropped: [String] = []
+        var renamed: [String] = []
         for value in values {
             if let raw = value as? String, let id = MissionID(rawValue: raw) {
                 ids.insert(id)
+            } else if let raw = value as? String, let id = renamedRawValues[raw] {
+                ids.insert(id)
+                renamed.append(raw)
             } else {
                 dropped.append(String(describing: value))
             }
         }
-        return (ids, dropped)
+        return (ids, dropped, renamed)
     }
 
     /// Folds the legacy number record into `current`.
@@ -96,29 +113,29 @@ extension MissionID {
 
     /// Whether an in-App PIP entry from `player` completes the PIP mission (§1 ⑤ · E1 · S26).
     ///
-    /// The nudge's own small window is the nudge, not "keep watching in PIP" (§1 ⑤: "a PIP entry that is
-    /// not a nudge session"):
-    ///   · `isNudgePlayer` — the sender is a nudge player, whatever mission is running now (X4);
-    ///   · while the nudge mission runs, an entry from its owner — or before the owner is registered,
-    ///     since the mission is recorded before the nudge starts and a signal can arrive during `play()`.
+    /// The preview's own small window is the preview, not "keep watching in PIP" (§1 ⑤: "a PIP entry that is
+    /// not a preview session"):
+    ///   · `isPreviewPlayer` — the sender is a preview player, whatever mission is running now (X4);
+    ///   · while the preview mission runs, an entry from its owner — or before the owner is registered,
+    ///     since the mission is recorded before the preview starts and a signal can arrive during `play()`.
     /// Same condition as Android `MissionProgress.creditFor` (CG-4.4).
     static func pipEntryCompletesPip(activeMission: MissionID?, owner: AnyObject?, player: AnyObject,
-                                     isNudgePlayer: Bool) -> Bool {
-        if isNudgePlayer { return false }
-        guard activeMission == .nudge else { return true }
+                                     isPreviewPlayer: Bool) -> Bool {
+        if isPreviewPlayer { return false }
+        guard activeMission == .preview else { return true }
         guard let owner else { return false }
         return player !== owner
     }
 }
 
-// MARK: - Nudge re-show rule (pure — NudgeProductViewController applies it)
+// MARK: - Preview re-show rule (pure — PreviewProductViewController applies it)
 
 extension MissionID {
 
-    /// Whether the nudge screen may start its nudge now. The first appearance follows the viewer's card
+    /// Whether the preview screen may start its preview now. The first appearance follows the viewer's card
     /// tap, so the session on screen is replaced as with any card. A later appearance is automatic and
     /// must not close a session the viewer is still watching (same rule as Android X2).
-    static func nudgeMayStart(isFirstAppearance: Bool, otherSessionInProgress: Bool) -> Bool {
+    static func previewMayStart(isFirstAppearance: Bool, otherSessionInProgress: Bool) -> Bool {
         isFirstAppearance || !otherSessionInProgress
     }
 }

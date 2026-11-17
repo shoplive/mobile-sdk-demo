@@ -48,9 +48,9 @@
     <string name="mission_player_title">플레이어 직접 띄우기</string>
     <string name="mission_player_desc">탭하면 전체화면 라이브가 바로 열립니다.</string>
     <string name="mission_player_check">2~3초 내 재생 · 라이브면 채팅·LIVE 배지</string>
-    <string name="mission_nudge_title">넛지형 프리뷰</string>
-    <string name="mission_nudge_desc">상품 상세 위에 소리 없는 작은 창으로 방송을 띄워 시청을 유도합니다. 탭하면 화면 가득 커집니다.</string>
-    <string name="mission_nudge_check">무음·오버레이 없는 작은 창 · 탭하면 풀스크린</string>
+    <string name="mission_preview_title">프리뷰</string>
+    <string name="mission_preview_desc">상품 상세 위에 소리 없는 작은 창으로 방송을 띄워 시청을 유도합니다. 탭하면 화면 가득 커집니다.</string>
+    <string name="mission_preview_check">무음·오버레이 없는 작은 창 · 탭하면 풀스크린</string>
     <string name="mission_pip_title">PIP로 이어보기</string>
     <string name="mission_pip_desc">재생 후 상품을 탭하면 작은 창으로 이어집니다. 옵션에서 작은 창으로 시작할 수도 있습니다.</string>
     <string name="mission_pip_check">작은 창 유지 · 탭하면 끊김 없이 복귀</string>
@@ -203,17 +203,17 @@
     <string name="inline_choice_native">네이티브 — 앱 피드 안에 ShoplivePlayerView 를 넣습니다</string>
     <string name="inline_choice_hybrid">하이브리드 — 웹뷰의 웹 목록이 campaignKey 를 앱으로 넘깁니다</string>
 
-    <!-- ── SMV-1922 · 3.0.4 options and the nudge policy toggle ───────────── -->
+    <!-- ── SMV-1922 · 3.0.4 options and the preview policy toggle ───────────── -->
     <string name="tip_pip_start">presentationStyle = PIP 이면 다음 재생이 처음부터 작은 창으로 열립니다(3.0.4+). pip.isInAppPipEnabled 가 켜져 있어야 합니다.</string>
     <string name="warn_custom_share">true: SDK 공유 시트 대신 shareRequested 이벤트가 오고, 앱이 자체 공유 화면(ACTION_SEND)을 띄웁니다. false(기본): SDK 공유 시트가 뜨고 앱에는 이벤트가 오지 않습니다.</string>
-    <string name="group_nudge">넛지형 프리뷰 · 미션 %1$d</string>
-    <string name="tip_nudge_close_not_live">SDK 옵션이 아니라 앱 정책입니다. 켜면: 키운 적 없는 넛지가 라이브가 아닐 때 스스로 닫힙니다(가이드 권장). 끄면(기본): 그대로 두어 VOD·예정 캠페인도 시연할 수 있습니다.</string>
+    <string name="group_preview">프리뷰 · 미션 %1$d</string>
+    <string name="tip_preview_close_not_live">SDK 옵션이 아니라 앱 정책입니다. 켜면: 키운 적 없는 프리뷰가 라이브가 아닐 때 스스로 닫힙니다(가이드 권장). 끄면(기본): 그대로 두어 VOD·예정 캠페인도 시연할 수 있습니다.</string>
 
-    <!-- ── SMV-1922 · nudge-preview product page ─────────────────────────── -->
-    <string name="nudge_product_desc">매일 입기 좋은 부드러운 면 셔츠. 데모 문구입니다 — 핵심은 위에 뜨는 작은 라이브 창입니다.</string>
-    <string name="nudge_tip_page">앱이 가진 상품 상세 화면입니다. 넛지형 프리뷰가 소리·오버레이 없이 그 위에 뜨고, 화면은 그대로 쓸 수 있습니다.</string>
-    <string name="nudge_tip_reshow">작은 창을 탭하면 화면 가득 커집니다. ✕ 로 닫으면 이 화면에서는 다시 뜨지 않습니다 — 카드를 다시 열면 새 화면입니다.</string>
-    <string name="nudge_tip_leave">키운 적 없는 넛지는 이 화면을 떠나면 닫힙니다. 키운 넛지는 계속 재생됩니다.</string>
+    <!-- ── SMV-1922 · preview product page ─────────────────────────── -->
+    <string name="preview_product_desc">매일 입기 좋은 부드러운 면 셔츠. 데모 문구입니다 — 핵심은 위에 뜨는 작은 라이브 창입니다.</string>
+    <string name="preview_tip_page">앱이 가진 상품 상세 화면입니다. 프리뷰가 소리·오버레이 없이 그 위에 뜨고, 화면은 그대로 쓸 수 있습니다.</string>
+    <string name="preview_tip_reshow">작은 창을 탭하면 화면 가득 커집니다. ✕ 로 닫으면 이 화면에서는 다시 뜨지 않습니다 — 카드를 다시 열면 새 화면입니다.</string>
+    <string name="preview_tip_leave">키운 적 없는 프리뷰는 이 화면을 떠나면 닫힙니다. 키운 프리뷰는 계속 재생됩니다.</string>
 
     <!-- ── SMV-1922 · hybrid inline preview (web list) ──────────────────── -->
     <string name="hybrid_tip_bridge">아래는 웹뷰 안의 웹 목록(앱에 들어 있는 페이지)입니다. 카드를 탭하면 ShopLiveAppInterface 로 campaignKey 하나가 넘어오고, 앱이 네이티브 풀스크린 플레이어를 엽니다. 다른 사이트 링크는 브라우저로 열립니다.</string>

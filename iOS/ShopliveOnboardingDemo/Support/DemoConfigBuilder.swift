@@ -76,9 +76,9 @@ enum DemoConfigBuilder {
         return config
     }
 
-    /// Nudge: the `.preview` preset plus only the options changed from the SDK default.
-    static func makeNudgeConfiguration(from store: DemoConfigStore = .shared) -> ShoplivePlayerConfiguration {
-        var config = NudgePreview.presetConfiguration()
+    /// Preview: the `.preview` preset plus only the options changed from the SDK default.
+    static func makePreviewConfiguration(from store: DemoConfigStore = .shared) -> ShoplivePlayerConfiguration {
+        var config = PreviewWindow.presetConfiguration()
         let options = makeConfiguration(.fullScreenLive, from: store)
         let sdkDefault = ShoplivePlayerConfiguration()
         func paint<T: Equatable>(_ field: WritableKeyPath<ShoplivePlayerConfiguration, T>) {

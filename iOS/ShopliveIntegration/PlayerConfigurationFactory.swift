@@ -25,7 +25,7 @@ enum PlayerConfigurationFactory {
         ShoplivePlayerConfiguration.default
     }
 
-    // TODO(SDP-VERIFY): 요확인 — 3.0.4 .preview 의 pip.isInAppPipEnabled·resizeMode 값은 swiftinterface 에 없음(예전 주석의 "PIP fully off"·"resizeMode .fill" 은 근거 없어 삭제). NudgePreview.presetConfiguration() 이 넛지 시작 때 PIP 값을 로그로 남기므로 실기기 로그로 확정 · 근거 SMV-1922 S07
+    // TODO(SDP-VERIFY): 요확인 — 3.0.4 .preview 의 pip.isInAppPipEnabled·resizeMode 값은 swiftinterface 에 없음(예전 주석의 "PIP fully off"·"resizeMode .fill" 은 근거 없어 삭제). PreviewWindow.presetConfiguration() 이 프리뷰 시작 때 PIP 값을 로그로 남기므로 실기기 로그로 확정 · 근거 SMV-1922 S07
     /// Embedded preview — a small inline preview placed in a product list and the like.
     ///
     /// The SDK's `.preview` preset (3.0.4) sets these at once (guide missions 2 · 7):

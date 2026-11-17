@@ -33,8 +33,8 @@ import cloud.shoplive.player.ShoplivePlayerPresentationStyle
  * ## Starting in PIP, and the PIP buttons (3.0.4+)
  * [startInPip] skips full screen and opens straight in the in-App PIP window — for a
  * viewer who came in through a notification and wants to keep the screen they are
- * on. A viewer who has not started watching yet gets a nudge preview instead (see
- * `ShopliveNudgePreview`). [withButtons] swaps or hides the window's close and
+ * on. A viewer who has not started watching yet gets a preview instead (see
+ * `ShoplivePreviewWindow`). [withButtons] swaps or hides the window's close and
  * restore buttons.
  */
 object ShoplivePipPresets {

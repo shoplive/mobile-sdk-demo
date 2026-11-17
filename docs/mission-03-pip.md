@@ -1,6 +1,6 @@
 # Mission 3 — Keep Watching in PIP
 
-[◀ Mission 2](mission-02-nudge-preview.md) · [Docs home](../README.md) · Next: [Mission 4 — Launch via Deep Link ▶](mission-04-deep-link.md)
+[◀ Mission 2](mission-02-preview.md) · [Docs home](../README.md) · Next: [Mission 4 — Launch via Deep Link ▶](mission-04-deep-link.md)
 
 > **Guide cross-reference:** [Mission 3 · Keep Watching in PIP](https://sdk.shoplive.cloud/#m3) · [Starting directly in PIP](https://sdk.shoplive.cloud/#m3-pipstart) · [PIP buttons](https://sdk.shoplive.cloud/#m3-buttons) · [ButtonOptions](https://sdk.shoplive.cloud/#f-button) · [PlayerConfiguration fields](https://sdk.shoplive.cloud/#f-playerconfig)
 >
@@ -14,7 +14,7 @@
 
 Playback that survives the user going somewhere else — a product page, another screen, or another app. In live commerce this is the difference between "watched and bought" and "left and never came back".
 
-**PIP is for a viewer who is already watching.** A small window that invites someone who has *not* started watching looks the same but is a different feature with different settings — that is [Mission 2 · Nudge-style preview](mission-02-nudge-preview.md).
+**PIP is for a viewer who is already watching.** A small window that invites someone who has *not* started watching looks the same but is a different feature with different settings — that is [Mission 2 · Preview](mission-02-preview.md).
 
 **Checkpoint:** the small window persists, and tapping it returns you to full screen without interrupting playback.
 
@@ -257,7 +257,7 @@ Full list: [Platform Differences](platform-differences.md).
 
 Card ③ starts full-screen playback with the Options tab's PIP settings applied. Because `actionOnNavigation` defaults to PIP behavior in the demo config, tapping a product in the overlay both opens the product detail screen and shrinks the player.
 
-The "done" badge lights up on `stateChanged(.inAppPIP)` / `IN_APP_PIP_ENTERED` — one of the missions not gated on `playback(started)`. The one exception is the small window of a **nudge preview** (Mission 2): a nudge player entering in-App PIP never counts — not while Mission 2 runs, and not later either (an expanded nudge shrunk back into PIP while another mission runs) — because a nudge is not PIP.
+The "done" badge lights up on `stateChanged(.inAppPIP)` / `IN_APP_PIP_ENTERED` — one of the missions not gated on `playback(started)`. The one exception is the small window of a **preview** (Mission 2): a preview player entering in-App PIP never counts — not while Mission 2 runs, and not later either (an expanded preview shrunk back into PIP while another mission runs) — because a preview is not PIP.
 
 The Options tab's PIP group carries the 3.0.4 items:
 
@@ -272,4 +272,4 @@ With *start in the small window* on, the card itself opens in PIP, so the badge 
 
 ---
 
-[◀ Mission 2](mission-02-nudge-preview.md) · [Docs home](../README.md) · Next: [Mission 4 ▶](mission-04-deep-link.md)
+[◀ Mission 2](mission-02-preview.md) · [Docs home](../README.md) · Next: [Mission 4 ▶](mission-04-deep-link.md)

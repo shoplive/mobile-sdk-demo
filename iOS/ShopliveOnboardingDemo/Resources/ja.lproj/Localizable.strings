@@ -41,9 +41,9 @@
 "mission.player.title" = "プレーヤーを直接表示する";
 "mission.player.summary" = "タップすると全画面のライブがすぐに開きます。";
 "mission.player.check" = "2〜3秒以内に再生 · ライブならチャットと LIVE バッジ";
-"mission.nudge.title" = "ナッジ型プレビュー";
-"mission.nudge.summary" = "商品詳細の上に音のない小窓で配信を表示し、視聴を促します。タップすると全画面に広がります。";
-"mission.nudge.check" = "無音・オーバーレイなしの小窓 · タップで全画面";
+"mission.preview.title" = "プレビュー";
+"mission.preview.summary" = "商品詳細の上に音のない小窓で配信を表示し、視聴を促します。タップすると全画面に広がります。";
+"mission.preview.check" = "無音・オーバーレイなしの小窓 · タップで全画面";
 "mission.pip.title" = "PIP で視聴を続ける";
 "mission.pip.summary" = "再生後に商品をタップすると、小さなウィンドウで継続します。オプションで小窓から開始することもできます。";
 "mission.pip.check" = "小窓が維持される · タップで途切れず復帰";
@@ -145,10 +145,10 @@
 "qr.cameraError" = "カメラを使用できません(%@)。設定でカメラへのアクセスを許可するか、キーを直接入力してください。";
 "qr.applied" = "QR「%@」— %@ を入力しました。値を確認してから「検証して開始」を押してください。";
 
-/* ── SMV-1922 · nudge preview · inline preview (native/hybrid) ── */
-"dev.group.nudge" = "ナッジ型プレビュー · ミッション%d";
-"nudge.title" = "商品詳細 · ミッション%d";
-"nudge.tip" = "この画面の上に、ナッジ型プレビューが音のない小窓で表示されます。小窓をタップすると全画面に広がり、音が出ます。広げずにこの画面を離れると小窓も閉じます。";
+/* ── SMV-1922 · preview window (mission 2) · inline preview (native/hybrid) ── */
+"dev.group.preview" = "プレビュー · ミッション%d";
+"preview.title" = "商品詳細 · ミッション%d";
+"preview.tip" = "この画面の上に、プレビューが音のない小窓で表示されます。小窓をタップすると全画面に広がり、音が出ます。広げずにこの画面を離れると小窓も閉じます。";
 "inline.sheet.title" = "一覧は何で作っていますか?";
 "inline.sheet.message" = "ネイティブはフィード内にプレイヤービューを置き、ハイブリッドは Web 一覧が campaignKey をアプリへ渡してアプリのプレイヤーで開きます。";
 "inline.native" = "ネイティブ — アプリのフィード内の ShoplivePlayerView";

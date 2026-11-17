@@ -82,13 +82,13 @@ data class DemoOptions(
     /** PlayOptions.presentationStyle = PIP (3.0.4+): open in the in-App PIP window. */
     val startInPip: Boolean = false,
 
-    // ── Nudge preview — demo policy, not SDK configuration ───────────────────
+    // ── Preview — demo policy, not SDK configuration ───────────────────
     /**
-     * The guide recommends not showing a nudge while the campaign is not live. Off by
+     * The guide recommends not showing a preview while the campaign is not live. Off by
      * default so VOD and upcoming campaigns can still be shown in the demo
      * (SMV-1922, decided 2026-11-04).
      */
-    val closeNudgeWhenNotLive: Boolean = false,
+    val closePreviewWhenNotLive: Boolean = false,
 
     // ── Runtime properties (control during playback, not configuration) ──────
     val resizeMode: ShopliveResizeMode = ShopliveResizeMode.FILL,

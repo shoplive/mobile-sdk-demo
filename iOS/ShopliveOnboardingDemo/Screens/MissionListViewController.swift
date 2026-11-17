@@ -97,9 +97,9 @@ final class MissionListViewController: UIViewController {
         case .player:
             startPlayer(mission)
 
-        case .nudge:
+        case .preview:
             navigationController?.pushViewController(
-                NudgeProductViewController(campaignKey: DemoCredentials.shared.campaignKey),
+                PreviewProductViewController(campaignKey: DemoCredentials.shared.campaignKey),
                 animated: true)
 
         case .inline:
@@ -120,7 +120,7 @@ final class MissionListViewController: UIViewController {
     }
 
     private func startPlayer(_ mission: Mission) {
-        // One session at a time — close what is on screen (a card in PIP, a nudge, a deep link) first.
+        // One session at a time — close what is on screen (a card in PIP, a preview, a deep link) first.
         DevSheetViewController.replaceCurrentSession { [weak self] in
             self?.presentPlayer(mission)
         }

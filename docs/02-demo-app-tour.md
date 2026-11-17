@@ -19,7 +19,7 @@ Both platforms implement the same five surfaces. The prototype codenames (S1, S2
 | **S3** | Player / studio | **The SDK** | The SDK player, subclassed for two demo controls — [`PlayerHostOverlay.swift`](../iOS/ShopliveOnboardingDemo/Screens/PlayerHostOverlay.swift) | SDK Activity |
 | **S3′** | Home feed (embedded player) — Mission 7, native | Demo app | [`FeedDemoViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/FeedDemoViewController.swift) | [`FeedScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/feed/FeedScreen.kt) |
 | — | Web list (WebView + bridge) — Mission 7, hybrid | Demo app | [`HybridListViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/HybridListViewController.swift) | [`HybridListScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/hybrid/HybridListScreen.kt) |
-| — | Product page with a nudge-style preview — Mission 2 | Demo app (the small window is the SDK) | [`NudgeProductViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/NudgeProductViewController.swift) | [`NudgeProductScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/nudge/NudgeProductScreen.kt) |
+| — | Product page with a preview — Mission 2 | Demo app (the small window is the SDK) | [`PreviewProductViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/PreviewProductViewController.swift) | [`PreviewProductScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/preview/PreviewProductScreen.kt) |
 | **V1** | Developer sheet — Log / Options | Demo app | [`DevSheetViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/DevSheetViewController.swift) | [`DevSheet.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/devtools/DevSheet.kt) |
 | **V2** | Product detail | Demo app | [`ProductDetailViewController.swift`](../iOS/ShopliveOnboardingDemo/Screens/ProductDetailViewController.swift) | [`ProductDetailScreen.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/ui/product/ProductDetailScreen.kt) |
 
@@ -82,7 +82,7 @@ Each card shows four things:
 
 **Tapping a card runs the mission immediately.** There is no detail screen in between — except Mission 7, which first asks *native* or *hybrid*, and Mission 5, which asks for the authentication method.
 
-Like every card, Mission 2 replaces the session on screen when you tap it. Coming **back** to its product page is different: if another session is still going (a PIP you are watching, say), the nudge is not started again — only logged — so returning to the page never closes something you are watching. Same rule on iOS and Android.
+Like every card, Mission 2 replaces the session on screen when you tap it. Coming **back** to its product page is different: if another session is still going (a PIP you are watching, say), the preview is not started again — only logged — so returning to the page never closes something you are watching. Same rule on iOS and Android.
 
 ### The "done" badge is not a checkbox
 
@@ -91,11 +91,11 @@ You cannot mark a mission complete yourself. The badge appears only when an SDK 
 | Proof | Marks complete |
 |---|---|
 | Playback reached first frame — **from the player the running mission started** | Missions 1, 2, 4, 5, 7, 8 (whichever is running) |
-| `stateChanged(.inAppPIP)` / `IN_APP_PIP_ENTERED` — any player **except a nudge's**: never from a nudge player (even after another mission started), nor while Mission 2 is still starting its nudge | Mission 3 |
+| `stateChanged(.inAppPIP)` / `IN_APP_PIP_ENTERED` — any player **except a preview's**: never from a preview player (even after another mission started), nor while Mission 2 is still starting its preview | Mission 3 |
 | A `navigation`, `coupon` or `customWebAction` **request** arrived — any player | Mission 6 |
 | `StreamerEvent.stateChanged(LIVE)` | Mission 9 |
 
-The rules are the same on both platforms, and they live in one place: `MissionProgress` knows **which mission is running** and **which player that mission started**. Every start path — card, deep link, nudge, hybrid list, feed — registers its player. That is why a feed embed still playing underneath a deep-link player cannot complete the deep-link mission, and why a nudge's small window does not count as "keep watching in PIP". A start path that registered no player completes nothing (and says so in the log) — better not done than done wrongly.
+The rules are the same on both platforms, and they live in one place: `MissionProgress` knows **which mission is running** and **which player that mission started**. Every start path — card, deep link, preview, hybrid list, feed — registers its player. That is why a feed embed still playing underneath a deep-link player cannot complete the deep-link mission, and why a preview's small window does not count as "keep watching in PIP". A start path that registered no player completes nothing (and says so in the log) — better not done than done wrongly.
 
 > All of this rests on the sender being the object the app holds. On iOS, view controller sessions get that from `DemoPlayerDelegate.adopt(_:)`, because the SDK names its inner view as `player` ([Known Issues](known-issues.md#the-delegates-player-is-not-your-view-controller-ios), measured on the simulator). ⚠️ **Unverified on a device:** for the feed, that `player` is the view `EmbeddedPlayerView.player` returns — it is on the 3.0.4 simulator ([Known Issues](known-issues.md#open-sdp-verify-markers-in-the-code) i2). Android rests on the same premise for the player `ShoplivePlayerLauncher.start` returns (a4).
 
@@ -103,7 +103,7 @@ Implementation: [`MissionProgress`](../Android/app/src/main/java/cloud/shoplive/
 
 ### Progress survives the renumbering
 
-Progress is stored as **mission identifiers**, not numbers — `player`, `nudge`, `pip`, `deeplink`, `user`, `events`, `inline`, `ui`, `studio` — under the same key on both platforms, `demo.completedMissionIds` (iOS `UserDefaults`, Android `SharedPreferences` file `shoplive_demo_progress`). A record from the 8-mission version (numbers 1–8) is migrated once on first launch — 1→player, 2→deeplink, 3→user, 4→inline, 5→pip, 6→events, 7→ui, 8→studio — and the old key is removed. A value that names no mission is dropped and logged. The nudge-style preview is new, so it starts not done.
+Progress is stored as **mission identifiers**, not numbers — `player`, `preview`, `pip`, `deeplink`, `user`, `events`, `inline`, `ui`, `studio` — under the same key on both platforms, `demo.completedMissionIds` (iOS `UserDefaults`, Android `SharedPreferences` file `shoplive_demo_progress`). A record from the 8-mission version (numbers 1–8) is migrated once on first launch — 1→player, 2→deeplink, 3→user, 4→inline, 5→pip, 6→events, 7→ui, 8→studio — and the old key is removed. A value that names no mission is dropped and logged. The preview is new, so it starts not done. Mission 2 was stored under a different identifier before it was renamed to `preview`; that old value is carried over to `preview` on the next launch (iOS `MissionID.renamedRawValues`, Android `MissionProgress.RENAMED_RAWS`).
 
 > **Why this matters to you:** on iOS, "playback reached" is judged from `playback(STARTED/RENDERING)` and **not** from `stateChanged(.playing)` — because on the measured build `stateChanged` never fires during a healthy session. If your own app gates its UI on `stateChanged` alone, it will wait forever. Details in [Known Issues](known-issues.md#statechanged-never-fires-ios).
 

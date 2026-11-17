@@ -1,6 +1,6 @@
 # Mission 1 — Launch the Player Directly
 
-[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 — Nudge-Style Preview ▶](mission-02-nudge-preview.md)
+[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 — Preview ▶](mission-02-preview.md)
 
 > **Guide cross-reference:** [Mission 1 · Launch the Player Directly](https://sdk.shoplive.cloud/#m1) · [Quick start](https://sdk.shoplive.cloud/#quickstart) · [ShopliveConfiguration fields](https://sdk.shoplive.cloud/#f-config)
 >
@@ -166,10 +166,10 @@ The "done" badge lights up when `playback(started)` arrives from **the player th
 
 ## Next
 
-[Mission 2 — Nudge-Style Preview ▶](mission-02-nudge-preview.md) starts the same player muted, in a small window over one of your screens — for a viewer who has not decided to watch yet.
+[Mission 2 — Preview ▶](mission-02-preview.md) starts the same player muted, in a small window over one of your screens — for a viewer who has not decided to watch yet.
 
 Coming from a push notification instead? [Mission 4 — Launch via Deep Link](mission-04-deep-link.md) takes this same playback call and triggers it from a link, where cold-start ordering becomes the whole problem.
 
 ---
 
-[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 ▶](mission-02-nudge-preview.md)
+[◀ Architecture](03-architecture.md) · [Docs home](../README.md) · Next: [Mission 2 ▶](mission-02-preview.md)

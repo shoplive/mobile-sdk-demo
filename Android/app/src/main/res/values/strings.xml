@@ -56,9 +56,9 @@
     <string name="mission_player_title">Launch the Player Directly</string>
     <string name="mission_player_desc">Tap to open a full-screen live stream right away.</string>
     <string name="mission_player_check">Playback within 2–3s · chat and LIVE badge when live</string>
-    <string name="mission_nudge_title">Nudge-Style Preview</string>
-    <string name="mission_nudge_desc">A silent small window over a product page invites the viewer in. Tap it to go full screen.</string>
-    <string name="mission_nudge_check">Small silent window without overlay · tap expands to full screen</string>
+    <string name="mission_preview_title">Preview</string>
+    <string name="mission_preview_desc">A silent small window over a product page invites the viewer in. Tap it to go full screen.</string>
+    <string name="mission_preview_check">Small silent window without overlay · tap expands to full screen</string>
     <string name="mission_pip_title">Keep Watching in PIP</string>
     <string name="mission_pip_desc">Tap a product during playback and it continues in a small window. Options can also start it in PIP.</string>
     <string name="mission_pip_check">Small window persists · tap to return without interruption</string>
@@ -211,17 +211,17 @@
     <string name="inline_choice_native">Native — a ShoplivePlayerView inside the app’s own feed</string>
     <string name="inline_choice_hybrid">Hybrid — a web list in a WebView hands the campaignKey to the app</string>
 
-    <!-- ── SMV-1922 · 3.0.4 options and the nudge policy toggle ───────────── -->
+    <!-- ── SMV-1922 · 3.0.4 options and the preview policy toggle ───────────── -->
     <string name="tip_pip_start">presentationStyle = PIP opens the next playback straight in the small window (3.0.4+). It needs pip.isInAppPipEnabled.</string>
     <string name="warn_custom_share">true: the SDK shows no share sheet and sends shareRequested instead; the app opens its own (ACTION_SEND). false (default): the SDK share sheet, and no event reaches the app.</string>
-    <string name="group_nudge">Nudge-Style Preview · Mission %1$d</string>
-    <string name="tip_nudge_close_not_live">App policy, not an SDK option. On: a nudge that was never expanded closes itself when the campaign is not live (the guide\'s recommendation). Off (default): it stays, so VOD and upcoming campaigns can still be shown.</string>
+    <string name="group_preview">Preview · Mission %1$d</string>
+    <string name="tip_preview_close_not_live">App policy, not an SDK option. On: a preview that was never expanded closes itself when the campaign is not live (the guide\'s recommendation). Off (default): it stays, so VOD and upcoming campaigns can still be shown.</string>
 
-    <!-- ── SMV-1922 · nudge-preview product page ─────────────────────────── -->
-    <string name="nudge_product_desc">A soft cotton shirt for every day. Demo copy — the small live window is the point.</string>
-    <string name="nudge_tip_page">This is the app\'s own product page. The nudge preview floats over it — silent, no overlay — and the page stays usable.</string>
-    <string name="nudge_tip_reshow">Tap the small window to watch full screen. Close it with ✕ and it will not come back on this page; open the card again for a new page.</string>
-    <string name="nudge_tip_leave">Leaving this page closes a nudge you never expanded. One you expanded keeps playing.</string>
+    <!-- ── SMV-1922 · preview product page ─────────────────────────── -->
+    <string name="preview_product_desc">A soft cotton shirt for every day. Demo copy — the small live window is the point.</string>
+    <string name="preview_tip_page">This is the app\'s own product page. The preview floats over it — silent, no overlay — and the page stays usable.</string>
+    <string name="preview_tip_reshow">Tap the small window to watch full screen. Close it with ✕ and it will not come back on this page; open the card again for a new page.</string>
+    <string name="preview_tip_leave">Leaving this page closes a preview you never expanded. One you expanded keeps playing.</string>
 
     <!-- ── SMV-1922 · hybrid inline preview (web list) ──────────────────── -->
     <string name="hybrid_tip_bridge">Below is a web list in a WebView (a bundled page). Tapping a card sends one campaignKey through ShopLiveAppInterface, and the app opens the native full-screen player. Links to other sites open in the browser.</string>

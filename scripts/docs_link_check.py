@@ -79,10 +79,11 @@ GUIDE_ANCHORS = frozenset({
 })
 
 # The English guide's mission map ("Mission N · <title>" rows under #mission-map), 2026-11-04.
-# Used unless --guide-html includes the English page.
+# Used unless --guide-html includes the English page. Entries in DOC_TITLE_OVERRIDES replace the
+# guide's title in both cases.
 GUIDE_MISSION_TITLES = {
     1: "Launch the Player Directly",
-    2: "Nudge-Style Preview",
+    2: "Preview",   # this repo's name for mission 2 (DOC_TITLE_OVERRIDES) — the guide's own title differs
     3: "Keep Watching in PIP",
     4: "Launch via Deep Link",
     5: "Connect User Information",
@@ -90,6 +91,12 @@ GUIDE_MISSION_TITLES = {
     7: "Add Inline Previews to a List Screen",
     8: "UI Customization & Placement",
     9: "Broadcasting",
+}
+
+# Missions this repo deliberately titles differently from the guide (SMV-1922, 2026-11-17: mission 2
+# is "Preview" in the demo and its docs). The guide page itself is not ours to change.
+DOC_TITLE_OVERRIDES = {
+    2: "Preview",
 }
 
 GUIDE_HOSTS = {"sdk.shoplive.cloud", "developer.shoplive.cloud"}
@@ -727,7 +734,7 @@ def main() -> int:
         html_anchors, html_titles = guide_from_html(options.guide_html)
         anchors, source = html_anchors, f"{len(options.guide_html)} HTML page(s)"
         if html_titles:
-            titles = html_titles
+            titles = {**html_titles, **DOC_TITLE_OVERRIDES}
         else:
             print("docs_link_check: no English page among --guide-html — mission titles from the built-in list")
     print(f"{SCOPE} · guide ids: {len(anchors)} from {source}")

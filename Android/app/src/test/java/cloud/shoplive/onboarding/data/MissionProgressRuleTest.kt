@@ -32,7 +32,7 @@ class MissionProgressRuleTest {
     @Test
     fun playbackFromTheOwnerCompletesTheRunningMission() {
         val playbackMissions = listOf(
-            MissionId.PLAYER, MissionId.NUDGE, MissionId.DEEPLINK,
+            MissionId.PLAYER, MissionId.PREVIEW, MissionId.DEEPLINK,
             MissionId.USER, MissionId.INLINE, MissionId.UI,
         )
         playbackMissions.forEach { active ->
@@ -79,38 +79,38 @@ class MissionProgressRuleTest {
         )
     }
 
-    /** E1: the nudge's own small window is not "keep watching in PIP". */
+    /** E1: the preview's own small window is not "keep watching in PIP". */
     @Test
-    fun nudgeSessionPipIsNotPipCompletion() {
+    fun previewSessionPipIsNotPipCompletion() {
         assertNull(
-            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, owner, MissionId.NUDGE, owner),
+            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, owner, MissionId.PREVIEW, owner),
         )
-        // Arriving while the nudge is still being started (owner not known yet).
+        // Arriving while the preview is still being started (owner not known yet).
         assertNull(
-            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, owner, MissionId.NUDGE, null),
+            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, owner, MissionId.PREVIEW, null),
         )
-        // Another session entering PIP while the nudge mission is current still counts.
+        // Another session entering PIP while the preview mission is current still counts.
         assertEquals(
             MissionId.PIP,
-            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, other, MissionId.NUDGE, owner),
+            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, other, MissionId.PREVIEW, owner),
         )
     }
 
     /**
-     * Contract 5 says "not the nudge session", not "not while the nudge mission runs":
-     * the last nudge player's PIP never completes PIP, whatever runs now (R1 X4).
+     * Contract 5 says "not the preview session", not "not while the preview mission runs":
+     * the last preview player's PIP never completes PIP, whatever runs now (R1 X4).
      */
     @Test
-    fun theNudgePlayersPipIsExcludedWhateverMissionRuns() {
-        val nudge = player()
+    fun thePreviewPlayersPipIsExcludedWhateverMissionRuns() {
+        val preview = player()
         listOf(MissionId.PLAYER, MissionId.PIP, MissionId.INLINE, null).forEach { active ->
             assertNull(
-                MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, nudge, active, owner, nudge = nudge),
+                MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, preview, active, owner, preview = preview),
             )
         }
         assertEquals(
             MissionId.PIP,
-            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, other, MissionId.PLAYER, owner, nudge = nudge),
+            MissionProgress.creditFor(ShopliveMilestone.IN_APP_PIP_ENTERED, other, MissionId.PLAYER, owner, preview = preview),
         )
     }
 

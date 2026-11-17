@@ -40,7 +40,7 @@ FORBIDDEN = [
     "StartViewController",
     "ProductDetailViewController",
     "FeedDemoViewController",
-    "NudgeProductViewController",
+    "PreviewProductViewController",
     "HybridListViewController",
     "MissionID",
 ]

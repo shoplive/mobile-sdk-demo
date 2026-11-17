@@ -26,7 +26,7 @@ func check(_ condition: Bool, _ name: String, _ detail: @autoclosure () -> Strin
 
 // MARK: - MissionID · stored identifiers
 
-check(MissionID.allCases.map(\.rawValue) == ["player", "nudge", "pip", "deeplink", "user", "events", "inline", "ui", "studio"],
+check(MissionID.allCases.map(\.rawValue) == ["player", "preview", "pip", "deeplink", "user", "events", "inline", "ui", "studio"],
       "raw values fixed and in guide order (S01 · L1)",
       "\(MissionID.allCases.map(\.rawValue))")
 
@@ -40,7 +40,7 @@ for (old, newNumber) in expectedDisplay.sorted(by: { $0.key < $1.key }) {
     let display = id.flatMap { MissionID.allCases.firstIndex(of: $0) }.map { $0 + 1 }
     check(display == newNumber, "old \(old) → display \(newNumber)", "got \(String(describing: display))")
 }
-check(!MissionID.legacyNumbers.values.contains(.nudge), "nudge has no legacy number (AC-3 — starts not done)")
+check(!MissionID.legacyNumbers.values.contains(.preview), "preview has no legacy number (AC-3 — starts not done)")
 
 let decodedNil = MissionID.decodeStored(nil)
 check(decodedNil.ids.isEmpty && decodedNil.dropped.isEmpty, "decode: nothing stored → empty, nothing dropped")
@@ -63,8 +63,8 @@ if case .unreadable = MissionID.migrateLegacy("1,2,3", into: []) {
 }
 
 let all8 = MissionID.migrateLegacy([1, 2, 3, 4, 5, 6, 7, 8] as [Any], into: [])
-check(all8 == .migrated(merged: Set(MissionID.allCases).subtracting([.nudge]), dropped: []),
-      "migrate: 1…8 → every mission except nudge", "\(all8)")
+check(all8 == .migrated(merged: Set(MissionID.allCases).subtracting([.preview]), dropped: []),
+      "migrate: 1…8 → every mission except preview", "\(all8)")
 
 let partial = MissionID.migrateLegacy([2, 5] as [Any], into: [])
 check(partial == .migrated(merged: [.deeplink, .pip], dropped: []),
@@ -78,8 +78,8 @@ if case .migrated(let merged, let dropped) = unknown {
     check(false, "migrate: values outside the table", "\(unknown)")
 }
 
-let union = MissionID.migrateLegacy([1] as [Any], into: [.nudge, .studio])
-check(union == .migrated(merged: [.player, .nudge, .studio], dropped: []),
+let union = MissionID.migrateLegacy([1] as [Any], into: [.preview, .studio])
+check(union == .migrated(merged: [.player, .preview, .studio], dropped: []),
       "migrate: union with records already under the new key", "\(union)")
 
 // Idempotence — simulate the store the way MissionProgress applies the outcome:
@@ -103,41 +103,54 @@ check(first == [.deeplink, .pip] && first == second && store["legacy"] == nil,
       "migrate: second run is a no-op (S01)", "\(first) / \(second)")
 
 // Killed between "write new key" and "delete legacy key": the next launch re-runs and converges.
-var crashed: [String: Any] = ["legacy": [2, 5], "new": ["deeplink", "pip", "nudge"]]
+var crashed: [String: Any] = ["legacy": [2, 5], "new": ["deeplink", "pip", "preview"]]
 apply(&crashed)
-check(MissionID.decodeStored(crashed["new"]).ids == [.deeplink, .pip, .nudge] && crashed["legacy"] == nil,
+check(MissionID.decodeStored(crashed["new"]).ids == [.deeplink, .pip, .preview] && crashed["legacy"] == nil,
       "migrate: interrupted run converges to the same result (U04 ①)")
 
-// MARK: - MissionID · PIP entry vs. the nudge's own small window (S26 · same as Android creditFor)
+// MARK: - MissionID · renamed raw value (mission 2, SMV-1922 2026-11-17 · same as Android MissionProgressMigrationTest)
 
-let nudgePlayer = NSObject()
+let renamedRecord = MissionID.decodeStored([MissionID.legacyPreviewRawValue, "pip"] as [Any])
+check(renamedRecord.ids == [.preview, .pip] && renamedRecord.dropped.isEmpty
+        && renamedRecord.renamed == [MissionID.legacyPreviewRawValue],
+      "renamed: old mission 2 raw value carries over to .preview", "\(renamedRecord)")
+let rewritten = MissionID.decodeStored(renamedRecord.ids.map(\.rawValue).sorted())
+check(rewritten.ids == renamedRecord.ids && rewritten.renamed.isEmpty && rewritten.dropped.isEmpty,
+      "renamed: the rewritten record reads back the same, nothing left to rename", "\(rewritten)")
+let renamedWithCurrent = MissionID.decodeStored([MissionID.legacyPreviewRawValue, "preview"] as [Any])
+check(renamedWithCurrent.ids == [.preview] && renamedWithCurrent.dropped.isEmpty,
+      "renamed: old and current raw value together → one .preview", "\(renamedWithCurrent)")
+
+// MARK: - MissionID · PIP entry vs. the preview's own small window (S26 · same as Android creditFor)
+
+let previewPlayer = NSObject()
 let otherPlayer = NSObject()
-check(MissionID.pipEntryCompletesPip(activeMission: nil, owner: nil, player: otherPlayer, isNudgePlayer: false),
+check(MissionID.pipEntryCompletesPip(activeMission: nil, owner: nil, player: otherPlayer, isPreviewPlayer: false),
       "pip rule: no mission running → PIP entry completes pip")
-check(MissionID.pipEntryCompletesPip(activeMission: .player, owner: otherPlayer, player: otherPlayer, isNudgePlayer: false),
+check(MissionID.pipEntryCompletesPip(activeMission: .player, owner: otherPlayer, player: otherPlayer, isPreviewPlayer: false),
       "pip rule: card player entering PIP → completes pip")
-check(MissionID.pipEntryCompletesPip(activeMission: .player, owner: nil, player: otherPlayer, isNudgePlayer: false),
-      "pip rule: non-nudge mission without owner → completes pip")
-check(!MissionID.pipEntryCompletesPip(activeMission: .nudge, owner: nudgePlayer, player: nudgePlayer, isNudgePlayer: false),
-      "pip rule: the nudge's own small window → not pip (E1)")
-check(!MissionID.pipEntryCompletesPip(activeMission: .nudge, owner: nil, player: otherPlayer, isNudgePlayer: false),
-      "pip rule: nudge running, owner not registered yet → not pip (signal during play())")
-check(MissionID.pipEntryCompletesPip(activeMission: .nudge, owner: nudgePlayer, player: otherPlayer, isNudgePlayer: false),
-      "pip rule: another player entering PIP while the nudge runs → completes pip")
+check(MissionID.pipEntryCompletesPip(activeMission: .player, owner: nil, player: otherPlayer, isPreviewPlayer: false),
+      "pip rule: non-preview mission without owner → completes pip")
+check(!MissionID.pipEntryCompletesPip(activeMission: .preview, owner: previewPlayer, player: previewPlayer, isPreviewPlayer: false),
+      "pip rule: the preview's own small window → not pip (E1)")
+check(!MissionID.pipEntryCompletesPip(activeMission: .preview, owner: nil, player: otherPlayer, isPreviewPlayer: false),
+      "pip rule: preview running, owner not registered yet → not pip (signal during play())")
+check(MissionID.pipEntryCompletesPip(activeMission: .preview, owner: previewPlayer, player: otherPlayer, isPreviewPlayer: false),
+      "pip rule: another player entering PIP while the preview runs → completes pip")
 
-check(!MissionID.pipEntryCompletesPip(activeMission: .player, owner: otherPlayer, player: nudgePlayer, isNudgePlayer: true),
-      "pip rule: a nudge player entering PIP after another mission started → not pip (X4)")
-check(!MissionID.pipEntryCompletesPip(activeMission: nil, owner: nil, player: nudgePlayer, isNudgePlayer: true),
-      "pip rule: a nudge player with no mission running → not pip (X4)")
+check(!MissionID.pipEntryCompletesPip(activeMission: .player, owner: otherPlayer, player: previewPlayer, isPreviewPlayer: true),
+      "pip rule: a preview player entering PIP after another mission started → not pip (X4)")
+check(!MissionID.pipEntryCompletesPip(activeMission: nil, owner: nil, player: previewPlayer, isPreviewPlayer: true),
+      "pip rule: a preview player with no mission running → not pip (X4)")
 
-// MARK: - Nudge re-show vs. a session in progress (Android X2)
+// MARK: - Preview re-show vs. a session in progress (Android X2)
 
-check(MissionID.nudgeMayStart(isFirstAppearance: true, otherSessionInProgress: true),
-      "nudge: first appearance (card tap) with a session in progress → start (replaces it)")
-check(!MissionID.nudgeMayStart(isFirstAppearance: false, otherSessionInProgress: true),
-      "nudge: later appearance with a session in progress → skipped")
-check(MissionID.nudgeMayStart(isFirstAppearance: false, otherSessionInProgress: false),
-      "nudge: later appearance with nothing in progress → start")
+check(MissionID.previewMayStart(isFirstAppearance: true, otherSessionInProgress: true),
+      "preview: first appearance (card tap) with a session in progress → start (replaces it)")
+check(!MissionID.previewMayStart(isFirstAppearance: false, otherSessionInProgress: true),
+      "preview: later appearance with a session in progress → skipped")
+check(MissionID.previewMayStart(isFirstAppearance: false, otherSessionInProgress: false),
+      "preview: later appearance with nothing in progress → start")
 
 // MARK: - MissionID · legacy values that only look like numbers (F6)
 

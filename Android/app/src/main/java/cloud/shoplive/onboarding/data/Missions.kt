@@ -8,12 +8,13 @@ import cloud.shoplive.onboarding.R
  *
  * [raw] is what gets stored on disk and is shared with the iOS demo, so the nine
  * values are frozen — renaming one silently drops everybody's progress for it
- * (SMV-1922 contract 2). The number a viewer sees is [displayNumber], derived from
+ * (SMV-1922 contract 2) unless the old value is added to `MissionProgress.RENAMED_RAWS`
+ * (and iOS `MissionID.renamedRawValues`), as was done for [PREVIEW]. The number a viewer sees is [displayNumber], derived from
  * the position in [MISSIONS] and never stored.
  */
 enum class MissionId(val raw: String) {
     PLAYER("player"),
-    NUDGE("nudge"),
+    PREVIEW("preview"),
     PIP("pip"),
     DEEPLINK("deeplink"),
     USER("user"),
@@ -37,8 +38,8 @@ enum class MissionRun {
     /** Launches the SDK's full-screen player Activity. */
     PLAYER,
 
-    /** The demo's own product screen, with a nudge preview floating over it. */
-    NUDGE,
+    /** The demo's own product screen, with a preview floating over it. */
+    PREVIEW,
 
     /** Fake push banner -> a real deep-link Intent -> the player. */
     DEEP_LINK,
@@ -96,12 +97,12 @@ val MISSIONS: List<Mission> = listOf(
         run = MissionRun.PLAYER,
     ),
     Mission(
-        id = MissionId.NUDGE,
-        titleRes = R.string.mission_nudge_title,
-        descriptionRes = R.string.mission_nudge_desc,
-        checkPointRes = R.string.mission_nudge_check,
-        sourcePaths = listOf("$INT_DIR/ShopliveNudgePreview.kt"),
-        run = MissionRun.NUDGE,
+        id = MissionId.PREVIEW,
+        titleRes = R.string.mission_preview_title,
+        descriptionRes = R.string.mission_preview_desc,
+        checkPointRes = R.string.mission_preview_check,
+        sourcePaths = listOf("$INT_DIR/ShoplivePreviewWindow.kt"),
+        run = MissionRun.PREVIEW,
     ),
     Mission(
         id = MissionId.PIP,

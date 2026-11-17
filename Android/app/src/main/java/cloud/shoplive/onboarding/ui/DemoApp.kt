@@ -55,20 +55,20 @@ import cloud.shoplive.onboarding.ui.feed.findActivity
 import cloud.shoplive.onboarding.ui.hybrid.HybridListScreen
 import cloud.shoplive.onboarding.ui.missions.MissionListScreen
 import cloud.shoplive.onboarding.ui.missions.ModeBar
-import cloud.shoplive.onboarding.ui.nudge.NudgeProductScreen
+import cloud.shoplive.onboarding.ui.preview.PreviewProductScreen
 import cloud.shoplive.onboarding.ui.start.QrScanScreen
 import cloud.shoplive.onboarding.ui.start.StartScreen
 
 private object Routes {
     const val START = "start"
     const val MISSIONS = "missions"
-    const val NUDGE = "nudge"
+    const val PREVIEW = "preview"
     const val FEED = "feed"
     const val HYBRID = "hybrid"
     const val QR = "qr"
 
     /** Demo-owned screens reached from a card; they show a back arrow. */
-    val CARD_SCREENS = setOf(NUDGE, FEED, HYBRID)
+    val CARD_SCREENS = setOf(PREVIEW, FEED, HYBRID)
 }
 
 /**
@@ -77,8 +77,8 @@ private object Routes {
  * - S1 [Routes.START] start
  * - S2 [Routes.MISSIONS] feature list
  * - S3 the running screen — the player and studio are **Activities owned by the SDK**,
- *   so they have no route. The app owns three: the product page the nudge preview
- *   floats over ([Routes.NUDGE]) and the two inline-preview lists, native
+ *   so they have no route. The app owns three: the product page the preview
+ *   floats over ([Routes.PREVIEW]) and the two inline-preview lists, native
  *   ([Routes.FEED]) and hybrid ([Routes.HYBRID]).
  *
  * The two overlays are a ModalBottomSheet (developer sheet) and a separate Activity
@@ -239,7 +239,7 @@ fun DemoApp(
                             onMissionClick = { mission ->
                                 val host = activity ?: return@MissionListScreen
                                 when (viewModel.runMission(host, mission)) {
-                                    MainViewModel.Destination.NUDGE -> navController.navigate(Routes.NUDGE)
+                                    MainViewModel.Destination.PREVIEW -> navController.navigate(Routes.PREVIEW)
                                     MainViewModel.Destination.FEED -> navController.navigate(Routes.FEED)
                                     MainViewModel.Destination.HYBRID -> navController.navigate(Routes.HYBRID)
                                     null -> Unit
@@ -248,8 +248,8 @@ fun DemoApp(
                         )
                     }
 
-                    composable(Routes.NUDGE) {
-                        NudgeProductScreen(mainViewModel = viewModel)
+                    composable(Routes.PREVIEW) {
+                        PreviewProductScreen(mainViewModel = viewModel)
                     }
 
                     composable(Routes.FEED) {

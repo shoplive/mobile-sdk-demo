@@ -183,7 +183,7 @@ Checking what resolution actually picked, and from where:
 | S1 | Start (take a tour / my account) | demo app |
 | S2 | The 9 mission cards — **tapping a card runs it immediately** | demo app |
 | S3 | Player · studio | **SDK** (Activity) |
-| — | Product page with a nudge-style preview (Mission 2) | demo app (page) + `:integration` (`ShopliveNudgePreview`) + SDK (small window) |
+| — | Product page with a preview (Mission 2) | demo app (page) + `:integration` (`ShoplivePreviewWindow`) + SDK (small window) |
 | S3 | Home feed (Mission 7, native) | demo app (layout) + `:integration` (player creation and control) |
 | — | Web list (Mission 7, hybrid) | demo app (WebView, bundled `assets/hybrid/index.html`) + `:integration` (`ShopliveWebBridge`) |
 | V1 | Developer sheet (log / options) | demo app · ModalBottomSheet |
@@ -199,7 +199,7 @@ makes `:integration` fail to compile — the same condition as an integrator who
 | # | Mission | File (`integration/src/main/java/cloud/shoplive/onboarding/integration/`) | Copy |
 | --- | --- | --- | --- |
 | 1 | Launch the Player Directly | `ShoplivePlayerLauncher.kt` | ✅ |
-| 2 | Nudge-Style Preview | `ShopliveNudgePreview.kt` | ✅ |
+| 2 | Preview | `ShoplivePreviewWindow.kt` | ✅ |
 | 3 | Keep Watching in PIP | `ShoplivePipPresets.kt` | ✅ |
 | 4 | Launch via Deep Link | `ShopliveDeepLinkRouter.kt` | ✅ |
 | 5 | Connect User Information | `ShopliveUserSetup.kt` | ✅ |
@@ -332,7 +332,7 @@ The "confirmed" badge is not checked off by the user — it is **decided automat
 | Evidence | Mission |
 | --- | --- |
 | `Playback.Started` **from the player the running mission started** | 1 · 2 · 4 · 5 · 7 · 8 (whichever is running) |
-| `StateChanged(InAppPIP)` — any player except a nudge's (never from the last nudge player, nor while Mission 2 is still starting it) | 3 |
+| `StateChanged(InAppPIP)` — any player except a preview's (never from the last preview player, nor while Mission 2 is still starting it) | 3 |
 | `Navigation` / `Coupon` / `CustomWebAction` request received | 6 |
 | `StreamerEvent.StateChanged(LIVE)` | 9 |
 

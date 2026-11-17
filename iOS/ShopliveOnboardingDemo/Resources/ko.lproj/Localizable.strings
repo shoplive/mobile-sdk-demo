@@ -41,9 +41,9 @@
 "mission.player.title" = "플레이어 직접 띄우기";
 "mission.player.summary" = "탭하면 전체화면 라이브가 바로 열립니다.";
 "mission.player.check" = "2~3초 내 재생 · 라이브면 채팅·LIVE 배지";
-"mission.nudge.title" = "넛지형 프리뷰";
-"mission.nudge.summary" = "상품 상세 위에 소리 없는 작은 창으로 방송을 띄워 시청을 유도합니다. 탭하면 화면 가득 커집니다.";
-"mission.nudge.check" = "무음·오버레이 없는 작은 창 · 탭하면 풀스크린";
+"mission.preview.title" = "프리뷰";
+"mission.preview.summary" = "상품 상세 위에 소리 없는 작은 창으로 방송을 띄워 시청을 유도합니다. 탭하면 화면 가득 커집니다.";
+"mission.preview.check" = "무음·오버레이 없는 작은 창 · 탭하면 풀스크린";
 "mission.pip.title" = "PIP로 이어보기";
 "mission.pip.summary" = "재생 후 상품을 탭하면 작은 창으로 이어집니다. 옵션에서 작은 창으로 시작할 수도 있습니다.";
 "mission.pip.check" = "작은 창 유지 · 탭하면 끊김 없이 복귀";
@@ -145,10 +145,10 @@
 "qr.cameraError" = "카메라를 쓸 수 없습니다(%@). 설정에서 카메라 접근을 허용하거나 키를 직접 입력하세요.";
 "qr.applied" = "QR “%@” — %@ 입력 완료. 값을 확인한 뒤 “검증하고 시작하기” 를 누르세요.";
 
-/* ── SMV-1922 · nudge preview · inline preview (native/hybrid) ── */
-"dev.group.nudge" = "넛지형 프리뷰 · 미션 %d";
-"nudge.title" = "상품 상세 · 미션 %d";
-"nudge.tip" = "이 화면 위에 넛지형 프리뷰가 소리 없는 작은 창으로 뜹니다. 작은 창을 탭하면 화면 가득 커지고 소리가 켜집니다. 키우지 않고 이 화면을 나가면 작은 창도 닫힙니다.";
+/* ── SMV-1922 · preview window (mission 2) · inline preview (native/hybrid) ── */
+"dev.group.preview" = "프리뷰 · 미션 %d";
+"preview.title" = "상품 상세 · 미션 %d";
+"preview.tip" = "이 화면 위에 프리뷰가 소리 없는 작은 창으로 뜹니다. 작은 창을 탭하면 화면 가득 커지고 소리가 켜집니다. 키우지 않고 이 화면을 나가면 작은 창도 닫힙니다.";
 "inline.sheet.title" = "목록을 무엇으로 만들었나요?";
 "inline.sheet.message" = "네이티브는 피드 안에 플레이어 뷰를 넣고, 하이브리드는 웹 목록이 campaignKey 를 앱으로 넘겨 앱 플레이어로 엽니다.";
 "inline.native" = "네이티브 — 앱 피드 안 ShoplivePlayerView";

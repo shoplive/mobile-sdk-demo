@@ -192,9 +192,9 @@ final class DevSheetViewController: UIViewController {
             store.customPipButtons.toggle()
         })
 
-        contentStack.addArrangedSubview(group(L("dev.group.nudge", MissionCatalog.number(of: .nudge))))
-        contentStack.addArrangedSubview(row("closeNudgeWhenNotLive", "false", "\(store.closeNudgeWhenNotLive)") {
-            store.closeNudgeWhenNotLive.toggle()
+        contentStack.addArrangedSubview(group(L("dev.group.preview", MissionCatalog.number(of: .preview))))
+        contentStack.addArrangedSubview(row("closePreviewWhenNotLive", "false", "\(store.closePreviewWhenNotLive)") {
+            store.closePreviewWhenNotLive.toggle()
         })
 
         contentStack.addArrangedSubview(group(L("dev.group.overlay", MissionCatalog.number(of: .ui))))
@@ -466,7 +466,7 @@ extension DevSheetViewController {
     /// the same close and open exactly one player — the earlier request is dropped (S39 · S46).
     private static var pendingOpen: (() -> Void)?
 
-    /// A switch is waiting. Automatic requests (e.g. the nudge re-showing itself on viewDidAppear) skip
+    /// A switch is waiting. Automatic requests (e.g. the preview re-showing itself on viewDidAppear) skip
     /// themselves while this is true, so they never replace a request the user made (a deep link).
     static var isSwitchingSession: Bool { pendingOpen != nil }
 
@@ -475,7 +475,7 @@ extension DevSheetViewController {
     /// iOS does not do this for us — Android 3.0.4's `start()` closes other sessions, the iOS SDK does
     /// not (guide L513-514) — and a second session left floating makes the new one's PIP promotion fail
     /// silently (PipOptions.swift, condition ④). Every path that opens a full-screen or floating player
-    /// comes through here: cards, the nudge, the hybrid list, the feed's expand, and deep links
+    /// comes through here: cards, the preview, the hybrid list, the feed's expand, and deep links
     /// (DeepLinkRouter.beforePresent).
     ///
     /// An embedded view (the feed) is not a session here and is never closed — guide L514.
@@ -523,7 +523,7 @@ extension DevSheetViewController {
         func scheduleTimeout() {
             deadline += 1
             let armed = deadline
-            // TODO(SDP-VERIFY): 요확인 — dismiss completion / .closed 가 오지 않을 때 sessionCloseTimeout(1.0s) 뒤 1회 진행이 맞는지, stop() 이 세션을 끝내는지(N1)·넛지 close() 후 PIP 창이 정리되는 시점(R3-1) 실측 · 근거 SMV-1922 S35·U15
+            // TODO(SDP-VERIFY): 요확인 — dismiss completion / .closed 가 오지 않을 때 sessionCloseTimeout(1.0s) 뒤 1회 진행이 맞는지, stop() 이 세션을 끝내는지(N1)·프리뷰 close() 후 PIP 창이 정리되는 시점(R3-1) 실측 · 근거 SMV-1922 S35·U15
             DispatchQueue.main.asyncAfter(deadline: .now() + sessionCloseTimeout) {
                 guard armed == deadline else { return }
                 proceed("did not report closing within \(sessionCloseTimeout)s (timeout fallback)")
@@ -570,7 +570,7 @@ extension DevSheetViewController {
                     current.presentingViewController?.dismiss(animated: false) { proceed("dismissed") }
                 }
             } else if !current.state.isClosed {
-                // Floating with no modal (a player in PIP, the nudge's small window): close() it and wait for its
+                // Floating with no modal (a player in PIP, the preview's small window): close() it and wait for its
                 // own `.closed` — the PIP window has to be gone before the next session can promote (R3-1).
                 closedObserver = DemoPlayerDelegate.observeMilestones(of: current) { _, milestone in
                     if case .closed = milestone { proceed("closed") }

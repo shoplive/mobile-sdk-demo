@@ -41,9 +41,9 @@
 "mission.player.title" = "Launch the Player Directly";
 "mission.player.summary" = "Tap to open a full-screen live stream right away.";
 "mission.player.check" = "Playback within 2–3s · chat and LIVE badge when live";
-"mission.nudge.title" = "Nudge-Style Preview";
-"mission.nudge.summary" = "A silent small window over a product page invites the viewer in. Tap it to go full screen.";
-"mission.nudge.check" = "Small silent window without overlay · tap expands to full screen";
+"mission.preview.title" = "Preview";
+"mission.preview.summary" = "A silent small window over a product page invites the viewer in. Tap it to go full screen.";
+"mission.preview.check" = "Small silent window without overlay · tap expands to full screen";
 "mission.pip.title" = "Keep Watching in PIP";
 "mission.pip.summary" = "Tap a product during playback and it continues in a small window. Options can also start it in PIP.";
 "mission.pip.check" = "Small window persists · tap to return without interruption";
@@ -145,10 +145,10 @@
 "qr.cameraError" = "The camera is not available (%@). Allow camera access in Settings, or type the keys instead.";
 "qr.applied" = "QR “%@” — filled %@. Check the values, then tap “Validate and start”.";
 
-/* ── SMV-1922 · nudge preview · inline preview (native/hybrid) ── */
-"dev.group.nudge" = "Nudge-Style Preview · Mission %d";
-"nudge.title" = "Product detail · Mission %d";
-"nudge.tip" = "A nudge preview floats over this screen as a small, silent window. Tap it to go full screen with sound. Leave this screen without expanding it and the small window closes too.";
+/* ── SMV-1922 · preview window (mission 2) · inline preview (native/hybrid) ── */
+"dev.group.preview" = "Preview · Mission %d";
+"preview.title" = "Product detail · Mission %d";
+"preview.tip" = "A preview floats over this screen as a small, silent window. Tap it to go full screen with sound. Leave this screen without expanding it and the small window closes too.";
 "inline.sheet.title" = "Which list is yours?";
 "inline.sheet.message" = "Native puts a player view inside the feed; hybrid has a web list hand the campaignKey to the app, which opens its own player.";
 "inline.native" = "Native — ShoplivePlayerView in the app's feed";

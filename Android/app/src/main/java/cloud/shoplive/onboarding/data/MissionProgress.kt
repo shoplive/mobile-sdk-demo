@@ -46,11 +46,11 @@ class MissionProgress(context: Context) {
     private var owner: WeakReference<ShoplivePlayerControlling>? = null
 
     /**
-     * The player the nudge mission last started. Its PIP is the nudge's own small
+     * The player the preview mission last started. Its PIP is the preview's own small
      * window, never the PIP mission — even after another mission became active.
      */
     @Volatile
-    private var lastNudge: WeakReference<ShoplivePlayerControlling>? = null
+    private var lastPreview: WeakReference<ShoplivePlayerControlling>? = null
 
     // ── Start paths ──────────────────────────────────────────────────────────
 
@@ -69,7 +69,7 @@ class MissionProgress(context: Context) {
         startMission(id)
         val player = start()
         owner = WeakReference(player)
-        if (id == MissionId.NUDGE) lastNudge = WeakReference(player)
+        if (id == MissionId.PREVIEW) lastPreview = WeakReference(player)
         return player
     }
 
@@ -80,7 +80,7 @@ class MissionProgress(context: Context) {
         val active = activeMission
         val ownerRef = owner
         val ownerPlayer = ownerRef?.get()
-        val credited = creditFor(milestone, player, active, ownerPlayer, lastNudge?.get())
+        val credited = creditFor(milestone, player, active, ownerPlayer, lastPreview?.get())
         if (credited != null) {
             complete(credited)
             return
@@ -99,7 +99,7 @@ class MissionProgress(context: Context) {
             }
 
             milestone == ShopliveMilestone.IN_APP_PIP_ENTERED ->
-                DemoLog.event("progress: in-App PIP of the nudge session — not the PIP mission")
+                DemoLog.event("progress: in-App PIP of the preview session — not the PIP mission")
 
             else -> Unit
         }
@@ -162,6 +162,9 @@ class MissionProgress(context: Context) {
         if (result.dropped.isNotEmpty()) {
             DemoLog.error("progress: dropped values that name no mission: ${result.dropped}")
         }
+        if (result.renamed.isNotEmpty()) {
+            DemoLog.event("progress: renamed values ${result.renamed} carried over to their current identifiers")
+        }
         if (result.needsWrite) {
             val editor = prefs.edit().putStringSet(KEY, result.storedValues)
             if (legacyReadable) editor.remove(LEGACY_KEY)
@@ -178,6 +181,8 @@ class MissionProgress(context: Context) {
         /** Values that named no mission. Logged, then gone for good. */
         val dropped: List<String>,
         val needsWrite: Boolean,
+        /** Old raw values read through [RENAMED_RAWS]. Rewritten under the current raw value. */
+        val renamed: List<String> = emptyList(),
     ) {
         val storedValues: Set<String> get() = ids.mapTo(mutableSetOf()) { it.raw }
     }
@@ -193,7 +198,7 @@ class MissionProgress(context: Context) {
 
         /**
          * Old guide number -> the same feature today. Frozen: it describes what old
-         * builds wrote, not the current order. The nudge is new and has no entry.
+         * builds wrote, not the current order. The preview is new and has no entry.
          */
         private val LEGACY_NUMBERS: Map<Int, MissionId> = mapOf(
             1 to MissionId.PLAYER,
@@ -206,10 +211,24 @@ class MissionProgress(context: Context) {
             8 to MissionId.STUDIO,
         )
 
+        /**
+         * Mission 2's raw value before SMV-1922 renamed it to "preview" (2026-11-17).
+         * Old key: kept only so [migrate] can read what earlier builds wrote.
+         */
+        const val LEGACY_PREVIEW_RAW = "nudge"
+
+        /**
+         * Raw values earlier builds stored that were renamed since -> the mission today.
+         * Same table as iOS `MissionID.renamedRawValues`.
+         */
+        private val RENAMED_RAWS: Map<String, MissionId> = mapOf(
+            LEGACY_PREVIEW_RAW to MissionId.PREVIEW,
+        )
+
         /** Missions whose success signal is "playback reached". */
         private val PLAYBACK_MISSIONS: Set<MissionId> = setOf(
             MissionId.PLAYER,
-            MissionId.NUDGE,
+            MissionId.PREVIEW,
             MissionId.DEEPLINK,
             MissionId.USER,
             MissionId.INLINE,
@@ -219,13 +238,17 @@ class MissionProgress(context: Context) {
         /**
          * Old numbers and new identifiers in, one identifier set out. Union of both, so
          * a run interrupted after writing the new key and before deleting the old one
-         * converges to the same set; anything that names no mission is dropped rather
-         * than guessed (crediting a wrong mission is worse than losing a tick).
+         * converges to the same set; a renamed raw value ([RENAMED_RAWS]) is read as its
+         * mission and written back under the current one; anything that names no mission
+         * is dropped rather than guessed (crediting a wrong mission is worse than losing a tick).
          */
         fun migrate(legacy: Set<String>?, stored: Set<String>?): Migration {
             val dropped = mutableListOf<String>()
+            val renamed = mutableListOf<String>()
             val fromStored = stored.orEmpty().mapNotNull { raw ->
-                MissionId.fromRaw(raw) ?: null.also { dropped += raw }
+                MissionId.fromRaw(raw)
+                    ?: RENAMED_RAWS[raw]?.also { renamed += raw }
+                    ?: null.also { dropped += raw }
             }
             val fromLegacy = legacy.orEmpty().mapNotNull { value ->
                 value.toIntOrNull()?.let(LEGACY_NUMBERS::get) ?: null.also { dropped += value }
@@ -233,7 +256,8 @@ class MissionProgress(context: Context) {
             return Migration(
                 ids = (fromStored + fromLegacy).toSet(),
                 dropped = dropped,
-                needsWrite = legacy != null || dropped.isNotEmpty(),
+                needsWrite = legacy != null || dropped.isNotEmpty() || renamed.isNotEmpty(),
+                renamed = renamed,
             )
         }
 
@@ -242,9 +266,9 @@ class MissionProgress(context: Context) {
          *
          * - Playback reached: the running mission, if it is a playback mission **and**
          *   [sender] is the player it started. No owner, no credit.
-         * - In-App PIP entered: the PIP mission, from any session — except the nudge
-         *   session's: the last nudge player ([nudge]) whatever runs now, and anything
-         *   while the nudge mission is still starting (no owner yet).
+         * - In-App PIP entered: the PIP mission, from any session — except the preview
+         *   session's: the last preview player ([preview]) whatever runs now, and anything
+         *   while the preview mission is still starting (no owner yet).
          * - A navigation / coupon / custom request: the events mission, any session.
          */
         fun creditFor(
@@ -252,15 +276,15 @@ class MissionProgress(context: Context) {
             sender: ShoplivePlayerControlling,
             active: MissionId?,
             owner: ShoplivePlayerControlling?,
-            nudge: ShoplivePlayerControlling? = null,
+            preview: ShoplivePlayerControlling? = null,
         ): MissionId? = when (milestone) {
             // TODO(SDP-VERIFY): 요확인 — S51 delegate가 넘기는 player가 Launcher·startMission이 돌려준 객체와 같은지(이 === 비교들의 전제) 실기기 확인, 다르면 재생 도달 완료가 기록되지 않음 · 근거 SMV-1922 S51
             ShopliveMilestone.PLAYBACK_STARTED ->
                 active?.takeIf { it in PLAYBACK_MISSIONS && owner != null && sender === owner }
 
             ShopliveMilestone.IN_APP_PIP_ENTERED -> when {
-                nudge != null && sender === nudge -> null
-                active == MissionId.NUDGE && (owner == null || sender === owner) -> null
+                preview != null && sender === preview -> null
+                active == MissionId.PREVIEW && (owner == null || sender === owner) -> null
                 else -> MissionId.PIP
             }
 
