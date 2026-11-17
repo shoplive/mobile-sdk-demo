@@ -6,6 +6,7 @@ import '../../shoplive_integration/shoplive_event_labels.dart';
 import '../../shoplive_integration/shoplive_log.dart';
 import '../../shoplive_integration/shoplive_player_session.dart';
 import '../data/demo_options.dart';
+import '../data/missions.dart';
 import '../demo_controller.dart';
 import '../l10n/demo_strings.dart';
 import '../widgets/common.dart';
@@ -53,11 +54,11 @@ class _OptionsTabState extends State<OptionsTab> {
             ),
 
             // ── auth ──────────────────────────────────────────────────────────
-            GroupLabel(tr('group_auth')),
-            Tip(tr('tip_auth')),
+            GroupLabel(tr('group_auth', [MissionId.user.number])),
+            Tip(tr('tip_auth', [MissionId.user.number])),
 
             // ── pip ───────────────────────────────────────────────────────────
-            GroupLabel(tr('group_pip')),
+            GroupLabel(tr('group_pip', [MissionId.pip.number])),
             _toggle(
               'pip.isInAppPipEnabled',
               o.isInAppPipEnabled,
@@ -106,8 +107,18 @@ class _OptionsTabState extends State<OptionsTab> {
               defaultValue: true,
             ),
 
+            // ── preview (demo policy) ─────────────────────────────────────────
+            GroupLabel(tr('group_preview', [MissionId.preview.number])),
+            _toggle(
+              'closePreviewWhenNotLive',
+              o.closePreviewWhenNotLive,
+              (v) => _set((o) => o.copyWith(closePreviewWhenNotLive: v)),
+              defaultValue: false,
+              warning: tr('tip_preview_close_not_live'),
+            ),
+
             // ── overlay · appearance ──────────────────────────────────────────
-            GroupLabel(tr('group_overlay_appearance')),
+            GroupLabel(tr('group_overlay_appearance', [MissionId.ui.number])),
             _cycle(
               'overlay.ui',
               o.overlayUI,

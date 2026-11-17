@@ -13,8 +13,8 @@
 /// | `ak` | accessKey | Android `CampaignListActivity`, iOS `SLQRReaderViewController` / `QRReaderViewController` |
 /// | `ck` | campaignKey | same |
 /// | `title` | label only | same (falls back to "Unknown Title (QR)") |
-/// | `userjwt` | user JWT (Mission 3) | iOS PlayerDemo2 `SLQRReaderViewController` |
-/// | `st` | stream token (Mission 8) | **new in this demo** — no native test app reads a stream token from QR |
+/// | `userjwt` | user JWT (Mission 5) | iOS PlayerDemo2 `SLQRReaderViewController` |
+/// | `st` | stream token (Mission 9) | **new in this demo** — no native test app reads a stream token from QR |
 ///
 /// ## Rules
 /// - Native apps read `ak` and `ck` together, or neither. This demo does the same:

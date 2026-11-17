@@ -8,7 +8,7 @@ import '../l10n/demo_strings.dart';
 import '../widgets/common.dart';
 
 /// The frame around S2 (feature list) and the feed: progress in the app bar, the
-/// mode bar, the ⌗ developer button, and the Mission 2 push banner.
+/// mode bar, the ⌗ developer button, and the deep-link mission's push banner.
 class DemoShell extends StatelessWidget {
   const DemoShell({super.key, required this.controller, required this.child, this.showBack = false});
 
@@ -26,7 +26,7 @@ class DemoShell extends StatelessWidget {
             appBar: AppBar(
               automaticallyImplyLeading: showBack,
               title: Text(
-                tr('topbar_progress', [c.progress.done.length]),
+                tr('topbar_progress', [c.progress.done.length, missions.length]),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               actions: [
@@ -48,7 +48,7 @@ class DemoShell extends StatelessWidget {
             body: Stack(
               children: [
                 Column(children: [if (c.mode != null) _ModeBar(controller: c), Expanded(child: child)]),
-                // Mission 2 — the fake push banner, shown over the list rather than on a
+                // Deep-link mission — the fake push banner, shown over the list rather than on a
                 // screen of its own.
                 if (c.showPushBanner) Positioned(left: 12, right: 12, top: 12, child: _PushBanner(controller: c)),
               ],
@@ -138,14 +138,14 @@ class MissionListScreen extends StatelessWidget {
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
       children: [
-        Tip(tr('mission_list_tip')),
+        Tip(tr('mission_list_tip', [missions.length])),
         const SizedBox(height: 9),
         for (final m in missions) ...[
           _MissionCard(
             mission: m,
-            isDone: controller.progress.done.contains(m.number),
+            isDone: controller.progress.done.contains(m.id),
             lockReason: controller.lockReason(m),
-            onTap: () => controller.runMission(m.number),
+            onTap: () => controller.runMission(m.id),
           ),
           const SizedBox(height: 9),
         ],

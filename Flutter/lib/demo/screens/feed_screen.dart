@@ -6,7 +6,7 @@ import '../l10n/demo_strings.dart';
 import '../widgets/common.dart';
 import 'mission_list_screen.dart';
 
-/// Mission 4 — the demo's own home feed, with the stream shown inside it.
+/// Mission 7 — the demo's own home feed, with the stream shown inside it.
 ///
 /// The native demos embed a `ShoplivePlayerView` between the cards. Flutter SDK
 /// 3.0.4 has no embeddable widget, so this screen starts the player directly in

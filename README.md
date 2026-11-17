@@ -106,7 +106,7 @@ mobile-sdk-demo/
 │   ├── ShopliveOnboardingDemo/    demo harness (Screens · Support · App)
 │   ├── ShopliveOnboardingDemo.xcodeproj  SDK dependency (SPM), pinned to 3.0.6
 │   └── scripts/                   boundary scanner
-├── Flutter/                     same 8 missions on the Flutter SDK 3.0.4 → Flutter/README.md
+├── Flutter/                     the guide's 9 missions on the Flutter SDK 3.0.4 → Flutter/README.md
 │   ├── lib/shoplive_integration/ ★ COPY THIS — SDK calls only, boundary enforced by flutter test
 │   └── lib/demo/                  demo harness (screens · developer sheet · strings)
 └── Android/

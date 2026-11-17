@@ -11,7 +11,7 @@ import 'shoplive_integration/shoplive_initializer.dart';
 /// App entry point.
 ///
 /// **SDK initialization happens here, before `runApp`.** A deep link can cold-start
-/// the app (Mission 2), and the access key has to be set before playback starts.
+/// the app (Mission 4), and the access key has to be set before playback starts.
 /// The last used mode's key is restored and initialized; when nothing is stored,
 /// initialization waits until the user chooses on the start screen.
 Future<void> main() async {

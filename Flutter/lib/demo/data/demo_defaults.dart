@@ -17,7 +17,7 @@
 ///   --dart-define=SHOPLIVE_DEMO_STREAM_TOKEN=...
 /// ```
 ///
-/// The stream token is short-lived: broadcasting (Mission 8) stops working when it
+/// The stream token is short-lived: broadcasting (Mission 9) stops working when it
 /// expires, and the fix is a new token from the console.
 abstract final class DemoDefaults {
   static const String _accessKey = 'ZJZBkloYuh5zXsH7wuUi';
@@ -38,7 +38,7 @@ abstract final class DemoDefaults {
 
 /// App-level wiring values that must match the native host files.
 abstract final class DemoConfig {
-  /// Mission 2. Must match the `<data android:scheme>` in
+  /// Mission 4 (deep link). Must match the `<data android:scheme>` in
   /// `android/app/src/main/AndroidManifest.xml` and `CFBundleURLSchemes` in
   /// `ios/Runner/Info.plist`. Different from the native demos' `shoplivedemo`, so
   /// that all three apps can be installed on one device without a chooser.

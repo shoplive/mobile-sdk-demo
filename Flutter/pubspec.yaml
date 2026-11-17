@@ -1,5 +1,5 @@
 name: shoplive_onboarding_demo
-description: "ShopLive SDK v3 onboarding demo for Flutter — the same 8 missions as the native demos, on shoplive_player / shoplive_streamer 3.0.4."
+description: "ShopLive SDK v3 onboarding demo for Flutter — the integration guide's 9 missions, on shoplive_player / shoplive_streamer 3.0.4."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

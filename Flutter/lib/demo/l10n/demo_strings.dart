@@ -55,9 +55,9 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': 'No built-in demo keys — pass --dart-define values or enter your own keys below.',
     'msg_demo_keys_missing':
         'The built-in demo keys are empty. Pass --dart-define=SHOPLIVE_DEMO_ACCESS_KEY and SHOPLIVE_DEMO_CAMPAIGN_KEY, or continue with “Use my own account”.',
-    'mission4_title': 'Show it in your screen',
-    'mission4_desc': 'Float a muted preview over the home feed, then promote it to full screen.',
-    'mission4_check': 'Preview floats over the feed · promotes to full screen',
+    'mission_inline_desc':
+        'Float a muted preview over the home feed, then promote it to full screen. (Flutter has no embeddable player widget.)',
+    'mission_inline_check': 'Preview floats over the feed · promotes to full screen',
     'warn_os_pip_activity_only':
         'Android: OS PIP needs android:supportsPictureInPicture="true" on the host Activity (set in this demo). Without it the player reports PIP_ACTIVITY_NOT_DECLARED and stays in in-app PIP.',
     'warn_overlay_hidden':
@@ -92,9 +92,8 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': '내장 데모 키가 비어 있습니다 — --dart-define 값을 넘기거나 아래에서 직접 입력하세요.',
     'msg_demo_keys_missing':
         '내장 데모 키가 비어 있습니다. --dart-define=SHOPLIVE_DEMO_ACCESS_KEY · SHOPLIVE_DEMO_CAMPAIGN_KEY 를 넘기거나 “내 계정으로 체험하기” 로 진행하세요.',
-    'mission4_title': '화면 안에 띄우기',
-    'mission4_desc': '홈 피드 위에 음소거 미리보기를 띄우고, 전체화면으로 승격합니다.',
-    'mission4_check': '피드 위에 미리보기 표시 · 전체화면 승격',
+    'mission_inline_desc': '홈 피드 위에 음소거 미리보기를 띄우고, 전체화면으로 승격합니다. (Flutter 에는 임베드용 플레이어 위젯이 없습니다.)',
+    'mission_inline_check': '피드 위에 미리보기 표시 · 전체화면 승격',
     'warn_os_pip_activity_only':
         'Android: OS PIP 는 host Activity 에 android:supportsPictureInPicture="true" 가 필요합니다(이 데모는 설정됨). 없으면 PIP_ACTIVITY_NOT_DECLARED 를 보고하고 in-App PIP 에 머뭅니다.',
     'warn_overlay_hidden': 'HIDDEN 은 표시만 끕니다. 커맨드 채널은 살아 있어 상품·쿠폰 요청은 계속 들어옵니다 — 로그 탭에서 확인하세요.',
@@ -126,9 +125,8 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': '内蔵デモキーが空です — --dart-define で渡すか、下で直接入力してください。',
     'msg_demo_keys_missing':
         '内蔵デモキーが空です。--dart-define=SHOPLIVE_DEMO_ACCESS_KEY と SHOPLIVE_DEMO_CAMPAIGN_KEY を渡すか、「自分のアカウントで試す」から進めてください。',
-    'mission4_title': '画面の上に表示する',
-    'mission4_desc': 'ホームフィードの上にミュートのプレビューを浮かべ、全画面へ昇格します。',
-    'mission4_check': 'フィードの上にプレビュー表示 · 全画面へ昇格',
+    'mission_inline_desc': 'ホームフィードの上にミュートのプレビューを浮かべ、全画面へ昇格します。(Flutter には埋め込み用のプレイヤーウィジェットがありません。)',
+    'mission_inline_check': 'フィードの上にプレビュー表示 · 全画面へ昇格',
     'warn_os_pip_activity_only':
         'Android: OS PIP にはホスト Activity の android:supportsPictureInPicture="true" が必要です(このデモは設定済み)。ない場合は PIP_ACTIVITY_NOT_DECLARED を報告し in-App PIP のままになります。',
     'warn_overlay_hidden': 'HIDDEN は表示だけを止めます。コマンドチャネルは生きているため商品・クーポンのリクエストは届き続けます — ログタブで確認してください。',

@@ -42,6 +42,7 @@ class DemoOptions {
     this.referrer = '',
     this.keepWindowStateOnPlayExecuted = false,
     this.resizeMode = ShopliveResizeMode.auto,
+    this.closePreviewWhenNotLive = false,
   });
 
   // ── type ────────────────────────────────────────────────────────────────────
@@ -111,6 +112,11 @@ class DemoOptions {
   /// applies it as `fill`.
   final ShopliveResizeMode resizeMode;
 
+  // ── Demo policy (not an SDK option) ─────────────────────────────────────────
+  /// Mission 2: close a preview the viewer never expanded when the campaign is not
+  /// live (the guide's recommendation). Off keeps VOD and upcoming campaigns visible.
+  final bool closePreviewWhenNotLive;
+
   static const DemoOptions defaults = DemoOptions();
 
   bool get isModified => this != defaults;
@@ -141,6 +147,7 @@ class DemoOptions {
     String? referrer,
     bool? keepWindowStateOnPlayExecuted,
     ShopliveResizeMode? resizeMode,
+    bool? closePreviewWhenNotLive,
   }) => DemoOptions(
     type: type ?? this.type,
     isInAppPipEnabled: isInAppPipEnabled ?? this.isInAppPipEnabled,
@@ -167,6 +174,7 @@ class DemoOptions {
     referrer: referrer ?? this.referrer,
     keepWindowStateOnPlayExecuted: keepWindowStateOnPlayExecuted ?? this.keepWindowStateOnPlayExecuted,
     resizeMode: resizeMode ?? this.resizeMode,
+    closePreviewWhenNotLive: closePreviewWhenNotLive ?? this.closePreviewWhenNotLive,
   );
 
   @override
@@ -196,7 +204,8 @@ class DemoOptions {
       mapEquals(other.customParameters, customParameters) &&
       other.referrer == referrer &&
       other.keepWindowStateOnPlayExecuted == keepWindowStateOnPlayExecuted &&
-      other.resizeMode == resizeMode;
+      other.resizeMode == resizeMode &&
+      other.closePreviewWhenNotLive == closePreviewWhenNotLive;
 
   @override
   int get hashCode => Object.hashAll([
@@ -205,7 +214,7 @@ class DemoOptions {
     isVolumeKeyEnabled, indicatorColor, isStatusBarVisible, allowScreenCapture,
     closeWhenAppDestroyed, actionOnNavigation, shareScheme, isCustomShareEnabled, overlayUI,
     Object.hashAllUnordered(customParameters.entries.map((e) => '${e.key}=${e.value}')),
-    referrer, keepWindowStateOnPlayExecuted, resizeMode,
+    referrer, keepWindowStateOnPlayExecuted, resizeMode, closePreviewWhenNotLive,
   ]);
 }
 

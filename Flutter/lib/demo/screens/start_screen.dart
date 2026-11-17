@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/demo_defaults.dart';
 import '../data/demo_store.dart';
+import '../data/missions.dart';
 import '../data/qr_credentials.dart';
 import '../demo_controller.dart';
 import '../l10n/demo_strings.dart';
@@ -116,7 +117,7 @@ class _StartScreenState extends State<StartScreen> {
 
   List<Widget> _ownForm(TextTheme text) => [
     const SizedBox(height: 12),
-    Text(tr('start_own_tip'), style: text.bodySmall),
+    Text(tr('start_own_tip', [MissionId.studio.number]), style: text.bodySmall),
     const SizedBox(height: 8),
     OutlinedButton.icon(
       onPressed: _scanQr,
@@ -128,7 +129,13 @@ class _StartScreenState extends State<StartScreen> {
     _field(_accessKey, 'field_access_key', 'field_access_key_hint', (v) => c.accessKeyInput = v),
     _field(_campaignKey, 'field_campaign_key', 'field_campaign_key_hint', (v) => c.campaignKeyInput = v),
     _field(_streamToken, 'field_stream_token', 'field_stream_token_hint', (v) => c.streamTokenInput = v),
-    _field(_userJwt, 'field_user_jwt', 'field_user_jwt_hint', (v) => c.userJwtInput = v),
+    _field(
+      _userJwt,
+      'field_user_jwt',
+      'field_user_jwt_hint',
+      (v) => c.userJwtInput = v,
+      hintArgs: [MissionId.user.number],
+    ),
     const SizedBox(height: 6),
     FilledButton.tonal(
       onPressed: () async {
@@ -143,7 +150,13 @@ class _StartScreenState extends State<StartScreen> {
     Text(tr('start_storage'), style: text.bodySmall),
   ];
 
-  Widget _field(TextEditingController ctl, String label, String hint, ValueChanged<String> onChanged) => Padding(
+  Widget _field(
+    TextEditingController ctl,
+    String label,
+    String hint,
+    ValueChanged<String> onChanged, {
+    List<Object?> hintArgs = const [],
+  }) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: TextField(
       controller: ctl,
@@ -153,7 +166,7 @@ class _StartScreenState extends State<StartScreen> {
       style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
       decoration: InputDecoration(
         labelText: tr(label),
-        helperText: tr(hint),
+        helperText: tr(hint, hintArgs),
         border: const OutlineInputBorder(),
         isDense: true,
       ),
