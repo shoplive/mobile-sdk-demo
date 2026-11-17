@@ -29,6 +29,11 @@ class OptionsTab extends StatefulWidget {
 class _OptionsTabState extends State<OptionsTab> {
   bool _advanced = false;
 
+  // Runtime values shown by the control rows. They start from the configuration the player
+  // started with and follow what this tab sets afterwards.
+  late bool _muted = store.value.muteOnStart;
+  late ShopliveOverlayUIMode _overlay = store.value.overlayUI;
+
   DemoOptionsStore get store => widget.controller.options;
 
   void _set(DemoOptions Function(DemoOptions) f) => store.update(f);
@@ -146,8 +151,10 @@ class _OptionsTabState extends State<OptionsTab> {
             // ── runtime controls ──────────────────────────────────────────────
             GroupLabel(tr('group_control')),
             Tip(tr('tip_control_runtime'), tone: TipTone.ok),
-            _action('setMuted(true)', tr('action_call'), () => ShoplivePlayerSession.setMuted(true)),
-            _action('setMuted(false)', tr('action_call'), () => ShoplivePlayerSession.setMuted(false)),
+            _toggle('setMuted', _muted, (v) {
+              setState(() => _muted = v);
+              ShoplivePlayerSession.setMuted(v);
+            }, defaultValue: o.muteOnStart),
             _cycle(
               'setResizeMode',
               o.resizeMode,
@@ -159,15 +166,15 @@ class _OptionsTabState extends State<OptionsTab> {
               // Android default since 3.0.4; iOS applies auto as fill.
               defaultValue: 'auto',
             ),
-            _action(
-              'setOverlayUI(hidden)',
-              tr('action_call'),
-              () => ShoplivePlayerSession.setOverlayUI(ShopliveOverlayUIMode.hidden),
-            ),
-            _action(
-              'setOverlayUI(builtIn)',
-              tr('action_call'),
-              () => ShoplivePlayerSession.setOverlayUI(ShopliveOverlayUIMode.builtIn),
+            _cycle(
+              'setOverlayUI',
+              _overlay,
+              const [ShopliveOverlayUIMode.builtIn, ShopliveOverlayUIMode.hidden],
+              (v) {
+                setState(() => _overlay = v);
+                ShoplivePlayerSession.setOverlayUI(v);
+              },
+              defaultValue: o.overlayUI.name,
             ),
             _action('reload()', tr('action_call'), ShoplivePlayerSession.reload),
             _action(
@@ -178,7 +185,7 @@ class _OptionsTabState extends State<OptionsTab> {
             _action('enterPictureInPicture()', tr('action_enter'), ShoplivePlayerSession.enterPictureInPicture),
             _action('exitPictureInPicture()', tr('action_exit'), ShoplivePlayerSession.exitPictureInPicture),
             _action('stop()', tr('action_stop'), ShoplivePlayerSession.stop),
-            _action('close()', tr('action_stop'), ShoplivePlayerSession.close),
+            _action('close()', tr('action_call'), ShoplivePlayerSession.close),
 
             // ── session state (Flutter: everything is a Future) ───────────────
             GroupLabel(tr('group_runtime_state')),
