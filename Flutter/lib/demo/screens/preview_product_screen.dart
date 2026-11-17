@@ -33,7 +33,10 @@ class PreviewProductScreen extends StatefulWidget {
 class _PreviewProductScreenState extends State<PreviewProductScreen> with RouteAware {
   /// This page's preview. One per page instance: a new visit from the card is a
   /// new page, so "closed by the viewer" holds only for this page.
-  final ShoplivePreviewSession _session = ShoplivePreviewSession();
+  late final ShoplivePreviewSession _session = ShoplivePreviewSession(isCurrent: _ownsPlayer(widget.controller));
+
+  /// Captures the controller, not `this` — `leave()` checks it after dispose.
+  static bool Function() _ownsPlayer(DemoController c) => () => c.progress.activeMission == MissionId.preview;
   late final AppLifecycleListener _lifecycle;
 
   /// False until the page has been visible once. The first visit follows the

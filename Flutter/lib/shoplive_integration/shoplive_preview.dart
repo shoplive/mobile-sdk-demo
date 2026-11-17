@@ -95,9 +95,17 @@ enum ShoplivePreviewVisit {
 /// **without** a `closed` event — the host must know when someone else took over
 /// and call [forget].
 class ShoplivePreviewSession {
-  ShoplivePreviewSession({ShoplivePlayer? player}) : _player = player ?? ShoplivePlayer.instance;
+  /// [isCurrent] tells whether the player session is still this preview's. The
+  /// player is a singleton and another `start` replaces the preview without a
+  /// `closed`, so events and a late `close()` are checked against it.
+  ShoplivePreviewSession({ShoplivePlayer? player, bool Function()? isCurrent})
+    : _player = player ?? ShoplivePlayer.instance,
+      _isCurrent = isCurrent ?? _always;
+
+  static bool _always() => true;
 
   final ShoplivePlayer _player;
+  final bool Function() _isCurrent;
   StreamSubscription<ShoplivePlayerEvent>? _events;
 
   bool _isOpen = false;
@@ -165,6 +173,11 @@ class ShoplivePreviewSession {
       logEvent('preview host left — the viewer expanded it, so it keeps playing');
       return;
     }
+    if (!_isCurrent()) {
+      _isOpen = false;
+      logEvent('preview host left — another session replaced the preview, left alone');
+      return;
+    }
     logCall('ShoplivePlayer.instance.close() — preview host left before it was expanded');
     try {
       await _player.close();
@@ -181,6 +194,10 @@ class ShoplivePreviewSession {
 
   void _onEvent(ShoplivePlayerEvent event) {
     if (!_isOpen) return;
+    if (!_isCurrent()) {
+      forget();
+      return;
+    }
     switch (event) {
       case ShoplivePlayerStateChanged(state: ShoplivePlayerState.closed, :final closeReason):
         if (!_sawOwnState) return;
