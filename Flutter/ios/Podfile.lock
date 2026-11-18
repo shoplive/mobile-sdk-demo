@@ -8,14 +8,14 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - shoplive_core (3.0.2):
+  - shoplive_core (3.0.4):
     - Flutter
-  - shoplive_player (3.0.2):
+  - shoplive_player (3.0.4):
     - Flutter
-    - shoplive_core (= 3.0.2)
-  - shoplive_streamer (3.0.2):
+    - shoplive_core (= 3.0.4)
+  - shoplive_streamer (3.0.4):
     - Flutter
-    - shoplive_core (= 3.0.2)
+    - shoplive_core (= 3.0.4)
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -52,9 +52,9 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
-  shoplive_core: f2acb929d9b23b88533d57a83d0b9c342cf5e2a9
-  shoplive_player: 075f0e642629f5b1eea1651f747b72082006fb96
-  shoplive_streamer: 8d30ad98134a29fec7126c94002295a434186b33
+  shoplive_core: fad1b0e80bd61f9c7a02b7edfc8122b1b55632be
+  shoplive_player: 158ac09d424a6935edc091e54c3ec8de08d005f3
+  shoplive_streamer: 34bdbf01742446c07d235d1f19ba3422a4d25f84
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: 9e1eb34606813207cf2f04e2fe2d5d503fb83031

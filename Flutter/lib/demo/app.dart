@@ -5,6 +5,7 @@ import 'devtools/dev_sheet.dart';
 import 'l10n/demo_strings.dart';
 import 'screens/feed_screen.dart';
 import 'screens/mission_list_screen.dart';
+import 'screens/preview_product_screen.dart';
 import 'screens/product_detail_screen.dart';
 import 'screens/start_screen.dart';
 import 'widgets/common.dart';
@@ -14,8 +15,9 @@ import 'widgets/common.dart';
 /// - S1 [Routes.start] start
 /// - S2 [Routes.missions] feature list
 /// - S3 the running screen — the player and studio are **native screens owned by
-///   the SDK**, so they have no route. The only one the app owns is the home feed
-///   ([Routes.feed], Mission 4).
+///   the SDK**, so they have no route. The ones the app owns are the preview's
+///   product page ([Routes.preview], Mission 2) and the home feed ([Routes.feed],
+///   Mission 7).
 /// - V1 the developer sheet (modal bottom sheet), V2 product detail ([Routes.product]).
 class DemoApp extends StatefulWidget {
   const DemoApp({super.key, required this.controller});
@@ -70,6 +72,7 @@ class _DemoAppState extends State<DemoApp> {
           title: tr('app_name'),
           debugShowCheckedModeBanner: false,
           navigatorKey: c.navigatorKey,
+          navigatorObservers: [c.routeObserver],
           scaffoldMessengerKey: _messenger,
           theme: demoTheme(Brightness.light),
           darkTheme: demoTheme(Brightness.dark),
@@ -88,6 +91,7 @@ class _DemoAppState extends State<DemoApp> {
     builder:
         (context) => switch (settings.name) {
           Routes.start => StartScreen(controller: c),
+          Routes.preview => PreviewProductScreen(controller: c),
           Routes.feed => FeedScreen(controller: c),
           Routes.product => ProductDetailScreen(url: settings.arguments as String? ?? '', options: c.options),
           _ => MissionListScreen(controller: c),

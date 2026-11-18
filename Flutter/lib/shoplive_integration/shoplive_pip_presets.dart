@@ -22,7 +22,8 @@ import 'package:shoplive_player/shoplive_player.dart';
 /// ## Flutter differences
 /// - `padding` is in **pixels**, not dp/pt.
 /// - `aspectRatio` is ignored on iOS.
-/// - `enterOSPipOnBackPressed` lives under `configuration.android`, not `pip`.
+/// - `backPressEntersPip` (3.0.4; formerly `enterOSPipOnBackPressed`) lives under
+///   `configuration.android`, not `pip`.
 abstract final class ShoplivePipPresets {
   /// SDK defaults: both PIP kinds enabled, bottom-right, 9:16, 40% of the width.
   static const ShoplivePipOptions defaults = ShoplivePipOptions(
@@ -55,10 +56,15 @@ abstract final class ShoplivePipPresets {
     double scale = 0.4,
   }) => ShoplivePipOptions(isInAppPipEnabled: true, isOSPipEnabled: false, defaultPosition: position, scale: scale);
 
-  /// Back press shrinks to OS PIP instead of closing the player — Android only.
-  static const ShoplivePlayerConfiguration osPipOnBackPressed = ShoplivePlayerConfiguration(
-    pip: ShoplivePipOptions(isOSPipEnabled: true),
-    android: ShopliveAndroidPlayerOptions(enterOSPipOnBackPressed: true),
+  /// Back press enters PIP instead of closing the player — Android only.
+  ///
+  /// Since 3.0.4 (Android SDK 3.0.6) back **closes** the player by default
+  /// (`closed` with `userAction`). It enters PIP only when `backPressEntersPip`
+  /// and `pip.isInAppPipEnabled` are both true; on Android the fullscreen player's
+  /// PIP is the system PIP window.
+  static const ShoplivePlayerConfiguration pipOnBackPressed = ShoplivePlayerConfiguration(
+    pip: ShoplivePipOptions(isInAppPipEnabled: true),
+    android: ShopliveAndroidPlayerOptions(backPressEntersPip: true),
   );
 
   /// No PIP at all — playback ends when the viewer leaves.

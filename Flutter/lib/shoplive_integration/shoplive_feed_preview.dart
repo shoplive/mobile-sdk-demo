@@ -6,9 +6,9 @@ import 'shoplive_player_session.dart';
 
 /// Showing a stream inside your own screen — the Flutter way.
 ///
-/// ## There is no embeddable player widget in Flutter SDK 3.0.2
+/// ## There is no embeddable player widget in Flutter SDK 3.0.4
 /// Native has `ShoplivePlayerView` (Android) / an embeddable view (iOS) that you
-/// place in your own layout. The Flutter plugin 3.0.2 has **no** `PlatformView`
+/// place in your own layout. The Flutter plugin 3.0.4 has **no** `PlatformView`
 /// widget: the player is always a native screen presented over Flutter.
 ///
 /// The closest equivalent — and the documented replacement for the 1.x

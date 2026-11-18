@@ -9,6 +9,8 @@ import '../shoplive_integration/shoplive_initializer.dart';
 import '../shoplive_integration/shoplive_log.dart';
 import '../shoplive_integration/shoplive_player_event_logger.dart';
 import '../shoplive_integration/shoplive_player_launcher.dart';
+import '../shoplive_integration/shoplive_player_session.dart';
+import '../shoplive_integration/shoplive_preview.dart';
 import '../shoplive_integration/shoplive_studio_launcher.dart';
 import '../shoplive_integration/shoplive_user_setup.dart';
 import 'data/demo_defaults.dart';
@@ -20,10 +22,12 @@ import 'data/qr_credentials.dart';
 import 'l10n/demo_strings.dart';
 
 /// Route names. The SDK's player and studio are native screens owned by the SDK,
-/// so they have no route — the only "running" screen this app owns is the feed.
+/// so they have no route — the "running" screens this app owns are the preview's
+/// product page and the feed.
 abstract final class Routes {
   static const start = '/start';
   static const missions = '/missions';
+  static const preview = '/preview';
   static const feed = '/feed';
   static const product = '/product';
 }
@@ -52,6 +56,9 @@ class DemoController extends ChangeNotifier {
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
+  /// Tells a screen when it is visible again (another route popped off it).
+  final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver();
+
   /// One event receiver for the app's whole life, so the log does not split and
   /// coupon requests always have a listener. Attached in [attach].
   ///
@@ -77,7 +84,7 @@ class DemoController extends ChangeNotifier {
   bool ownFormExpanded = false;
   ShopliveUserMethod authMethod = ShopliveUserMethod.guest;
 
-  /// Whether the fake push banner is showing (Mission 2).
+  /// Whether the fake push banner is showing (the deep-link mission).
   bool showPushBanner = false;
 
   /// Why the start screen rejected the input.
@@ -91,7 +98,7 @@ class DemoController extends ChangeNotifier {
 
   void attach() {
     playerEvents.attach();
-    // Mission 2. app_links 6.x emits the cold-start link on this same stream, so
+    // Deep-link mission. app_links 6.x emits the cold-start link on this same stream, so
     // one subscription covers both cold and warm starts.
     _links = AppLinks().uriLinkStream.listen(_onIncomingLink, onError: (Object e) => logError('app_links: $e'));
   }
@@ -216,20 +223,23 @@ class DemoController extends ChangeNotifier {
 
   // ── Running a mission ──────────────────────────────────────────────────────
 
-  Future<void> runMission(int number) async {
-    final mission = missionOf(number);
+  Future<void> runMission(MissionId id) async {
+    final mission = missionOf(id);
     final lock = lockReason(mission);
     if (lock != null) {
       showMessage(lock);
       return;
     }
 
-    progress.startMission(number);
+    progress.startMission(id);
 
     switch (mission.run) {
       case MissionRun.player:
         _openSheetFor(mission);
         await _launchPlayer();
+      case MissionRun.preview:
+        // The product page starts the preview itself, once it is on screen.
+        navigatorKey.currentState?.pushNamed(Routes.preview);
       case MissionRun.deepLink:
         // No dedicated screen — a banner over the list.
         showPushBanner = true;
@@ -267,7 +277,7 @@ class DemoController extends ChangeNotifier {
       showMessage(tr('msg_no_campaign_key'));
       return;
     }
-    progress.startMission(7);
+    progress.startMission(MissionId.ui);
     await _launchPlayer();
   }
 
@@ -279,6 +289,24 @@ class DemoController extends ChangeNotifier {
       onFatalError: showMessage,
     );
     if (!started) showMessage(tr('msg_studio_not_started'));
+  }
+
+  // ── Preview ────────────────────────────────────────────────────────────────
+
+  /// Starts the preview mission's preview over the product page.
+  ///
+  /// `startPreview` does nothing while a viewing session is showing, so a session
+  /// the viewer was watching is closed first — only when [closeOtherFirst] (the
+  /// viewer just tapped the card, like any other card replaces the session).
+  Future<void> startPreview(ShoplivePreviewSession session, {required bool closeOtherFirst}) async {
+    final campaignKey = effectiveCampaignKey;
+    if (campaignKey.isEmpty) {
+      showMessage(tr('msg_no_campaign_key'));
+      return;
+    }
+    if (closeOtherFirst) await ShoplivePlayerSession.close();
+    progress.startMission(MissionId.preview);
+    await session.start(campaignKey, closeWhenNotLive: options.value.closePreviewWhenNotLive);
   }
 
   // ── Deep link ──────────────────────────────────────────────────────────────
@@ -325,7 +353,7 @@ class DemoController extends ChangeNotifier {
     }
     // Cold-start safety — make sure initialization finished before playing.
     await ShopliveInitializer.initializeIfNeeded(accessKey);
-    progress.startMission(2);
+    progress.startMission(MissionId.deeplink);
     final o = options.value;
     await ShoplivePlayerLauncher.start(
       link.campaignKey,
@@ -370,7 +398,7 @@ class DemoController extends ChangeNotifier {
     authMethod = applied;
     notifyListeners();
     if (applied != method) showMessage(tr('msg_token_needs_jwt'));
-    progress.startMission(3);
+    progress.startMission(MissionId.user);
     await _launchPlayer();
   }
 
