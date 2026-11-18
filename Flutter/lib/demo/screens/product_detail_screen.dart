@@ -32,20 +32,7 @@ class ProductDetailScreen extends StatelessWidget {
           const SizedBox(height: 4),
           SelectableText(url, style: text.bodySmall?.copyWith(fontFamily: 'monospace')),
           const SizedBox(height: 16),
-          AspectRatio(
-            aspectRatio: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              alignment: Alignment.center,
-              child: const Text('👕', style: TextStyle(fontSize: 72)),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(tr('product_name'), style: text.titleLarge),
-          Text(tr('product_price'), style: text.titleMedium?.copyWith(color: DemoColors.brand)),
+          const ProductSummary(),
           const SizedBox(height: 16),
           GroupLabel(
             'navigation.actionOnNavigation = ${action.name}'
@@ -72,6 +59,36 @@ class ProductDetailScreen extends StatelessWidget {
           Tip(tr('product_tip_policy')),
         ],
       ),
+    );
+  }
+}
+
+/// The demo product itself — image, name, price. Shared by this screen and the
+/// preview mission's product page.
+class ProductSummary extends StatelessWidget {
+  const ProductSummary({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            alignment: Alignment.center,
+            child: const Text('👕', style: TextStyle(fontSize: 72)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(tr('product_name'), style: text.titleLarge),
+        Text(tr('product_price'), style: text.titleMedium?.copyWith(color: DemoColors.brand)),
+      ],
     );
   }
 }

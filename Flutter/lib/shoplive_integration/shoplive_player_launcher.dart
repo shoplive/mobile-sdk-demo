@@ -23,9 +23,11 @@ import 'shoplive_player_presets.dart';
 /// or before the first frame.
 ///
 /// ## One player, a singleton
-/// `ShoplivePlayer.instance` is the only player. Calling `start` while a session is
-/// open switches the campaign in the same player (iOS) instead of opening a second.
-/// Subscribe to its streams once — see `ShoplivePlayerEventLogger`.
+/// `ShoplivePlayer.instance` is the only player. Since 3.0.3, calling `start` while
+/// a session is open (full screen or in-app PIP) closes it and opens a new player
+/// with this call's configuration, on both platforms; the replaced session's
+/// `closed` is not delivered. To switch campaigns inside the running session, use
+/// `play`. Subscribe to its streams once — see `ShoplivePlayerEventLogger`.
 abstract final class ShoplivePlayerLauncher {
   /// [configuration] is **merged** onto the current settings (see
   /// [ShoplivePlayerPresets]). [playOptions] apply to this call only.

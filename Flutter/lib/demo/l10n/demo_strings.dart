@@ -55,21 +55,21 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': 'No built-in demo keys — pass --dart-define values or enter your own keys below.',
     'msg_demo_keys_missing':
         'The built-in demo keys are empty. Pass --dart-define=SHOPLIVE_DEMO_ACCESS_KEY and SHOPLIVE_DEMO_CAMPAIGN_KEY, or continue with “Use my own account”.',
-    'mission4_title': 'Show it in your screen',
-    'mission4_desc': 'Float a muted preview over the home feed, then promote it to full screen.',
-    'mission4_check': 'Preview floats over the feed · promotes to full screen',
+    'mission_inline_desc':
+        'Float a muted preview over the home feed, then promote it to full screen. (Flutter has no embeddable player widget.)',
+    'mission_inline_check': 'Preview floats over the feed · promotes to full screen',
     'warn_os_pip_activity_only':
         'Android: OS PIP needs android:supportsPictureInPicture="true" on the host Activity (set in this demo). Without it the player reports PIP_ACTIVITY_NOT_DECLARED and stays in in-app PIP.',
     'warn_overlay_hidden':
         'HIDDEN only hides the UI. The command channel stays alive, so product and coupon requests keep arriving — watch the log tab.',
     'warn_allow_screen_capture':
-        'Android only (configuration.android). false makes the SDK apply FLAG_SECURE, so video shows up black in screenshots, mirroring, and recordings. Not exposed for iOS in Flutter 3.0.2.',
+        'Android only (configuration.android). false makes the SDK apply FLAG_SECURE, so video shows up black in screenshots, mirroring, and recordings. Not exposed for iOS in Flutter 3.0.4.',
     'warn_mute_on_start':
         'Measured in the native Android demo (SDK 3.0.0): enabling this made playback bounce into PIP. Not re-measured on Flutter — turn it on for inspection only.',
     'warn_config_merge':
         'Flutter merges configuration onto the current settings — fields you do not pass keep their last value. This tab always sends every field, so what you see is what plays.',
     'feed_tip_embed':
-        'Flutter SDK 3.0.2 has no embeddable player widget. The closest equivalent is starting the player directly in in-app PIP: a muted preview floating over this screen. Events, requests and controls are the same as full screen.',
+        'Flutter SDK 3.0.4 has no embeddable player widget. The closest equivalent is starting the player directly in in-app PIP: a muted preview floating over this screen. Events, requests and controls are the same as full screen.',
     'feed_warn_activity_context':
         'The floating window is not part of this widget tree — it does not scroll with the feed and is not removed with the screen. This screen closes it when you leave.',
     'feed_card2_desc': 'Scroll freely — the preview floats and keeps playing',
@@ -92,20 +92,19 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': '내장 데모 키가 비어 있습니다 — --dart-define 값을 넘기거나 아래에서 직접 입력하세요.',
     'msg_demo_keys_missing':
         '내장 데모 키가 비어 있습니다. --dart-define=SHOPLIVE_DEMO_ACCESS_KEY · SHOPLIVE_DEMO_CAMPAIGN_KEY 를 넘기거나 “내 계정으로 체험하기” 로 진행하세요.',
-    'mission4_title': '화면 안에 띄우기',
-    'mission4_desc': '홈 피드 위에 음소거 미리보기를 띄우고, 전체화면으로 승격합니다.',
-    'mission4_check': '피드 위에 미리보기 표시 · 전체화면 승격',
+    'mission_inline_desc': '홈 피드 위에 음소거 미리보기를 띄우고, 전체화면으로 승격합니다. (Flutter 에는 임베드용 플레이어 위젯이 없습니다.)',
+    'mission_inline_check': '피드 위에 미리보기 표시 · 전체화면 승격',
     'warn_os_pip_activity_only':
         'Android: OS PIP 는 host Activity 에 android:supportsPictureInPicture="true" 가 필요합니다(이 데모는 설정됨). 없으면 PIP_ACTIVITY_NOT_DECLARED 를 보고하고 in-App PIP 에 머뭅니다.',
     'warn_overlay_hidden': 'HIDDEN 은 표시만 끕니다. 커맨드 채널은 살아 있어 상품·쿠폰 요청은 계속 들어옵니다 — 로그 탭에서 확인하세요.',
     'warn_allow_screen_capture':
-        'Android 전용(configuration.android). false 로 두면 SDK 가 FLAG_SECURE 를 걸어 스크린샷·미러링·녹화에서 영상이 검게 나옵니다. Flutter 3.0.2 는 iOS 용 옵션을 노출하지 않습니다.',
+        'Android 전용(configuration.android). false 로 두면 SDK 가 FLAG_SECURE 를 걸어 스크린샷·미러링·녹화에서 영상이 검게 나옵니다. Flutter 3.0.4 는 iOS 용 옵션을 노출하지 않습니다.',
     'warn_mute_on_start':
         '네이티브 Android 데모(SDK 3.0.0)에서 켜면 재생이 PIP 로 튕기는 문제가 측정됐습니다. Flutter 에서는 재측정하지 않았습니다 — 확인용으로만 켜세요.',
     'warn_config_merge':
         'Flutter 는 configuration 을 현재 설정 위에 병합합니다 — 넘기지 않은 필드는 직전 값을 유지합니다. 이 탭은 항상 모든 필드를 보내므로 보이는 값 그대로 재생됩니다.',
     'feed_tip_embed':
-        'Flutter SDK 3.0.2 에는 임베드용 플레이어 위젯이 없습니다. 가장 가까운 방법은 플레이어를 처음부터 in-App PIP 로 시작하는 것입니다 — 이 화면 위에 뜨는 음소거 미리보기. 이벤트·요청·컨트롤은 전체화면과 같습니다.',
+        'Flutter SDK 3.0.4 에는 임베드용 플레이어 위젯이 없습니다. 가장 가까운 방법은 플레이어를 처음부터 in-App PIP 로 시작하는 것입니다 — 이 화면 위에 뜨는 음소거 미리보기. 이벤트·요청·컨트롤은 전체화면과 같습니다.',
     'feed_warn_activity_context': '떠 있는 창은 이 위젯 트리에 속하지 않습니다 — 피드와 함께 스크롤되지 않고, 화면이 사라져도 남습니다. 이 화면은 나갈 때 창을 닫습니다.',
     'feed_card2_desc': '스크롤해도 미리보기는 떠 있는 채로 재생됩니다',
     'feed_card3_desc': '위치·크기는 pip.defaultPosition / scale 로 정합니다',
@@ -126,19 +125,18 @@ const Map<String, Map<String, String>> flutterOverrides = {
     'start_tour_hint_missing': '内蔵デモキーが空です — --dart-define で渡すか、下で直接入力してください。',
     'msg_demo_keys_missing':
         '内蔵デモキーが空です。--dart-define=SHOPLIVE_DEMO_ACCESS_KEY と SHOPLIVE_DEMO_CAMPAIGN_KEY を渡すか、「自分のアカウントで試す」から進めてください。',
-    'mission4_title': '画面の上に表示する',
-    'mission4_desc': 'ホームフィードの上にミュートのプレビューを浮かべ、全画面へ昇格します。',
-    'mission4_check': 'フィードの上にプレビュー表示 · 全画面へ昇格',
+    'mission_inline_desc': 'ホームフィードの上にミュートのプレビューを浮かべ、全画面へ昇格します。(Flutter には埋め込み用のプレイヤーウィジェットがありません。)',
+    'mission_inline_check': 'フィードの上にプレビュー表示 · 全画面へ昇格',
     'warn_os_pip_activity_only':
         'Android: OS PIP にはホスト Activity の android:supportsPictureInPicture="true" が必要です(このデモは設定済み)。ない場合は PIP_ACTIVITY_NOT_DECLARED を報告し in-App PIP のままになります。',
     'warn_overlay_hidden': 'HIDDEN は表示だけを止めます。コマンドチャネルは生きているため商品・クーポンのリクエストは届き続けます — ログタブで確認してください。',
     'warn_allow_screen_capture':
-        'Android 専用(configuration.android)。false にすると SDK が FLAG_SECURE を設定し、スクリーンショット・ミラーリング・録画で映像が黒くなります。Flutter 3.0.2 は iOS 向けのオプションを公開していません。',
+        'Android 専用(configuration.android)。false にすると SDK が FLAG_SECURE を設定し、スクリーンショット・ミラーリング・録画で映像が黒くなります。Flutter 3.0.4 は iOS 向けのオプションを公開していません。',
     'warn_mute_on_start':
         'ネイティブ Android デモ(SDK 3.0.0)で有効にすると再生が PIP に切り替わる問題が測定されました。Flutter では再測定していません — 確認目的でのみ有効にしてください。',
     'warn_config_merge': 'Flutter は configuration を現在の設定にマージします — 渡さないフィールドは直前の値を保ちます。このタブは常に全フィールドを送るので、表示どおりに再生されます。',
     'feed_tip_embed':
-        'Flutter SDK 3.0.2 には埋め込み用のプレイヤーウィジェットがありません。最も近い方法は、プレイヤーを最初から in-App PIP で開始することです — この画面の上に浮かぶミュートのプレビュー。イベント・リクエスト・操作は全画面と同じです。',
+        'Flutter SDK 3.0.4 には埋め込み用のプレイヤーウィジェットがありません。最も近い方法は、プレイヤーを最初から in-App PIP で開始することです — この画面の上に浮かぶミュートのプレビュー。イベント・リクエスト・操作は全画面と同じです。',
     'feed_warn_activity_context': '浮かぶウィンドウはこのウィジェットツリーに属しません — フィードと一緒にスクロールせず、画面が消えても残ります。この画面は離れるときにウィンドウを閉じます。',
     'feed_card2_desc': 'スクロールしてもプレビューは浮かんだまま再生されます',
     'feed_card3_desc': '位置とサイズは pip.defaultPosition / scale で決まります',

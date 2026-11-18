@@ -6,6 +6,7 @@ import '../../shoplive_integration/shoplive_event_labels.dart';
 import '../../shoplive_integration/shoplive_log.dart';
 import '../../shoplive_integration/shoplive_player_session.dart';
 import '../data/demo_options.dart';
+import '../data/missions.dart';
 import '../demo_controller.dart';
 import '../l10n/demo_strings.dart';
 import '../widgets/common.dart';
@@ -27,6 +28,11 @@ class OptionsTab extends StatefulWidget {
 
 class _OptionsTabState extends State<OptionsTab> {
   bool _advanced = false;
+
+  // Runtime values shown by the control rows. They start from the configuration the player
+  // started with and follow what this tab sets afterwards.
+  late bool _muted = store.value.muteOnStart;
+  late ShopliveOverlayUIMode _overlay = store.value.overlayUI;
 
   DemoOptionsStore get store => widget.controller.options;
 
@@ -53,11 +59,11 @@ class _OptionsTabState extends State<OptionsTab> {
             ),
 
             // ── auth ──────────────────────────────────────────────────────────
-            GroupLabel(tr('group_auth')),
-            Tip(tr('tip_auth')),
+            GroupLabel(tr('group_auth', [MissionId.user.number])),
+            Tip(tr('tip_auth', [MissionId.user.number])),
 
             // ── pip ───────────────────────────────────────────────────────────
-            GroupLabel(tr('group_pip')),
+            GroupLabel(tr('group_pip', [MissionId.pip.number])),
             _toggle(
               'pip.isInAppPipEnabled',
               o.isInAppPipEnabled,
@@ -99,9 +105,25 @@ class _OptionsTabState extends State<OptionsTab> {
               (v) => _set((o) => o.copyWith(pipPaddingPx: v)),
               defaultValue: '0',
             ),
+            _toggle(
+              'pip.isDragOutToCloseEnabled',
+              o.isDragOutToCloseEnabled,
+              (v) => _set((o) => o.copyWith(isDragOutToCloseEnabled: v)),
+              defaultValue: true,
+            ),
+
+            // ── preview (demo policy) ─────────────────────────────────────────
+            GroupLabel(tr('group_preview', [MissionId.preview.number])),
+            _toggle(
+              'closePreviewWhenNotLive',
+              o.closePreviewWhenNotLive,
+              (v) => _set((o) => o.copyWith(closePreviewWhenNotLive: v)),
+              defaultValue: false,
+              warning: tr('tip_preview_close_not_live'),
+            ),
 
             // ── overlay · appearance ──────────────────────────────────────────
-            GroupLabel(tr('group_overlay_appearance')),
+            GroupLabel(tr('group_overlay_appearance', [MissionId.ui.number])),
             _cycle(
               'overlay.ui',
               o.overlayUI,
@@ -129,21 +151,30 @@ class _OptionsTabState extends State<OptionsTab> {
             // ── runtime controls ──────────────────────────────────────────────
             GroupLabel(tr('group_control')),
             Tip(tr('tip_control_runtime'), tone: TipTone.ok),
-            _action('setMuted(true)', tr('action_call'), () => ShoplivePlayerSession.setMuted(true)),
-            _action('setMuted(false)', tr('action_call'), () => ShoplivePlayerSession.setMuted(false)),
-            _cycle('setResizeMode', o.resizeMode, const [ShopliveResizeMode.fill, ShopliveResizeMode.fit], (v) {
-              _set((o) => o.copyWith(resizeMode: v));
-              ShoplivePlayerSession.setResizeMode(v);
-            }, defaultValue: 'fill'),
-            _action(
-              'setOverlayUI(hidden)',
-              tr('action_call'),
-              () => ShoplivePlayerSession.setOverlayUI(ShopliveOverlayUIMode.hidden),
+            _toggle('setMuted', _muted, (v) {
+              setState(() => _muted = v);
+              ShoplivePlayerSession.setMuted(v);
+            }, defaultValue: o.muteOnStart),
+            _cycle(
+              'setResizeMode',
+              o.resizeMode,
+              const [ShopliveResizeMode.auto, ShopliveResizeMode.fill, ShopliveResizeMode.fit],
+              (v) {
+                _set((o) => o.copyWith(resizeMode: v));
+                ShoplivePlayerSession.setResizeMode(v);
+              },
+              // Android default since 3.0.4; iOS applies auto as fill.
+              defaultValue: 'auto',
             ),
-            _action(
-              'setOverlayUI(builtIn)',
-              tr('action_call'),
-              () => ShoplivePlayerSession.setOverlayUI(ShopliveOverlayUIMode.builtIn),
+            _cycle(
+              'setOverlayUI',
+              _overlay,
+              const [ShopliveOverlayUIMode.builtIn, ShopliveOverlayUIMode.hidden],
+              (v) {
+                setState(() => _overlay = v);
+                ShoplivePlayerSession.setOverlayUI(v);
+              },
+              defaultValue: o.overlayUI.name,
             ),
             _action('reload()', tr('action_call'), ShoplivePlayerSession.reload),
             _action(
@@ -154,7 +185,7 @@ class _OptionsTabState extends State<OptionsTab> {
             _action('enterPictureInPicture()', tr('action_enter'), ShoplivePlayerSession.enterPictureInPicture),
             _action('exitPictureInPicture()', tr('action_exit'), ShoplivePlayerSession.exitPictureInPicture),
             _action('stop()', tr('action_stop'), ShoplivePlayerSession.stop),
-            _action('close()', tr('action_stop'), ShoplivePlayerSession.close),
+            _action('close()', tr('action_call'), ShoplivePlayerSession.close),
 
             // ── session state (Flutter: everything is a Future) ───────────────
             GroupLabel(tr('group_runtime_state')),
@@ -201,6 +232,12 @@ class _OptionsTabState extends State<OptionsTab> {
       label: (v) => v.isEmpty ? tr('value_null_sdk_default') : v,
       defaultValue: 'null',
     ),
+    _toggle(
+      'navigation.isCustomShareEnabled',
+      o.isCustomShareEnabled,
+      (v) => _set((o) => o.copyWith(isCustomShareEnabled: v)),
+      defaultValue: false,
+    ),
     GroupLabel('customParameters'),
     _cycle<Map<String, String>>(
       'customParameters',
@@ -215,9 +252,9 @@ class _OptionsTabState extends State<OptionsTab> {
     ),
     GroupLabel('android (ignored on iOS)'),
     _toggle(
-      'android.enterOSPipOnBackPressed',
-      o.enterOSPipOnBackPressed,
-      (v) => _set((o) => o.copyWith(enterOSPipOnBackPressed: v)),
+      'android.backPressEntersPip',
+      o.backPressEntersPip,
+      (v) => _set((o) => o.copyWith(backPressEntersPip: v)),
       defaultValue: false,
     ),
     _cycle<bool?>(
