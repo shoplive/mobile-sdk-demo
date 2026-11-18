@@ -1,12 +1,12 @@
-# Mission 8 — Go Live (Broadcasting)
+# Mission 9 — Broadcasting
 
-[◀ Mission 7](mission-07-ui-customization.md) · [Docs home](../README.md) · Next: [API Reference ▶](api-reference.md)
+[◀ Mission 8](mission-08-ui-customization.md) · [Docs home](../README.md) · Next: [API Reference ▶](api-reference.md)
 
-> **Guide cross-reference:** [Mission 8 · Broadcasting](https://sdk.shoplive.cloud/#m8) · [Step 1 · Setting the stream token](https://sdk.shoplive.cloud/#m8-1) · [Studio screen](https://sdk.shoplive.cloud/#screens-streamer)
+> **Guide cross-reference:** [Mission 9 · Broadcasting](https://sdk.shoplive.cloud/#m9) · [Step 1 · Set the broadcasting token](https://sdk.shoplive.cloud/#m9-1) · [ShopliveStreamerEvent types](https://sdk.shoplive.cloud/#m9-events) · [Studio screen](https://sdk.shoplive.cloud/#screens-streamer)
 >
-> **Source:** [`ShopliveIntegration/StudioLauncher.swift`](../iOS/ShopliveIntegration/StudioLauncher.swift) · [`sdk/StudioLauncher.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/StudioLauncher.kt)
+> **Source:** [`ShopliveIntegration/StudioLauncher.swift`](../iOS/ShopliveIntegration/StudioLauncher.swift) · [`integration/…/ShopliveStudioLauncher.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveStudioLauncher.kt)
 >
-> **In the app:** card ⑧ — *"Go live"*. Locked unless a stream token is present.
+> **In the app:** card ⑨ — *"Broadcasting"*. Locked unless a stream token is present.
 
 ---
 
@@ -66,7 +66,7 @@ This is the single most common misunderstanding in this mission.
 
 **Setting one does not fill the other.** A logged-in viewer cannot broadcast; calling `setUser` for your host account changes nothing about broadcast permission. Present the studio without a token and assembly fails with an authentication error.
 
-Note that `logout()` clears **both** (plus `authToken`). So if your app logs the user out anywhere in the broadcast flow, you must call `setStreamToken` again before starting. See [Mission 3](mission-03-user-identity.md).
+Note that `logout()` clears **both** (plus `authToken`). So if your app logs the user out anywhere in the broadcast flow, you must call `setStreamToken` again before starting. See [Mission 5](mission-05-user-identity.md).
 
 **In the demo:** the stream token is stored in the iOS **Keychain** (not `UserDefaults`, unlike the access/campaign keys) and card ⑧ is **locked whenever no token is present** — on both platforms, in both tour and own-account mode. There's no point offering a button that cannot work.
 
@@ -205,7 +205,7 @@ If studio branding matters to your iOS product, raise it with your ShopLive cont
 
 ## How the demo runs this mission
 
-Card ⑧ sets the token, launches the studio, and returns. The "done" badge appears on `StreamerEvent.stateChanged(LIVE)` — actually going live, not merely opening the studio.
+Card ⑨ sets the token, launches the studio, and returns. The "done" badge appears on `StreamerEvent.stateChanged(LIVE)` — actually going live, not merely opening the studio.
 
 The token is masked to 8 characters in the log, like every other credential:
 
@@ -227,8 +227,9 @@ You've covered the whole feature set. Useful next stops:
 | [API Reference](api-reference.md) | Every public type and field, both platforms, side by side |
 | [Platform Differences](platform-differences.md) | What exists on one platform and not the other |
 | [Known Issues](known-issues.md) | Measured behaviors, guide-vs-reality gaps, troubleshooting |
-| [v2 → v3 migration](https://sdk.shoplive.cloud/#migration) | If you're upgrading an existing integration |
+| [API Reference § v3 renames](api-reference.md#v3-renames-ios-breaking) | If you're upgrading an existing v2 integration |
+| [Guide · Upgrading from 3.0.3 to 3.0.4](https://sdk.shoplive.cloud/#upgrade-304) | If you're on 3.0.3 |
 
 ---
 
-[◀ Mission 7](mission-07-ui-customization.md) · [Docs home](../README.md) · Next: [API Reference ▶](api-reference.md)
+[◀ Mission 8](mission-08-ui-customization.md) · [Docs home](../README.md) · Next: [API Reference ▶](api-reference.md)

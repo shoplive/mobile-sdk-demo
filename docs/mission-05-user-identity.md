@@ -1,12 +1,12 @@
-# Mission 3 — Connect Member Info
+# Mission 5 — Connect User Information
 
-[◀ Mission 2](mission-02-deep-link.md) · [Docs home](../README.md) · Next: [Mission 4 — Embed in your screen ▶](mission-04-embed-in-your-screen.md)
+[◀ Mission 4](mission-04-deep-link.md) · [Docs home](../README.md) · Next: [Mission 6 — Events · Products · Coupons ▶](mission-06-events-products-coupons.md)
 
-> **Guide cross-reference:** [Mission 3 · Connecting user info](https://sdk.shoplive.cloud/#m3) · [Queenie console setup](https://sdk.shoplive.cloud/#m3-queenie) · [ID hashing](https://sdk.shoplive.cloud/#m3-hash) · [ShopliveUser fields](https://sdk.shoplive.cloud/#f-user)
+> **Guide cross-reference:** [Mission 5 · Connect User Information](https://sdk.shoplive.cloud/#m5) · [Choose by sign-in state](https://sdk.shoplive.cloud/#m5-judge) · [setUser](https://sdk.shoplive.cloud/#m5-setuser) · [ID hashing](https://sdk.shoplive.cloud/#m5-hash) · [JWT for secure auth](https://sdk.shoplive.cloud/#m5-queenie) · [ShopliveUser fields](https://sdk.shoplive.cloud/#f-user)
 >
-> **Source:** [`ShopliveIntegration/UserSetup.swift`](../iOS/ShopliveIntegration/UserSetup.swift) · [`sdk/UserSetup.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/UserSetup.kt)
+> **Source:** [`ShopliveIntegration/UserSetup.swift`](../iOS/ShopliveIntegration/UserSetup.swift) · [`integration/…/ShopliveUserSetup.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveUserSetup.kt)
 >
-> **In the app:** card ③ — *"Connect member info"*. Pick guest / profile / token, then play.
+> **In the app:** card ⑤ — *"Connect User Information"*. Pick guest / profile / token, then play.
 
 ---
 
@@ -50,7 +50,7 @@ static func applyToken(_ jwt: String) {
 Shoplive.setUser(ShopliveUser.Token(jwt))
 ```
 
-Setting up the signing secret is a console task — see [Queenie console setup](https://sdk.shoplive.cloud/#m3-queenie) in the guide.
+Setting up the signing secret is a console task — see [Create the JWT for secure auth](https://sdk.shoplive.cloud/#m5-queenie) in the guide.
 
 The demo falls back gracefully when the token field is empty, which is worth mirroring so you never send an empty token to the server:
 
@@ -139,7 +139,7 @@ fun hashUserId(raw: String, salt: String = "SHOPLIVE_DEMO_SALT"): String =
 
 > ⚠️ **A hardcoded salt can be extracted from your app binary.** For a demo that's fine; for production, fetch the salt from remote config — or better, use the **token** approach, where the server does the work and the client never handles member identity at all.
 
-Guide reference: [ID hashing](https://sdk.shoplive.cloud/#m3-hash).
+Guide reference: [ID hashing](https://sdk.shoplive.cloud/#m5-hash).
 
 ---
 
@@ -166,9 +166,9 @@ Shoplive.logout()
 Shoplive.setUser(ShopliveUser.Guest)   // then explicitly become a guest
 ```
 
-That two-line Android sequence is exactly what [`UserSetup.apply(Method.GUEST)`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/UserSetup.kt) does, and the ordering is the point: logout first, then declare guest.
+That two-line Android sequence is exactly what [`ShopliveUserSetup.apply(Method.GUEST)`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveUserSetup.kt) does, and the ordering is the point: logout first, then declare guest.
 
-`logout()` clears **three slots at once** — `authToken`, `user`, and `streamToken`. If you're broadcasting, note that logging out a viewer also revokes broadcast permission; you'll need to call `setStreamToken` again ([Mission 8](mission-08-go-live.md)).
+`logout()` clears **three slots at once** — `authToken`, `user`, and `streamToken`. If you're broadcasting, note that logging out a viewer also revokes broadcast permission; you'll need to call `setStreamToken` again ([Mission 9](mission-09-go-live.md)).
 
 > ⚠️ **Migrating from v2?** `setUser` is **non-optional** in v3. `Shoplive.setUser(nil)` and `clearAuth` are gone; `logout()` replaces both. The integration guide still shows `setUser(nil)` in one place — that won't compile.
 
@@ -191,27 +191,37 @@ If you start with Profile and later add a signing endpoint, switching to Token i
 
 ## How the demo runs this mission
 
-Tapping card ③ opens an action sheet with the three methods, applies the chosen one, and then plays. The result appears in the chat nickname on the SDK's overlay.
+Tapping card ⑤ opens an action sheet with the three methods, applies the chosen one, and then plays. The result appears in the chat nickname on the SDK's overlay.
 
-Android models the choice as an enum whose `label` is deliberately **not** translated — it's an API value, so `"guest"` / `"profile"` / `"token"` stay verbatim while only the human-readable description is localized:
+Android models the choice as an enum whose `label` is deliberately **not** translated — it's an API value, so `"guest"` / `"profile"` / `"token"` stay verbatim. The human-readable description is localized by the app, outside the copy-paste layer:
 
 ```kotlin
-enum class Method(val label: String, @StringRes val descriptionRes: Int) {
-    GUEST("guest",     R.string.auth_guest_desc),
-    PROFILE("profile", R.string.auth_profile_desc),
-    TOKEN("token",     R.string.auth_token_desc),
+// :integration — ShopliveUserSetup.kt
+enum class Method(val label: String) {
+    GUEST("guest"),
+    PROFILE("profile"),
+    TOKEN("token"),
+}
+
+// app — DemoLabels.kt
+fun descriptionRes(method: ShopliveUserSetup.Method): Int = when (method) {
+    ShopliveUserSetup.Method.GUEST -> R.string.auth_guest_desc
+    ShopliveUserSetup.Method.PROFILE -> R.string.auth_profile_desc
+    ShopliveUserSetup.Method.TOKEN -> R.string.auth_token_desc
 }
 ```
 
-Every applied method is logged as a `→SDK` line with the ID and token **masked to the first 8 characters** — the demo never prints a credential in full, because logs get pasted into tickets. See `shopliveMasked` in [`ShopliveLog.swift`](../iOS/ShopliveIntegration/ShopliveLog.swift) and `DemoLog.mask` on Android.
+Every applied method is logged as a `→SDK` line with the ID and token **masked to the first 8 characters** — the demo never prints a credential in full, because logs get pasted into tickets. See `shopliveMasked` in [`ShopliveLog.swift`](../iOS/ShopliveIntegration/ShopliveLog.swift) and in [`ShopliveLog.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShopliveLog.kt) on Android.
 
 ---
 
 ## Related
 
 - The overlay can ask you to change the nickname via the `userNameUpdateRequested` event — [Mission 6](mission-06-events-products-coupons.md).
+- Calling `Shoplive.initialize` again with a **different access key** closes players opened with the old key (close reason `accessKeyChanged`, 3.0.4+). A token-signed-in viewer must then be set again with `setUser` — see [Mission 6 § Why the player closed](mission-06-events-products-coupons.md#why-the-player-closed-304).
+- A hybrid list ([Mission 7](mission-07-embed-in-your-screen.md)) passes only a `campaignKey`; for a signed-in viewer, call `setUser` right before the native player starts.
 - Auth failures show up as a family of error codes (`AUTHENTICATION_FAILED`, `GUEST_LOGIN_NOT_ALLOWED`, `INVALID_SIGNATURE`, `DUPLICATE_SESSION`, `EXPIRED_SESSION`, …) — see the [error code table](api-reference.md#error-codes).
 
 ---
 
-[◀ Mission 2](mission-02-deep-link.md) · [Docs home](../README.md) · Next: [Mission 4 ▶](mission-04-embed-in-your-screen.md)
+[◀ Mission 4](mission-04-deep-link.md) · [Docs home](../README.md) · Next: [Mission 6 ▶](mission-06-events-products-coupons.md)

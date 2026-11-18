@@ -5,6 +5,7 @@ import cloud.shoplive.player.ShoplivePlayOptions
 import cloud.shoplive.player.ShoplivePlayer
 import cloud.shoplive.player.ShoplivePlayerConfiguration
 import cloud.shoplive.player.ShoplivePlayerDelegate
+import cloud.shoplive.player.ShoplivePlayerPresentationStyle
 
 /**
  * Starting full-screen playback.
@@ -41,6 +42,8 @@ object ShoplivePlayerLauncher {
      *   want events — see [ShoplivePlayerEventLogger].
      * @param configuration initial values for this one playback. Omit for the SDK
      *   defaults; see [ShoplivePlayerPresets].
+     * @return the player, so the caller can tell its events apart from another
+     *   session's (the delegate is handed the player on every callback).
      */
     fun start(
         activity: Activity,
@@ -48,20 +51,29 @@ object ShoplivePlayerLauncher {
         delegate: ShoplivePlayerDelegate,
         configuration: ShoplivePlayerConfiguration = ShoplivePlayerPresets.default(),
         options: ShoplivePlayOptions = ShoplivePlayOptions(),
-    ) {
+    ): ShoplivePlayer {
         val player = ShoplivePlayer(activity)
         player.delegate = delegate
 
         ShoplivePlayerSession.attach(player)
 
+        val startsInPip = options.presentationStyle == ShoplivePlayerPresentationStyle.PIP
+        if (startsInPip && !configuration.pip.isInAppPipEnabled) {
+            // iOS documents a silent fall back to full screen; Android documents nothing.
+            // TODO(SDP-VERIFY): needs verification — what Android 3.0.4 does with presentationStyle = PIP and pip.isInAppPipEnabled = false (full screen / ignored / exception) is undocumented; measure on a device · ref SMV-1922 S08
+            logError("start in PIP requested while pip.isInAppPipEnabled = false — Android behaviour undocumented")
+        }
         logCall(
             "ShoplivePlayer(activity).start(campaignKey: \"$campaignKey\"" +
-                ", referrer: ${options.referrer ?: "null"})"
+                ", referrer: ${options.referrer ?: "null"}" +
+                ", presentationStyle: ${options.presentationStyle}" +
+                ", pip.isInAppPipEnabled: ${configuration.pip.isInAppPipEnabled})"
         )
         player.start(
             campaignKey = campaignKey,
             options = options,
             configuration = configuration,
         )
+        return player
     }
 }

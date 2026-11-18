@@ -13,8 +13,8 @@
 //  | ak        | accessKey                | Android CampaignListActivity, iOS SLQRReaderViewController |
 //  | ck        | campaignKey              | same                                                     |
 //  | title     | label only               | same (falls back to "Unknown Title (QR)")                |
-//  | userjwt   | User JWT (Mission 3)     | iOS PlayerDemo2 SLQRReaderViewController                 |
-//  | st        | stream token (Mission 8) | new in these demos — no native test app reads it         |
+//  | userjwt   | User JWT (mission 5)     | iOS PlayerDemo2 SLQRReaderViewController                 |
+//  | st        | stream token (mission 9) | new in these demos — no native test app reads it         |
 //
 //  Rules — identical in the Android and Flutter demos:
 //  - ak and ck are used together or not at all.

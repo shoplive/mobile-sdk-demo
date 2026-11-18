@@ -1,9 +1,11 @@
 package cloud.shoplive.onboarding.integration
 
+import android.content.Intent
 import cloud.shoplive.core.publicsurface.ShopliveError
 import cloud.shoplive.player.ShopliveCouponResult
 import cloud.shoplive.player.ShopliveCustomActionResult
 import cloud.shoplive.player.ShoplivePlaybackEvent
+import cloud.shoplive.player.ShoplivePlayerConfiguration
 import cloud.shoplive.player.ShoplivePlayerControlling
 import cloud.shoplive.player.ShoplivePlayerDelegate
 import cloud.shoplive.player.ShoplivePlayerEvent
@@ -11,6 +13,7 @@ import cloud.shoplive.player.ShoplivePlayerRequest
 import cloud.shoplive.player.ShoplivePlayerState
 import cloud.shoplive.player.ShopliveResultAlertType
 import cloud.shoplive.player.ShopliveResultStatus
+import cloud.shoplive.player.ShopliveShareInfo
 
 /**
  * Events, products and coupons — a delegate that logs everything and hands the
@@ -49,15 +52,23 @@ import cloud.shoplive.player.ShopliveResultStatus
  *   Nothing else in the SDK will.
  * @param onFailure something the viewer should be told about. See [ShopliveFailure].
  * @param onMilestone progress signals, if your app tracks them (analytics,
- *   onboarding state). Ignore it and nothing breaks.
+ *   onboarding state), together with the player that raised them. One delegate can
+ *   serve several players (a feed view and a full-screen player, say), so compare
+ *   the player with the one you started before crediting anything. Ignore it and
+ *   nothing breaks.
  * @param couponMessage the text shown in the coupon popup, localized by you.
  *   Returning null lets the overlay show its own default.
+ * @param onShare a ready-to-start share chooser for the viewer's share tap. Only
+ *   called with `navigation.isCustomShareEnabled = true` (see [withCustomShare]);
+ *   otherwise the SDK shows its own share sheet and nothing reaches the app. Start it
+ *   from whatever Activity is in front — that is usually the SDK player.
  */
 open class ShoplivePlayerEventLogger(
     private val onNavigation: (url: String) -> Unit,
     private val onFailure: (ShopliveFailure) -> Unit = {},
-    private val onMilestone: (ShopliveMilestone) -> Unit = {},
+    private val onMilestone: (ShopliveMilestone, ShoplivePlayerControlling) -> Unit = { _, _ -> },
     private val couponMessage: (couponId: String) -> String? = { null },
+    private val onShare: (chooser: Intent) -> Unit = {},
 ) : ShoplivePlayerDelegate {
 
     /** Consecutive playback failures. Reset when playback works or a new session starts. */
@@ -69,7 +80,7 @@ open class ShoplivePlayerEventLogger(
     override fun onEvent(player: ShoplivePlayerControlling, event: ShoplivePlayerEvent) {
         when (event) {
             is ShoplivePlayerEvent.StateChanged -> {
-                logEvent("stateChanged(${event.state})")
+                logEvent("stateChanged(${stateLabel(event.state)})")
                 when (event.state) {
                     // A new session starts here. This delegate is reused across
                     // sessions, so the failure counters reset at this point.
@@ -78,10 +89,11 @@ open class ShoplivePlayerEventLogger(
                         failureNotified = false
                     }
 
-                    ShoplivePlayerState.InAppPIP -> onMilestone(ShopliveMilestone.IN_APP_PIP_ENTERED)
+                    ShoplivePlayerState.InAppPIP -> onMilestone(ShopliveMilestone.IN_APP_PIP_ENTERED, player)
 
                     // Session over — release the control handle so later commands
-                    // do not hit a dead player.
+                    // do not hit a dead player. Why it closed is in the log line above
+                    // (3.0.4+): USER_ACTION, APP_REQUEST or ACCESS_KEY_CHANGED.
                     is ShoplivePlayerState.Closed -> ShoplivePlayerSession.detach(player)
 
                     else -> Unit
@@ -103,7 +115,7 @@ open class ShoplivePlayerEventLogger(
                 when (val playback = event.event) {
                     is ShoplivePlaybackEvent.Started -> {
                         consecutiveFailures = 0
-                        onMilestone(ShopliveMilestone.PLAYBACK_STARTED)
+                        onMilestone(ShopliveMilestone.PLAYBACK_STARTED, player)
                     }
 
                     is ShoplivePlaybackEvent.Rendering -> consecutiveFailures = 0
@@ -132,10 +144,9 @@ open class ShoplivePlayerEventLogger(
             is ShoplivePlayerEvent.WebCommandReceived ->
                 logEvent("webCommandReceived(name: \"${event.name}\", payload: ${event.payload})")
 
-            // Only arrives with NavigationOptions.isCustomShareEnabled = true; this
-            // demo keeps the SDK share sheet, so there is nothing to show here.
-            is ShoplivePlayerEvent.ShareRequested ->
-                logEvent("shareRequested(url: ${event.info.url})")
+            // Only arrives with navigation.isCustomShareEnabled = true (3.0.4+), and
+            // then the SDK shows no share sheet of its own.
+            is ShoplivePlayerEvent.ShareRequested -> onShareRequested(event.info)
 
             is ShoplivePlayerEvent.Error -> onError(event.error)
         }
@@ -146,7 +157,7 @@ open class ShoplivePlayerEventLogger(
             // ── The one request you must handle ──────────────────────────────
             is ShoplivePlayerRequest.Navigation -> {
                 logRequest("navigation(url: \"${request.url}\") — the app MUST handle this")
-                onMilestone(ShopliveMilestone.REQUEST_RECEIVED)
+                onMilestone(ShopliveMilestone.REQUEST_RECEIVED, player)
                 onNavigation(request.url)
                 logRespond("→ navigation handled by the app")
             }
@@ -154,7 +165,7 @@ open class ShoplivePlayerEventLogger(
             // ── respond is what dismisses the popup ─────────────────────────
             is ShoplivePlayerRequest.Coupon -> {
                 logRequest("coupon(id: \"${request.id}\") received")
-                onMilestone(ShopliveMilestone.REQUEST_RECEIVED)
+                onMilestone(ShopliveMilestone.REQUEST_RECEIVED, player)
 
                 // A real app calls its coupon server here and responds with the
                 // result. respond may be called from any thread, so an async
@@ -176,7 +187,7 @@ open class ShoplivePlayerEventLogger(
                     "customWebAction(id: \"${request.id}\", type: \"${request.type}\"" +
                         ", payload: ${request.payload})"
                 )
-                onMilestone(ShopliveMilestone.REQUEST_RECEIVED)
+                onMilestone(ShopliveMilestone.REQUEST_RECEIVED, player)
                 request.respond(
                     ShopliveCustomActionResult(
                         id = request.id,
@@ -188,6 +199,29 @@ open class ShoplivePlayerEventLogger(
                 logRespond("→ respond(success = true) called")
             }
         }
+    }
+
+    /**
+     * Builds the share chooser the app should start. No url means nothing worth
+     * sharing — logged, and the viewer simply sees no sheet.
+     */
+    private fun onShareRequested(info: ShopliveShareInfo) {
+        logEvent(
+            "shareRequested(url: ${info.url ?: "null"}, campaignKey: ${info.campaignKey ?: "null"}" +
+                ", title: ${info.title ?: "null"})"
+        )
+        val url = info.url
+        if (url.isNullOrBlank()) {
+            logError("shareRequested without a url — no share sheet shown")
+            return
+        }
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, url)
+            info.title?.let { putExtra(Intent.EXTRA_SUBJECT, it) }
+        }
+        logRespond("→ app share chooser (ACTION_SEND) for $url")
+        onShare(Intent.createChooser(send, null))
     }
 
     private fun onError(error: ShopliveError) {
@@ -243,8 +277,28 @@ open class ShoplivePlayerEventLogger(
     private companion object {
         /** Report after this many consecutive failures — one can be transient. */
         const val FAILURE_THRESHOLD = 2
+
+        /** `closed(reason: …)` spelled out — the reason decides what the app does next. */
+        fun stateLabel(state: ShoplivePlayerState): String = when (state) {
+            is ShoplivePlayerState.Closed -> "closed(reason: ${state.reason})"
+            else -> state.toString()
+        }
     }
 }
+
+/**
+ * Lets the app handle the viewer's share tap (3.0.4+). With `true`, the SDK stops
+ * showing its own share sheet and sends `ShareRequested` instead — which
+ * [ShoplivePlayerEventLogger] turns into a chooser for `onShare`. The SDK default is
+ * `false`.
+ *
+ * ```kotlin
+ * val navigation = ShoplivePlayerConfiguration.NavigationOptions().withCustomShare()
+ * ```
+ */
+fun ShoplivePlayerConfiguration.NavigationOptions.withCustomShare(
+    enabled: Boolean = true,
+): ShoplivePlayerConfiguration.NavigationOptions = copy(isCustomShareEnabled = enabled)
 
 /**
  * Something went wrong in a way the viewer should hear about.
@@ -280,7 +334,8 @@ data class ShopliveFailure(
  * Playback progress worth recording, for apps that track it.
  *
  * These are derived from SDK events, not from the SDK's own vocabulary, so this
- * enum is the stable thing to switch on rather than event classes.
+ * enum is the stable thing to switch on rather than event classes. Each one is
+ * reported together with the player that raised it (see `onMilestone`).
  */
 enum class ShopliveMilestone {
     /** The stream is actually playing (not merely requested). */

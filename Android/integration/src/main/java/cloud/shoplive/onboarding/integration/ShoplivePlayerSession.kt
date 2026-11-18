@@ -2,7 +2,23 @@ package cloud.shoplive.onboarding.integration
 
 import cloud.shoplive.player.ShopliveOverlayUIMode
 import cloud.shoplive.player.ShoplivePlayerControlling
+import cloud.shoplive.player.ShoplivePlayerState
 import cloud.shoplive.player.ShopliveResizeMode
+
+/**
+ * True while a session is starting or showing a stream: loading, playing, paused or
+ * in the in-App PIP window.
+ *
+ * Use it for "is the player I opened still up?" guards. `Idle` is deliberately
+ * outside: a player whose start was refused (an application context, say) or whose
+ * stream ended stays idle, and treating that as "still up" would block the next
+ * attempt for good. `Closed` is the end of the session.
+ */
+val ShoplivePlayerState.isOngoing: Boolean
+    get() = this == ShoplivePlayerState.Loading ||
+        this == ShoplivePlayerState.Playing ||
+        this == ShoplivePlayerState.Paused ||
+        this == ShoplivePlayerState.InAppPIP
 
 /**
  * Holds the currently live player handle.

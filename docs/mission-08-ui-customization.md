@@ -1,12 +1,12 @@
-# Mission 7 — Customize the UI
+# Mission 8 — UI Customization & Placement
 
-[◀ Mission 6](mission-06-events-products-coupons.md) · [Docs home](../README.md) · Next: [Mission 8 — Go live ▶](mission-08-go-live.md)
+[◀ Mission 7](mission-07-embed-in-your-screen.md) · [Docs home](../README.md) · Next: [Mission 9 — Broadcasting ▶](mission-09-go-live.md)
 
-> **Guide cross-reference:** [Mission 7 · UI customization & positioning](https://sdk.shoplive.cloud/#m7) · [PlayerConfiguration fields](https://sdk.shoplive.cloud/#f-playerconfig) · [PlayOptions fields](https://sdk.shoplive.cloud/#f-playoptions) · [Customer-configured items](https://sdk.shoplive.cloud/#customer-config)
+> **Guide cross-reference:** [Mission 8 · UI Customization & Placement](https://sdk.shoplive.cloud/#m8) · [Two ways to customize](https://sdk.shoplive.cloud/#m8-kinds) · [PlayerConfiguration fields](https://sdk.shoplive.cloud/#f-playerconfig) · [PlayOptions fields](https://sdk.shoplive.cloud/#f-playoptions) · [Customer-configured items](https://sdk.shoplive.cloud/#customer-config)
 >
-> **Source:** [`ShopliveIntegration/PlayerConfigurationFactory.swift`](../iOS/ShopliveIntegration/PlayerConfigurationFactory.swift) · [`sdk/PlayerConfigurationFactory.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerConfigurationFactory.kt)
+> **Source:** [`ShopliveIntegration/PlayerConfigurationFactory.swift`](../iOS/ShopliveIntegration/PlayerConfigurationFactory.swift) · [`integration/…/ShoplivePlayerPresets.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerPresets.kt)
 >
-> **In the app:** card ⑦ — *"Customize the UI"*. Opens the Options tab automatically. Change colors and the overlay, then replay.
+> **In the app:** card ⑧ — *"UI Customization & Placement"*. Opens the Options tab automatically. Change colors and the overlay, then replay.
 
 ---
 
@@ -135,7 +135,7 @@ static func applyRuntimeOverlay(_ mode: ShopliveOverlayUIMode, to player: Shopli
 
 Historically this was the *only* way to hide the overlay, because older iOS builds didn't consume the `overlay.ui` configuration field at all. On the current build the configuration path **is** wired (`ShoplivePlayerView` reads `configuration.overlay.ui` on play), so use configuration for the initial state and keep the runtime property for genuine mid-playback toggles.
 
-> ⚠️ **Android:** the runtime `overlayUI` setter is **not yet wired** in the current version, and on the embedded view it's pinned to `HIDDEN` regardless. To be sure a mode is applied on Android, replay with an `overlay.ui` configuration. Noted in [`PlayerSession.kt`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerSession.kt).
+> ⚠️ **Android:** the runtime `overlayUI` setter is **not yet wired** in the current version, and on the embedded view it's pinned to `HIDDEN` regardless. To be sure a mode is applied on Android, replay with an `overlay.ui` configuration. Noted in [`ShoplivePlayerSession.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerSession.kt).
 
 ---
 
@@ -145,20 +145,20 @@ Rather than assembling policy by hand, the iOS SDK provides two named presets. U
 
 ```swift
 static func fullScreenLive() -> ShoplivePlayerConfiguration {
-    ShoplivePlayerConfiguration.live       // equals .init() — everything on
+    ShoplivePlayerConfiguration.default    // equals .init() — everything on
 }
 
 static func embeddedPreview() -> ShoplivePlayerConfiguration {
-    ShoplivePlayerConfiguration.preview    // PIP off, overlay hidden, muted, fill
+    ShoplivePlayerConfiguration.preview    // preview stream, muted, overlay hidden — PIP and resizeMode unverified (Mission 7)
 }
 ```
 
-`.live` has the same *value* as `.init()`, but `PlayerConfigurationFactory.fullScreenLive()` at a call site says something `.init()` doesn't. The demo picks between them on a `Usage` axis in [`DemoConfigBuilder.swift`](../iOS/ShopliveOnboardingDemo/Support/DemoConfigBuilder.swift):
+`.default` has the same *value* as `.init()`, but `PlayerConfigurationFactory.fullScreenLive()` at a call site says something `.init()` doesn't. (SDK 3.0.4 names the two constants `.default` and `.preview`.) The demo picks between them on a `Usage` axis in [`DemoConfigBuilder.swift`](../iOS/ShopliveOnboardingDemo/Support/DemoConfigBuilder.swift):
 
 - `MissionListViewController`, deep links, PIP promotion → `.fullScreenLive`
 - `FeedDemoViewController` embed → `.embeddedPreview`
 
-Full comparison table in [Mission 4](mission-04-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot).
+Full comparison table in [Mission 7](mission-07-embed-in-your-screen.md#choosing-a-preset-for-the-embedded-slot).
 
 On Android the equivalent axis is `ShoplivePlayerType.LIVE` / `PREVIEW` in the `type` field, which drives volume-key policy and received stream resolution.
 
@@ -184,8 +184,9 @@ Everything not covered above, for orientation. Field-level details are in the [A
 
 | Field | Purpose |
 |---|---|
-| `actionOnNavigation` | What happens to the player when a product tap navigates away — close, or PIP ([Mission 5](mission-05-pip.md)) |
+| `actionOnNavigation` | What happens to the player when a product tap navigates away — close, or PIP ([Mission 3](mission-03-pip.md)) |
 | `shareScheme` | Your app's URL scheme, used by the overlay's share button |
+| `isCustomShareEnabled` | 3.0.4+ — the share button sends `shareRequested` to your app instead of opening the SDK's share sheet ([Mission 6](mission-06-events-products-coupons.md#share-button--handle-it-in-your-app-optional--304)) |
 | `closeWhenAppDestroyed` | Android only |
 
 **`customParameters`** — extra query parameters appended to the overlay URL. This is your hook for passing app-specific context (store ID, A/B bucket, membership tier) to your overlay web content.
@@ -194,16 +195,17 @@ Everything not covered above, for orientation. Field-level details are in the [A
 
 | Field | Purpose |
 |---|---|
-| `referrer` | Traffic source. Essential for deep links — [Mission 2](mission-02-deep-link.md) |
+| `referrer` | Traffic source. Essential for deep links — [Mission 4](mission-04-deep-link.md) |
 | `keepWindowStateOnPlayExecuted` | Preserve window state across a `play` call |
+| `presentationStyle` | 3.0.4+ — start full screen (default) or in the in-App PIP window ([Mission 3](mission-03-pip.md#starting-directly-in-pip-304)) |
 
 ---
 
 ## How the demo runs this mission
 
-Card ⑦ starts playback and **auto-opens the Options tab**, which has one control for **every public configuration field** — including the ones that don't fully work yet, which are marked with an inline warning rather than quietly omitted. That honesty is the point: you can see the whole surface and what part of it is real.
+Card ⑧ starts playback and **auto-opens the Options tab**, which has one control for **every public configuration field** — including the ones that don't fully work yet, which are marked with an inline warning rather than quietly omitted. That honesty is the point: you can see the whole surface and what part of it is real.
 
-The build path is [`DemoConfigBuilder.makeConfiguration(_:from:)`](../iOS/ShopliveOnboardingDemo/Support/DemoConfigBuilder.swift) on iOS and [`PlayerConfigurationFactory.from(options)`](../Android/app/src/main/java/cloud/shoplive/onboarding/sdk/PlayerConfigurationFactory.kt) on Android. Note that this assembly code lives in the **harness**, not the copy-target layer — it exists only because the demo needs one control per field, and your app doesn't. For copy-ready examples, use `branded()` / `overlayHidden()` in [`PlayerConfigurationFactory.swift`](../iOS/ShopliveIntegration/PlayerConfigurationFactory.swift).
+The build path is [`DemoConfigBuilder.makeConfiguration(_:from:)`](../iOS/ShopliveOnboardingDemo/Support/DemoConfigBuilder.swift) on iOS and [`DemoConfigurationFactory.from(options)`](../Android/app/src/main/java/cloud/shoplive/onboarding/demo/DemoConfigurationFactory.kt) on Android. Note that this assembly code lives in the **harness**, not the copy-target layer — it exists only because the demo needs one control per field, and your app doesn't. For copy-ready examples, use `branded()` / `overlayHidden()` in [`PlayerConfigurationFactory.swift`](../iOS/ShopliveIntegration/PlayerConfigurationFactory.swift) and [`ShoplivePlayerPresets.kt`](../Android/integration/src/main/java/cloud/shoplive/onboarding/integration/ShoplivePlayerPresets.kt).
 
 The "done" badge lights up on `playback(started)` after a replay.
 
@@ -211,4 +213,4 @@ The "done" badge lights up on `playback(started)` after a replay.
 
 ---
 
-[◀ Mission 6](mission-06-events-products-coupons.md) · [Docs home](../README.md) · Next: [Mission 8 ▶](mission-08-go-live.md)
+[◀ Mission 7](mission-07-embed-in-your-screen.md) · [Docs home](../README.md) · Next: [Mission 9 ▶](mission-09-go-live.md)

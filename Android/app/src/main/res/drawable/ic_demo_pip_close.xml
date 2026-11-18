@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Demo-app image for pip.closeButton (3.0.4+): a brand-coloured circle with a cross.
+     Passed into :integration as an Int, never referenced from there by name. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFF2D55"
+        android:pathData="M12,2a10,10 0,1 0,0.001 0Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M8,8L16,16M16,8L8,16" />
+</vector>

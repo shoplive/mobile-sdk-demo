@@ -5,6 +5,8 @@ import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.ChatInputFont
 import cloud.shoplive.onboarding.data.DemoOptions
 import cloud.shoplive.onboarding.data.LoadingAnimation
+import cloud.shoplive.onboarding.integration.ShoplivePipPresets
+import cloud.shoplive.onboarding.integration.withCustomShare
 import cloud.shoplive.player.ShopliveInsets
 import cloud.shoplive.player.ShoplivePlayOptions
 import cloud.shoplive.player.ShoplivePlayerConfiguration
@@ -66,7 +68,7 @@ object DemoConfigurationFactory {
                 actionOnNavigation = options.actionOnNavigation,
                 shareScheme = options.shareScheme.takeIf { it.isNotBlank() },
                 closeWhenAppDestroyed = options.closeWhenAppDestroyed,
-            ),
+            ).withCustomShare(options.isCustomShareEnabled),
 
             overlay = ShoplivePlayerConfiguration.OverlayOptions(
                 ui = options.overlayUI,
@@ -77,20 +79,27 @@ object DemoConfigurationFactory {
         )
 
     private fun pip(options: DemoOptions): ShoplivePlayerConfiguration.PipOptions =
-        ShoplivePlayerConfiguration.PipOptions(
-            isInAppPipEnabled = options.isInAppPipEnabled,
-            isOSPipEnabled = options.isOSPipEnabled,
-            enterOSPipOnBackPressed = options.enterOSPipOnBackPressed,
-            defaultPosition = options.pipPosition,
-            scale = options.pipScale,
-            aspectRatio = options.pipAspectRatio,
-            padding = ShopliveInsets.all(options.pipPaddingDp),
+        ShoplivePipPresets.withButtons(
+            pip = ShoplivePlayerConfiguration.PipOptions(
+                isInAppPipEnabled = options.isInAppPipEnabled,
+                isOSPipEnabled = options.isOSPipEnabled,
+                enterOSPipOnBackPressed = options.enterOSPipOnBackPressed,
+                defaultPosition = options.pipPosition,
+                scale = options.pipScale,
+                aspectRatio = options.pipAspectRatio,
+                padding = ShopliveInsets.all(options.pipPaddingDp),
+            ),
+            // The drawable id is this app's; :integration only takes an Int.
+            closeImageResId = R.drawable.ic_demo_pip_close.takeIf { options.pipCloseButtonImage },
+            hideRestore = options.pipRestoreButtonHidden,
         )
 
     /** Per-playback options, which may differ on every `start()` / `play()`. */
-    fun playOptions(options: DemoOptions, referrerOverride: String? = null): ShoplivePlayOptions =
-        ShoplivePlayOptions(
+    fun playOptions(options: DemoOptions, referrerOverride: String? = null): ShoplivePlayOptions {
+        val base = ShoplivePlayOptions(
             referrer = (referrerOverride ?: options.referrer).takeIf { it.isNotBlank() },
             keepWindowStateOnPlayExecuted = options.keepWindowStateOnPlayExecuted,
         )
+        return if (options.startInPip) ShoplivePipPresets.startInPip(base) else base
+    }
 }

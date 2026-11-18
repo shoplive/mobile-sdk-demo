@@ -48,8 +48,20 @@ extension ShopliveOverlayUIMode {
 }
 
 extension ShopliveResizeMode {
-    var logLabel: String { self == .fill ? "fill" : "fit" }
-    var toggled: ShopliveResizeMode { self == .fill ? .fit : .fill }
+    var logLabel: String {
+        switch self {
+        case .default: return "default"; case .fill: return "fill"; case .fit: return "fit"
+        @unknown default: return "unknown"
+        }
+    }
+    /// default → fill → fit → default
+    var toggled: ShopliveResizeMode {
+        switch self {
+        case .default: return .fill
+        case .fill: return .fit
+        default: return .default
+        }
+    }
 }
 
 extension ShoplivePlayerState {
@@ -83,6 +95,17 @@ extension ShopliveConnectionState {
         switch self {
         case .connecting: return "connecting"; case .connected: return "connected"
         case .reconnecting: return "reconnecting"; case .disconnected: return "disconnected"
+        @unknown default: return "unknown"
+        }
+    }
+}
+
+extension ShopliveCloseReason {
+    var logLabel: String {
+        switch self {
+        case .userAction: return "userAction"
+        case .appRequest: return "appRequest"
+        case .accessKeyChanged: return "accessKeyChanged"
         @unknown default: return "unknown"
         }
     }

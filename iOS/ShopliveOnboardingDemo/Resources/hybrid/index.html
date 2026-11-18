@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+  Shoplive onboarding demo — mission 7 · hybrid (bundled with the app, no network, no Web SDK).
+
+  Stands in for a list page that the Web SDK would draw. The only part that matters is the branch in
+  sendToApp(): it is the guide's step-1 code — Android exposes window.ShopLiveAppInterface, iOS exposes
+  window.webkit.messageHandlers.ShopLiveAppInterface, and a plain browser has neither.
+
+  The campaignKey comes from the app: iOS injects window.demoCampaignKey (a JSON string literal) before
+  this page runs; Android passes ?campaignKey=… in the URL.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live list (hybrid demo)</title>
+<style>
+  body { font: 14px -apple-system, system-ui, sans-serif; margin: 0; padding: 12px 16px 32px; color: #111; }
+  h1 { font-size: 15px; margin: 4px 0 12px; }
+  .card { display: flex; gap: 12px; align-items: center; padding: 12px; margin-bottom: 10px;
+          border: 1px solid #e6e8eb; border-radius: 14px; background: #fff; cursor: pointer; }
+  .thumb { width: 64px; height: 64px; border-radius: 10px; background: #ffd9e2; flex: none;
+           display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #e0245e; }
+  .meta b { display: block; font-size: 13.5px; }
+  .meta small { color: #6b7280; }
+  h2 { font-size: 12px; color: #6b7280; margin: 22px 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+  button { font: inherit; font-size: 12.5px; margin: 0 6px 8px 0; padding: 7px 10px; border-radius: 9px;
+           border: 1px solid #d1d5db; background: #f9fafb; }
+  #log { font: 11px ui-monospace, Menlo, monospace; color: #374151; white-space: pre-wrap; margin-top: 10px; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<h1>Live now</h1>
+<div id="list"></div>
+
+<h2>Bridge input checks</h2>
+<button data-send="empty">empty ""</button>
+<button data-send="blank">blank "   "</button>
+<button data-send="number">number 123</button>
+<button data-send="object">object {}</button>
+<button data-send="null">null</button>
+
+<h2>Links</h2>
+<p><a href="https://sdk.shoplive.cloud">External link (opens outside the app)</a></p>
+<p><a href="https://sdk.shoplive.cloud" target="_blank">External link, target=_blank</a></p>
+
+<div id="log"></div>
+
+<script>
+  var APP_INTERFACE = "ShopLiveAppInterface";
+
+  function campaignKey() {
+    if (typeof window.demoCampaignKey === "string") return window.demoCampaignKey;           // iOS
+    return new URLSearchParams(window.location.search).get("campaignKey") || "";             // Android
+  }
+
+  function log(text) {
+    document.getElementById("log").textContent += text + "\n";
+  }
+
+  // The guide's step-1 branch — the campaignKey (or, for the checks, whatever value) goes to the app.
+  function sendToApp(value) {
+    if (window[APP_INTERFACE]) {
+      window[APP_INTERFACE].postMessage(value);                                               // Android
+    } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers[APP_INTERFACE]) {
+      window.webkit.messageHandlers[APP_INTERFACE].postMessage(value);                        // iOS
+    } else {
+      log("No native interface — in a browser the Web SDK would play this in its own modal.");
+      return;
+    }
+    log("sent: " + JSON.stringify(value));
+  }
+
+  var cards = [
+    { title: "Summer sale live", detail: "Tap to watch in the app's player" },
+    { title: "New arrivals", detail: "Same campaign — the demo has one key" },
+    { title: "Weekend picks", detail: "Same campaign — the demo has one key" }
+  ];
+  var list = document.getElementById("list");
+  cards.forEach(function (card) {
+    var row = document.createElement("div");
+    row.className = "card";
+    row.innerHTML = '<div class="thumb">LIVE</div><div class="meta"><b></b><small></small></div>';
+    row.querySelector("b").textContent = card.title;
+    row.querySelector("small").textContent = card.detail;
+    row.addEventListener("click", function () { sendToApp(campaignKey()); });
+    list.appendChild(row);
+  });
+
+  var checks = { empty: "", blank: "   ", number: 123, object: { campaignKey: campaignKey() }, "null": null };
+  Array.prototype.forEach.call(document.querySelectorAll("button[data-send]"), function (button) {
+    button.addEventListener("click", function () { sendToApp(checks[button.getAttribute("data-send")]); });
+  });
+</script>
+</body>
+</html>

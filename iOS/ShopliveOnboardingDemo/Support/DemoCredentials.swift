@@ -21,9 +21,9 @@ enum DemoDefaults {
     static let accessKey = "ZJZBkloYuh5zXsH7wuUi"
     static let campaignKey = "9c83384b5c93"
 
-    /// For mission 8 (broadcasting) only. A completely separate path from viewer authentication.
+    /// For mission 9 (broadcasting) only. A completely separate path from viewer authentication.
     ///
-    /// This is a throwaway token for ShopLive's internal demo campaign, committed so that mission 8
+    /// This is a throwaway token for ShopLive's internal demo campaign, committed so that mission 9
     /// runs with no setup.
     ///
     /// - Important: In your own app, do **not** copy this pattern. A stream token grants
@@ -78,7 +78,7 @@ final class DemoCredentials {
         set { Keychain.write(Key.streamToken, newValue) }
     }
 
-    /// A server-issued user JWT for Mission 3's token method. Signed, so it goes in the Keychain.
+    /// A server-issued user JWT for mission 5's token method. Signed, so it goes in the Keychain.
     /// Used in both modes — tour mode has no built-in JWT.
     var userJwt: String {
         get { Keychain.read(Key.userJwt) ?? "" }

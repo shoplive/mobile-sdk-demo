@@ -10,7 +10,7 @@
     <!-- Only needed for advertising-ID based attribution (optional). -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-    <!-- For broadcasting (Mission 8). RECORD_AUDIO is not in the AAR, so the app must
+    <!-- For broadcasting (the go-live mission). RECORD_AUDIO is not in the AAR, so the app must
          declare it. The runtime request itself is made by ShopliveStreamer.start(). -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Mission 2 — the deep-link entry point.
+        <!-- Deep-link mission — the entry point.
              shoplivedemo://live?campaign={CAMPAIGN_KEY}&ref={REFERRER}
              For cold-start safety this screen only parses and hands over to
              MainActivity. -->
@@ -61,7 +61,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Mission 6 — where a navigation(url) request lands.
+        <!-- Events mission — where a navigation(url) request lands.
              It has to open while the SDK player Activity is front-most, which is why it
              is an Activity and not a Compose route. -->
         <activity

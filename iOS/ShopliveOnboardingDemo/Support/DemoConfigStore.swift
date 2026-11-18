@@ -22,7 +22,7 @@ final class DemoConfigStore {
 
     private init() {}
 
-    // MARK: - Authentication (mission 3)
+    // MARK: - Authentication (user info mission)
 
     enum AuthMode: String, CaseIterable {
         case guest, profile, token
@@ -46,10 +46,15 @@ final class DemoConfigStore {
     var pipScale: CGFloat = 0.4
     /// The spec default is `.zero`, but at 0 the PIP window sits flush against the right/bottom edge
     /// and runs into the home indicator area, where it looks clipped (measured). Only the demo's
-    /// default is nudged to 12 — you can set it back to 0 from the options tab.
+    /// default is raised to 12 — you can set it back to 0 from the options tab.
     var pipPadding: CGFloat = 12
     var pipFloatingOffset: CGFloat = 0
     var pipFixedWidth: CGFloat? = nil
+
+    /// Card players start in the small window (`ShoplivePlayOptions.presentationStyle = .pip`, 3.0.4+).
+    var startInPip = false
+    /// pip.closeButton gets an SF Symbol image and pip.restoreButton is hidden (3.0.4+). Off = SDK defaults.
+    var customPipButtons = false
 
     // MARK: - SoundOptions
 
@@ -66,6 +71,9 @@ final class DemoConfigStore {
 
     var actionOnNavigation: ShopliveNavigationAction = .pip
     var shareScheme: String? = nil
+    /// `true` → the share button sends shareRequested and the app shows its own sheet (3.0.4+). Same
+    /// default as the SDK.
+    var isCustomShareEnabled = false
 
     // MARK: - OverlayOptions
 
@@ -80,10 +88,16 @@ final class DemoConfigStore {
     var referrer: String? = nil
     var keepWindowStateOnPlayExecuted = false
 
+    // MARK: - Preview (demo behavior, not an SDK field)
+
+    /// Close a preview the viewer has not expanded when its campaign is not live (the guide's recommended
+    /// practice). Off by default so VOD and scheduled campaigns can still be demoed (S38).
+    var closePreviewWhenNotLive = false
+
     // MARK: - Runtime controls (applied immediately via properties, not through config)
 
     var isMuted = false
-    var resizeMode: ShopliveResizeMode = .fill
+    var resizeMode: ShopliveResizeMode = .default
 
     // MARK: - Cycling helpers (tap a value in the options tab → next value)
 

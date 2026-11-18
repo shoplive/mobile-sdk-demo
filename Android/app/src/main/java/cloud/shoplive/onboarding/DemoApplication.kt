@@ -2,10 +2,13 @@ package cloud.shoplive.onboarding
 
 import android.app.Activity
 import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.StringRes
 import cloud.shoplive.onboarding.data.CredentialStore
+import cloud.shoplive.onboarding.data.DemoLog
 import cloud.shoplive.onboarding.data.DemoMode
 import cloud.shoplive.onboarding.data.LocaleSetting
 import cloud.shoplive.onboarding.data.MissionProgress
@@ -147,6 +150,24 @@ object ProductRouter {
                 override fun onActivityDestroyed(activity: Activity) = Unit
             }
         )
+    }
+
+    /**
+     * Starts the share chooser built from a `shareRequested` event (3.0.4+). Like a
+     * product page it has to open over the SDK player, so it needs the resumed
+     * Activity; with none in front there is nobody to show it to.
+     */
+    fun share(chooser: Intent) {
+        val host = foreground.get()
+        if (host == null) {
+            DemoLog.error("share: no Activity in front — share sheet not shown")
+            return
+        }
+        try {
+            host.startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            DemoLog.error("share: nothing can handle the share chooser (${e.message})")
+        }
     }
 
     fun open(url: String) {

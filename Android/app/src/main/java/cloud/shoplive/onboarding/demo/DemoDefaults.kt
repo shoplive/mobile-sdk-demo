@@ -20,7 +20,7 @@ package cloud.shoplive.onboarding.demo
  * value in this file as already public, and rotate on the Shoplive console when it
  * needs to stop working.
  *
- * The stream token in particular is short-lived: broadcasting (Mission 8) stops
+ * The stream token in particular is short-lived: broadcasting (the go-live mission) stops
  * working when it expires, and the fix is a new token from the console, pasted here
  * and into the iOS file.
  */
@@ -32,7 +32,7 @@ object DemoDefaults {
     /** Demo campaign. */
     const val CAMPAIGN_KEY = "9c83384b5c93"
 
-    /** Broadcast token for Mission 8. Expires; see the rotation note above. */
+    /** Broadcast token for the go-live mission. Expires; see the rotation note above. */
     const val STREAM_TOKEN =
         "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAzODI2IiwiYWNjZXNzS2V5IjoiWkpaQmtsb1l1aDV6WHNIN3d1VWkiLCJzb3VyY2UiOiJTVFJFQU1fQVBQIiwiZXhwIjoxODE2OTk4MjcxLCJpYXQiOjE3ODU0NjIyNzF9.77ZUK-ztmLR0Ow4N3vllxwU9-s-ziAtqGezvzvaZHhw"
 }

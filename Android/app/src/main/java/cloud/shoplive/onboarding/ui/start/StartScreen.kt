@@ -53,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cloud.shoplive.onboarding.R
 import cloud.shoplive.onboarding.data.DemoMode
 import cloud.shoplive.onboarding.data.LocaleSetting
+import cloud.shoplive.onboarding.data.MissionId
 import cloud.shoplive.onboarding.ui.MainViewModel
 import cloud.shoplive.onboarding.ui.feed.findActivity
 import cloud.shoplive.onboarding.ui.components.Pill
@@ -66,7 +67,7 @@ import cloud.shoplive.onboarding.ui.theme.Brand
  * Both paths — look around with no input, or use your own keys — are chosen on **one
  * screen**. The input form starts collapsed so that "look around" is what catches the
  * eye first. The auth method (guest/profile/token) is not asked here; that is
- * Mission 3.
+ * the user-info mission's card.
  */
 @Composable
 fun StartScreen(
@@ -161,7 +162,7 @@ fun StartScreen(
                     Modifier.padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Tip(stringResource(R.string.start_own_tip))
+                    Tip(stringResource(R.string.start_own_tip, MissionId.STUDIO.displayNumber))
 
                     OutlinedButton(
                         onClick = onScanQr,
@@ -192,14 +193,14 @@ fun StartScreen(
                         value = state.streamTokenInput,
                         onValueChange = viewModel::onStreamTokenChange,
                         hint = stringResource(R.string.field_stream_token_hint),
-                        trailingPill = "Mission 8",
+                        trailingPill = stringResource(R.string.mission_badge, MissionId.STUDIO.displayNumber),
                     )
                     KeyField(
                         label = stringResource(R.string.field_user_jwt),
                         value = state.userJwtInput,
                         onValueChange = viewModel::onUserJwtChange,
-                        hint = stringResource(R.string.field_user_jwt_hint),
-                        trailingPill = "Mission 3",
+                        hint = stringResource(R.string.field_user_jwt_hint, MissionId.USER.displayNumber),
+                        trailingPill = stringResource(R.string.mission_badge, MissionId.USER.displayNumber),
                     )
                 }
             }

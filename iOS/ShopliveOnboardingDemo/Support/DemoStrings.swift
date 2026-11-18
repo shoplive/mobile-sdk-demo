@@ -49,7 +49,8 @@ enum DemoLanguage: String, CaseIterable {
     }
 }
 
-/// Localized string lookup. Used as `L("start.tour")` or `L("list.title", 3)`.
+/// Localized string lookup. Used as `L("start.tour")` or `L("list.title", done, total)` — pass exactly
+/// as many arguments as the string has placeholders.
 func L(_ key: String, _ args: CVarArg...) -> String {
     let format = NSLocalizedString(key, bundle: DemoLanguage.bundle, comment: "")
     guard !args.isEmpty else { return format }
